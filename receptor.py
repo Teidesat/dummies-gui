@@ -21,7 +21,7 @@ def main():
     while True:  # Event Loop
         event, values = window.read(timeout=1)
         # print(event, values)
-        if event == sg.WIN_CLOSED or event == "-EXIT-":
+        if event == sg.WIN_CLOSED or event.startswith("-EXIT"):
             break
 
         # Folder name was filled in, make a list of files in the folder
@@ -52,7 +52,7 @@ def main():
             # ToDo: Recibir los datos de la función de desencriptado
 
             window["-MESSAGE-"].update(value=values["-MESSAGE-"] +
-                                       "Recibiendo datos...\n")
+                                       "\nHello world!\nHola mundi!\n...")
             #! Salto de línea no reconocido
 
         if event.startswith("-TOGGLE SEC"):
@@ -72,7 +72,7 @@ def define_gui_layout():
             sg.Button("Recibir", key="-START-"),
             sg.Button("Parar", key="-STOP-"),
             sg.Button("Limpiar", key="-CLEAN-"),
-            sg.Button("Salir", key="-EXIT-"),
+            sg.Button("Salir", key="-EXIT1-"),
         ],
     ]
 
@@ -95,7 +95,7 @@ def define_gui_layout():
         ],
         [
             sg.Button("Guardar", key="-SAVE-"),
-            sg.Button("Salir", key="-EXIT-"),
+            sg.Button("Salir", key="-EXIT2-"),
         ],
     ]
 
@@ -118,7 +118,7 @@ def define_gui_layout():
         ],
     ]
 
-    window = sg.Window("Emisor", layout)
+    window = sg.Window("Receptor", layout)
     return window
 
 

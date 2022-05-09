@@ -50,7 +50,7 @@ def main():
             ]
 
             if values['-TOGGLE SEC1-RADIO-']:
-                print(values["-MESSAGE-"], params)
+                print([values["-MESSAGE-"], params])
 
             elif values['-TOGGLE SEC2-RADIO-']:
                 file_path = os.path.join(values['-FOLDER-'],
@@ -58,7 +58,7 @@ def main():
                 with open(file_path, "r", encoding='utf-8-sig') as file:
                     data = file.read()
                     file.close()
-                    print(data)
+                    print([data, params])
 
             else:
                 sys.exit("Error: Algo raro ha pasao!")
