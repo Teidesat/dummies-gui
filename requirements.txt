@@ -1,1 +1,1 @@
-pysimplegui
+pysimplegui==4.70.1
