@@ -1,8 +1,8 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Program to start the execution of the receiver dummie for the optical
-comunications test and interact with it.
+Program to start the execution of the receiver dummy for the optical communications test
+and interact with it.
 """
 
 import os
@@ -12,7 +12,7 @@ import PySimpleGUI as sg
 
 
 def main():
-    """ Main function to start the execution of the receiver program. """
+    """Main function to start the execution of the receiver program."""
 
     folder = None
     receiving_message = False
@@ -46,13 +46,14 @@ def main():
             receiving_message = False
 
         if event == "-CLEAN-":
-            window["-MESSAGE-"].update(value='')
+            window["-MESSAGE-"].update(value="")
 
-        if values['-TOGGLE SEC1-RADIO-'] and receiving_message:
+        if values["-TOGGLE SEC1-RADIO-"] and receiving_message:
             # ToDo: Recibir los datos de la función de desencriptado
 
-            window["-MESSAGE-"].update(value=values["-MESSAGE-"] +
-                                       "\nHello world!\nHola mundi!\n...")
+            window["-MESSAGE-"].update(
+                value=values["-MESSAGE-"] + "\nHello world!\nHola mundi!\n..."
+            )
             #! Salto de línea no reconocido
 
         if event.startswith("-TOGGLE SEC"):
@@ -63,7 +64,7 @@ def main():
 
 
 def define_gui_layout():
-    """ GUI layout """
+    """GUI layout"""
 
     section1 = [
         [sg.Text("Mensaje:")],
@@ -80,18 +81,20 @@ def define_gui_layout():
         [
             sg.Text("Archivo:"),
             sg.In(size=30, enable_events=True, key="-FOLDER-"),
-            sg.FolderBrowse()
+            sg.FolderBrowse(),
         ],
         [
             sg.Text("Nombre de archivo:"),
-            sg.In(default_text='', size=30, key="-FILE_NAME-"),
+            sg.In(default_text="", size=30, key="-FILE_NAME-"),
         ],
         [
-            sg.Text("Error: ruta de archivo no válida.",
-                    text_color="red",
-                    background_color="black",
-                    visible=False,
-                    key="-PATH-ERROR-MSG-"),
+            sg.Text(
+                "Error: ruta de archivo no válida.",
+                text_color="red",
+                background_color="black",
+                visible=False,
+                key="-PATH-ERROR-MSG-",
+            ),
         ],
         [
             sg.Button("Guardar", key="-SAVE-"),
@@ -102,15 +105,19 @@ def define_gui_layout():
     layout = [
         [sg.Text("Receptor")],
         [
-            sg.Radio(" Mostrar texto",
-                     "Radio",
-                     default=True,
-                     enable_events=True,
-                     key="-TOGGLE SEC1-RADIO-"),
-            sg.Radio(" Guardar en archivo",
-                     "Radio",
-                     enable_events=True,
-                     key="-TOGGLE SEC2-RADIO-"),
+            sg.Radio(
+                " Mostrar texto",
+                "Radio",
+                default=True,
+                enable_events=True,
+                key="-TOGGLE SEC1-RADIO-",
+            ),
+            sg.Radio(
+                " Guardar en archivo",
+                "Radio",
+                enable_events=True,
+                key="-TOGGLE SEC2-RADIO-",
+            ),
         ],
         [
             sg.Column(section1, key="-SEC1-"),

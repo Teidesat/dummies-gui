@@ -1,8 +1,8 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Program to start the execution of the transmitter dummie for the optical
-comunications test and interact with it.
+Program to start the execution of the transmitter dummy for the optical communications
+test and interact with it.
 """
 
 import os
@@ -12,7 +12,7 @@ import PySimpleGUI as sg
 
 
 def main():
-    """ Main function to start the execution of the transmitter program. """
+    """Main function to start the execution of the transmitter program."""
 
     sending_message = False
     window = define_gui_layout()
@@ -25,15 +25,17 @@ def main():
 
         # Folder name was filled in, make a list of files in the folder
         if event == "-FOLDER-":
-            folder = values["-FOLDER-"]
+            base_folder = values["-FOLDER-"]
             try:
-                file_list = os.listdir(folder)  # get list of files in folder
+                file_list = os.listdir(base_folder)  # get list of files in folder
             except FileNotFoundError:
                 file_list = []
-            fnames = [
-                f for f in file_list if os.path.isfile(os.path.join(folder, f))
+            file_names = [
+                file_name
+                for file_name in file_list
+                if os.path.isfile(os.path.join(base_folder, file_name))
             ]
-            window["-FILE LIST-"].update(fnames)
+            window["-FILE LIST-"].update(file_names)
 
         if event == "-SEND-":
             sending_message = True
@@ -49,19 +51,18 @@ def main():
                 values["-PARAM-DUTY_CYCLE-"],
             ]
 
-            if values['-TOGGLE SEC1-RADIO-']:
+            if values["-TOGGLE SEC1-RADIO-"]:
                 print([values["-MESSAGE-"], params])
 
-            elif values['-TOGGLE SEC2-RADIO-']:
-                file_path = os.path.join(values['-FOLDER-'],
-                                         values['-FILE LIST-'][0])
-                with open(file_path, "r", encoding='utf-8-sig') as file:
+            elif values["-TOGGLE SEC2-RADIO-"]:
+                file_path = os.path.join(values["-FOLDER-"], values["-FILE LIST-"][0])
+                with open(file_path, "r", encoding="utf-8-sig") as file:
                     data = file.read()
                     file.close()
                     print([data, params])
 
             else:
-                sys.exit("Error: Algo raro ha pasao!")
+                sys.exit("Error: Algo raro ha pasado!")
 
         if event.startswith("-TOGGLE SEC"):
             window["-SEC1-"].update(visible=values["-TOGGLE SEC1-RADIO-"])
@@ -71,7 +72,7 @@ def main():
 
 
 def define_gui_layout():
-    """ GUI layout """
+    """GUI layout"""
 
     section1 = [
         [sg.Text("Mensaje:")],
@@ -82,14 +83,9 @@ def define_gui_layout():
         [
             sg.Text("Archivo:"),
             sg.In(size=30, enable_events=True, key="-FOLDER-"),
-            sg.FolderBrowse()
+            sg.FolderBrowse(),
         ],
-        [
-            sg.Listbox(values=[],
-                       enable_events=True,
-                       size=(50, 10),
-                       key="-FILE LIST-")
-        ],
+        [sg.Listbox(values=[], enable_events=True, size=(50, 10), key="-FILE LIST-")],
     ]
 
     parameters = [
@@ -105,24 +101,27 @@ def define_gui_layout():
         ],
     ]
 
-    buttons = [[
-        sg.Button("Enviar", key="-SEND-"),
-        sg.Button("Parar", key="-STOP-"),
-        sg.Button("Salir", key="-EXIT-"),
-    ]]
+    buttons = [
+        [
+            sg.Button("Enviar", key="-SEND-"),
+            sg.Button("Parar", key="-STOP-"),
+            sg.Button("Salir", key="-EXIT-"),
+        ]
+    ]
 
     layout = [
         [sg.Text("Emisor")],
         [
-            sg.Radio(" Texto plano",
-                     "Radio",
-                     default=True,
-                     enable_events=True,
-                     key="-TOGGLE SEC1-RADIO-"),
-            sg.Radio(" Archivo",
-                     "Radio",
-                     enable_events=True,
-                     key="-TOGGLE SEC2-RADIO-"),
+            sg.Radio(
+                " Texto plano",
+                "Radio",
+                default=True,
+                enable_events=True,
+                key="-TOGGLE SEC1-RADIO-",
+            ),
+            sg.Radio(
+                " Archivo", "Radio", enable_events=True, key="-TOGGLE SEC2-RADIO-"
+            ),
         ],
         [
             sg.Column(section1, key="-SEC1-"),
