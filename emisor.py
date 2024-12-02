@@ -74,10 +74,10 @@ def main():
 def define_gui_layout():
     """GUI layout"""
 
-    section1 = [
-        [sg.Text("Mensaje:")],
-        [sg.Multiline(size=(50, 10), key="-MESSAGE-")],
-    ]
+    # section1 = [
+    #     [sg.Text("Mensaje:")],
+    #     [sg.Multiline(size=(50, 10), key="-MESSAGE-")],
+    # ]
 
     section2 = [
         [
@@ -124,7 +124,7 @@ def define_gui_layout():
             ),
         ],
         [
-            sg.Column(section1, key="-SEC1-"),
+            # sg.Column(section1, key="-SEC1-"),
             sg.Column(section2, key="-SEC2-", visible=False),
         ],
         [
