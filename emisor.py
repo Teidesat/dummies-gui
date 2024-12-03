@@ -47,26 +47,31 @@ def main():
             # ToDo: Enviar los datos a la función de encriptado
 
             params = [
-                values["-PARAM-FREQUENCY-"],
-                values["-PARAM-DUTY_CYCLE-"],
+                values["-PARAM-EXP_ID-"],
+                values["-PARAM-SENDER_ANGLE-"],
+                values["-PARAM-LED_POWER-"],
+                values["-PARAM-BLINKING_FREQUENCY-"],
+                values["-PARAM-DUMMY_DISTANCE-"],
             ]
 
-            if values["-TOGGLE SEC1-RADIO-"]:
+            if values["-TOGGLE SEC_PTEXT-RADIO-"]:
                 print([values["-MESSAGE-"], params])
 
-            elif values["-TOGGLE SEC2-RADIO-"]:
+            elif values["-TOGGLE SEC_FILE-RADIO-"]:
                 file_path = os.path.join(values["-FOLDER-"], values["-FILE LIST-"][0])
                 with open(file_path, "r", encoding="utf-8-sig") as file:
                     data = file.read()
                     file.close()
                     print([data, params])
+            # elif values["-TOGGLE SEC_EXP-RADIO-"]:
 
             else:
                 sys.exit("Error: Algo raro ha pasado!")
 
         if event.startswith("-TOGGLE SEC"):
-            window["-SEC1-"].update(visible=values["-TOGGLE SEC1-RADIO-"])
-            window["-SEC2-"].update(visible=values["-TOGGLE SEC2-RADIO-"])
+            window["-SEC_PTEXT-"].update(visible=values["-TOGGLE SEC_PTEXT-RADIO-"])
+            window["-SEC_FILE-"].update(visible=values["-TOGGLE SEC_FILE-RADIO-"])
+            window["-SEC_EXP-"].update(visible=values["-TOGGLE SEC_EXP-RADIO-"])
 
     window.close()
 
@@ -74,12 +79,12 @@ def main():
 def define_gui_layout():
     """GUI layout"""
 
-    # section1 = [
-    #     [sg.Text("Mensaje:")],
-    #     [sg.Multiline(size=(50, 10), key="-MESSAGE-")],
-    # ]
+    sectionPText = [
+        [sg.Text("Mensaje:")],
+        [sg.Multiline(size=(50, 10), key="-MESSAGE-")],
+    ]
 
-    section2 = [
+    sectionFile = [
         [
             sg.Text("Archivo:"),
             sg.In(size=30, enable_events=True, key="-FOLDER-"),
@@ -88,24 +93,56 @@ def define_gui_layout():
         [sg.Listbox(values=[], enable_events=True, size=(50, 10), key="-FILE LIST-")],
     ]
 
-    parameters = [
+    exp_param_input = [
         [
-            sg.Text("Frecuencia:"),
-            sg.In(default_text="30", size=5, key="-PARAM-FREQUENCY-"),
-            sg.Text("KHz"),
+            sg.In(default_text="12345678", size=10, key="-PARAM-EXP_ID-"),
         ],
         [
-            sg.Text("Duty cycle:"),
-            sg.In(default_text="65", size=5, key="-PARAM-DUTY_CYCLE-"),
-            sg.Text("%"),
+            sg.In(default_text="45", size=5, key="-PARAM-SENDER_ANGLE-"),
+            sg.Text("º"),
         ],
+        [
+            sg.In(default_text="1", size=5, key="-PARAM-LED_POWER-"),
+            sg.Text("A"),
+        ],
+        [
+            sg.In(default_text="30", size=5, key="-PARAM-BLINKING_FREQUENCY-"),
+            sg.Text("kbps"),
+        ],
+        [
+            sg.In(default_text="42", size=5, key="-PARAM-DUMMY_DISTANCE-"),
+            sg.Text("<unit>"),
+        ],
+    ]
+    exp_param_labels = [
+        [
+            sg.Text("Experiment Id:",expand_x=True),
+        ],
+        [
+            sg.Text("Sender angle:",expand_x=True),
+        ],
+        [
+            sg.Text("Led Power:",expand_x=True),
+        ],
+        [
+            sg.Text("Blinking frecuency:",expand_x=True),
+        ],
+        [
+            sg.Text("Dummy distance:",expand_x=True),
+        ],
+    ]
+    sectionExperiment = [
+        [
+            sg.Column(exp_param_labels),
+            sg.Column(exp_param_input),
+        ]
     ]
 
     buttons = [
         [
-            sg.Button("Enviar", key="-SEND-"),
-            sg.Button("Parar", key="-STOP-"),
-            sg.Button("Salir", key="-EXIT-"),
+            sg.Button("Execute experiment", key="-SEND-", expand_x=True),
+            # sg.Button("Parar", key="-STOP-"),
+            # sg.Button("Salir", key="-EXIT-"),
         ]
     ]
 
@@ -117,19 +154,26 @@ def define_gui_layout():
                 "Radio",
                 default=True,
                 enable_events=True,
-                key="-TOGGLE SEC1-RADIO-",
+                key="-TOGGLE SEC_PTEXT-RADIO-",
             ),
             sg.Radio(
-                " Archivo", "Radio", enable_events=True, key="-TOGGLE SEC2-RADIO-"
+                " Archivo", "Radio", enable_events=True, key="-TOGGLE SEC_FILE-RADIO-"
+            ),
+            sg.Radio(
+                " Experimento", "Radio", enable_events=True, key="-TOGGLE SEC_EXP-RADIO-"
             ),
         ],
         [
-            # sg.Column(section1, key="-SEC1-"),
-            sg.Column(section2, key="-SEC2-", visible=False),
+            sg.Column(sectionPText, key="-SEC_PTEXT-"),
+            sg.Column(sectionFile, key="-SEC_FILE-", visible=False),
+            sg.Column(sectionExperiment, key="-SEC_EXP-", visible=False),
         ],
+        # [
+        #     sg.Column(exp_param_labels),
+        #     sg.Column(exp_param_input),
+        # ],
         [
-            sg.Column(parameters),
-            sg.Column(buttons),
+            sg.Column(buttons,expand_x=True),
         ],
     ]
 
