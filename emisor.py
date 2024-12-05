@@ -47,11 +47,13 @@ def main():
             # ToDo: Enviar los datos a la función de encriptado
 
             params = [
-                values["-PARAM-EXP-ID-"],
-                values["-PARAM-EXP-SENDER_ANGLE-"],
-                values["-PARAM-EXP-LED_POWER-"],
-                values["-PARAM-EXP-BLINKING_FREQUENCY-"],
-                values["-PARAM-EXP-DUMMY_DISTANCE-"],
+                # values["-PARAM-EXP-ID-"],
+                # values["-PARAM-EXP-SENDER_ANGLE-"],
+                # values["-PARAM-EXP-LED_POWER-"],
+                # values["-PARAM-EXP-BLINKING_FREQUENCY-"],
+                # values["-PARAM-EXP-DUMMY_DISTANCE-"],
+                values["-PARAM-FREQUENCY-"],
+                values["-PARAM-DUTY_CYCLE-"],
             ]
 
             if values["-TOGGLE SEC_PTEXT-RADIO-"]:
