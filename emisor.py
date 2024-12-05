@@ -194,11 +194,14 @@ def define_gui_layout():
             [
                 sg.Column(labelsExperiment),
                 sg.Column(inputsExperiment),
-                sg.Button("Execute experiment", key="-EXEC-"),
+            ],
+            [
+                sg.Button("Execute experiment", key="-EXEC-",expand_x=True),
             ]
         ],
         key="-IL-EXP-",
         visible=False, 
+        expand_x=True
     )
     # -------------------------------------------------------------------------
 
