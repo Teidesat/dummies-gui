@@ -47,11 +47,11 @@ def main():
             # ToDo: Enviar los datos a la función de encriptado
 
             params = [
-                values["-PARAM-EXP_ID-"],
-                values["-PARAM-SENDER_ANGLE-"],
-                values["-PARAM-LED_POWER-"],
-                values["-PARAM-BLINKING_FREQUENCY-"],
-                values["-PARAM-DUMMY_DISTANCE-"],
+                values["-PARAM-EXP-ID-"],
+                values["-PARAM-EXP-SENDER_ANGLE-"],
+                values["-PARAM-EXP-LED_POWER-"],
+                values["-PARAM-EXP-BLINKING_FREQUENCY-"],
+                values["-PARAM-EXP-DUMMY_DISTANCE-"],
             ]
 
             if values["-TOGGLE SEC_PTEXT-RADIO-"]:
@@ -63,21 +63,74 @@ def main():
                     data = file.read()
                     file.close()
                     print([data, params])
-            # elif values["-TOGGLE SEC_EXP-RADIO-"]:
 
             else:
                 sys.exit("Error: Algo raro ha pasado!")
 
         if event.startswith("-TOGGLE SEC"):
+            # is_experiment = (
+            #     values["-TOGGLE SEC_EXP-RADIO-"]
+            # )
+            # window["-IL-PTEXT_FOLDER-"].update(visible=not is_exp)
+            # window["-IL-PTEXT_FOLDER-"].update(visible=is_exp)
+
+            # Mostrar/Ocultar secciones
             window["-SEC_PTEXT-"].update(visible=values["-TOGGLE SEC_PTEXT-RADIO-"])
             window["-SEC_FILE-"].update(visible=values["-TOGGLE SEC_FILE-RADIO-"])
-            window["-SEC_EXP-"].update(visible=values["-TOGGLE SEC_EXP-RADIO-"])
+            window["-IL-EXP-"].update(visible=values["-TOGGLE SEC_EXP-RADIO-"])
+            window["-IL-PTEXT_FOLDER-"].update(visible=not values["-TOGGLE SEC_EXP-RADIO-"])
 
     window.close()
 
 
 def define_gui_layout():
     """GUI layout"""
+
+    buttons = [
+        [
+            sg.Button("Enviar", key="-SEND-"),
+            sg.Button("Parar", key="-STOP-"),
+            sg.Button("Salir", key="-EXIT-"),
+        ]
+    ]
+
+    labels = [
+        [
+            sg.Text("Frecuencia:"),
+        ],
+        [
+            sg.Text("Duty cycle:"),
+        ],
+    ]
+
+    inputs = [
+        [
+            sg.In(default_text="30", size=5, key="-PARAM-FREQUENCY-"),
+            sg.Text("KHz"),
+        ],
+        [
+            sg.In(default_text="65", size=5, key="-PARAM-DUTY_CYCLE-"),
+            sg.Text("%"),
+        ],
+    ]
+
+    labelInputFieldsLayout = [
+        [
+            sg.Column(labels),
+            sg.Column(inputs),
+        ]
+    ]
+
+    inputLayoutPTextFile = sg.Column(
+        [
+            [
+                sg.Column(labelInputFieldsLayout),
+                sg.Column(buttons),
+            ]
+        ],
+        key="-IL-PTEXT_FOLDER-",
+        visible=True, 
+    )
 
     sectionPText = [
         [sg.Text("Mensaje:")],
@@ -93,28 +146,30 @@ def define_gui_layout():
         [sg.Listbox(values=[], enable_events=True, size=(50, 10), key="-FILE LIST-")],
     ]
 
-    exp_param_input = [
+    # ---------------------------- Experiment part ----------------------------
+    inputsExperiment = [
         [
-            sg.In(default_text="12345678", size=10, key="-PARAM-EXP_ID-"),
+            sg.In(default_text="12345678", size=10, key="-PARAM-EXP-ID-"),
         ],
         [
-            sg.In(default_text="45", size=5, key="-PARAM-SENDER_ANGLE-"),
+            sg.In(default_text="45", size=5, key="-PARAM-EXP-SENDER_ANGLE-"),
             sg.Text("º"),
         ],
         [
-            sg.In(default_text="1", size=5, key="-PARAM-LED_POWER-"),
+            sg.In(default_text="1", size=5, key="-PARAM-EXP-LED_POWER-"),
             sg.Text("A"),
         ],
         [
-            sg.In(default_text="30", size=5, key="-PARAM-BLINKING_FREQUENCY-"),
+            sg.In(default_text="30", size=5, key="-PARAM-EXP-BLINKING_FREQUENCY-"),
             sg.Text("kbps"),
         ],
         [
-            sg.In(default_text="42", size=5, key="-PARAM-DUMMY_DISTANCE-"),
+            sg.In(default_text="42", size=5, key="-PARAM-EXP-DUMMY_DISTANCE-"),
             sg.Text("<unit>"),
         ],
     ]
-    exp_param_labels = [
+
+    labelsExperiment = [
         [
             sg.Text("Experiment Id:",expand_x=True),
         ],
@@ -131,20 +186,19 @@ def define_gui_layout():
             sg.Text("Dummy distance:",expand_x=True),
         ],
     ]
-    sectionExperiment = [
-        [
-            sg.Column(exp_param_labels),
-            sg.Column(exp_param_input),
-        ]
-    ]
 
-    buttons = [
+    inputLayoutExperiment = sg.Column(
         [
-            sg.Button("Execute experiment", key="-SEND-", expand_x=True),
-            # sg.Button("Parar", key="-STOP-"),
-            # sg.Button("Salir", key="-EXIT-"),
-        ]
-    ]
+            [
+                sg.Column(labelsExperiment),
+                sg.Column(inputsExperiment),
+                sg.Button("Execute experiment", key="-EXEC-"),
+            ]
+        ],
+        key="-IL-EXP-",
+        visible=False, 
+    )
+    # -------------------------------------------------------------------------
 
     layout = [
         [sg.Text("Emisor")],
@@ -164,16 +218,14 @@ def define_gui_layout():
             ),
         ],
         [
+            # Sections
             sg.Column(sectionPText, key="-SEC_PTEXT-"),
             sg.Column(sectionFile, key="-SEC_FILE-", visible=False),
-            sg.Column(sectionExperiment, key="-SEC_EXP-", visible=False),
+            inputLayoutExperiment,
         ],
-        # [
-        #     sg.Column(exp_param_labels),
-        #     sg.Column(exp_param_input),
-        # ],
         [
-            sg.Column(buttons,expand_x=True),
+            # Input layout
+            inputLayoutPTextFile,
         ],
     ]
 
