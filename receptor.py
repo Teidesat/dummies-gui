@@ -11,8 +11,14 @@ import sys
 import PySimpleGUI as sg
 
 
+# Global variable to store the received message
+received_message = ""
+
+
 def main():
     """Main function to start the execution of the receiver program."""
+
+    global received_message
 
     folder = None
     receiving_message = False
@@ -46,15 +52,12 @@ def main():
             receiving_message = False
 
         if event == "-CLEAN-":
+            received_message = ""
             window["-MESSAGE-"].update(value="")
 
         if values["-TOGGLE SEC1-RADIO-"] and receiving_message:
-            # ToDo: Recibir los datos de la función de desencriptado
-
-            window["-MESSAGE-"].update(
-                value=values["-MESSAGE-"] + "\nHello world!\nHola mundi!\n..."
-            )
-            #! Salto de línea no reconocido
+            receive_message()
+            window["-MESSAGE-"].update(value=received_message)
 
         if event.startswith("-TOGGLE SEC"):
             window["-SEC1-"].update(visible=values["-TOGGLE SEC1-RADIO-"])
@@ -127,6 +130,16 @@ def define_gui_layout():
 
     window = sg.Window("Receptor", layout)
     return window
+
+
+def receive_message():
+    """Function to obtain the message from the transmitter dummy."""
+
+    # ToDo: Recibir los datos de la función de desencriptado de pulsos de luz
+    latest_message = "Hola mundo!"
+
+    global received_message
+    received_message += latest_message + "\n"
 
 
 if __name__ == "__main__":

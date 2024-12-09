@@ -52,17 +52,17 @@ def main():
             ]
 
             if values["-TOGGLE SEC1-RADIO-"]:
-                print([values["-MESSAGE-"], params])
+                message_data = values["-MESSAGE-"]
 
             elif values["-TOGGLE SEC2-RADIO-"]:
                 file_path = os.path.join(values["-FOLDER-"], values["-FILE LIST-"][0])
                 with open(file_path, "r", encoding="utf-8-sig") as file:
-                    data = file.read()
-                    file.close()
-                    print([data, params])
+                    message_data = file.read()
 
             else:
-                sys.exit("Error: Algo raro ha pasado!")
+                sys.exit("Error: Algo raro ha pasado, tipo de emisión desconocida!")
+
+            send_message(message_data, params)
 
         if event.startswith("-TOGGLE SEC"):
             window["-SEC1-"].update(visible=values["-TOGGLE SEC1-RADIO-"])
@@ -135,6 +135,13 @@ def define_gui_layout():
 
     window = sg.Window("Emisor", layout)
     return window
+
+
+def send_message(message_data, params):
+    """Function to send the message to the receiver dummy."""
+
+    # ToDo: Enviar el mensaje y los parámetros al codificador de mensajes en pulsos de luz
+    print(f"Message: {message_data} - Parameters: {params}")
 
 
 if __name__ == "__main__":

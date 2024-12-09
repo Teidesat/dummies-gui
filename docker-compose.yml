@@ -1,0 +1,46 @@
+networks:
+    dummies-network:
+        external: true
+
+services:
+    emisor-gui:
+        image: dummies-gui:latest
+        build:
+            context: .
+            dockerfile: Dockerfile
+        container_name: emisor-gui
+        hostname: emisor-gui
+        networks:
+            - dummies-network
+        environment:
+            - DISPLAY=${DISPLAY}
+        volumes:
+            - /dev/bus/usb:/dev/bus/usb:ro
+            - /tmp/.X11-unix:/tmp/.X11-unix:ro
+            - $HOME/.Xauthority:/root/.Xauthority:ro
+            - .:/app
+        device_cgroup_rules:
+            - c 189:* rmw
+        working_dir: /app
+        command: python3 emisor.py
+
+    receptor-gui:
+        image: dummies-gui:latest
+        build:
+            context: .
+            dockerfile: Dockerfile
+        container_name: receptor-gui
+        hostname: receptor-gui
+        networks:
+            - dummies-network
+        environment:
+            - DISPLAY=${DISPLAY}
+        volumes:
+            - /dev/bus/usb:/dev/bus/usb:ro
+            - /tmp/.X11-unix:/tmp/.X11-unix:ro
+            - $HOME/.Xauthority:/root/.Xauthority:ro
+            - .:/app
+        device_cgroup_rules:
+            - c 189:* rmw
+        working_dir: /app
+        command: python3 receptor.py
