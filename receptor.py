@@ -8,6 +8,7 @@ and interact with it.
 import os
 import sys
 
+from paho.mqtt.client import Client as MqttClient
 import PySimpleGUI as sg
 
 
@@ -23,6 +24,8 @@ def main():
     folder = None
     receiving_message = False
     window = define_gui_layout()
+
+    mqtt_client = init_mqtt_client()
 
     while True:  # Event Loop
         event, values = window.read(timeout=1)
@@ -56,7 +59,6 @@ def main():
             window["-MESSAGE-"].update(value="")
 
         if values["-TOGGLE SEC1-RADIO-"] and receiving_message:
-            receive_message()
             window["-MESSAGE-"].update(value=received_message)
 
         if event.startswith("-TOGGLE SEC"):
@@ -64,6 +66,8 @@ def main():
             window["-SEC2-"].update(visible=values["-TOGGLE SEC2-RADIO-"])
 
     window.close()
+    mqtt_client.loop_stop()
+    mqtt_client.disconnect()
 
 
 def define_gui_layout():
@@ -132,14 +136,45 @@ def define_gui_layout():
     return window
 
 
-def receive_message():
-    """Function to obtain the message from the transmitter dummy."""
+def init_mqtt_client():
+    """Initialize the MQTT client."""
 
-    # ToDo: Recibir los datos de la función de desencriptado de pulsos de luz
-    latest_message = "Hola mundo!"
+    print("Initializing mqtt client...", flush=True)
 
-    global received_message
-    received_message += latest_message + "\n"
+    mqtt_client = MqttClient("receptor")
+
+    mqtt_client.on_connect = mqtt_on_connect
+    mqtt_client.on_message = mqtt_on_message
+
+    mqtt_client.connect("mqtt-broker", 1883)
+    mqtt_client.loop_start()
+
+    return mqtt_client
+
+
+def mqtt_on_connect(client, userdata, flags, return_code):
+    """Callback function for the MQTT client to handle a connection event."""
+
+    if return_code != 0:
+        print(f"Failed to connect to mqtt server with error code {return_code}.")
+        return
+
+    print("Connected to mqtt server.", flush=True)
+
+    client.subscribe("optic-comms-message")
+
+    print("Subscribed to optic-comms-message topic.", flush=True)
+
+
+def mqtt_on_message(client, userdata, message):
+    """Callback function for the MQTT client to handle a message reception event."""
+
+    if message.topic == "optic-comms-message":
+        latest_message = message.payload.decode()
+        print(f"Received message: {latest_message}", flush=True)
+
+        global received_message
+        received_message += latest_message + "\n"
 
 
 if __name__ == "__main__":

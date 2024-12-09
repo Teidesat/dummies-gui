@@ -8,6 +8,7 @@ test and interact with it.
 import os
 import sys
 
+from paho.mqtt.client import Client as MqttClient
 import PySimpleGUI as sg
 
 
@@ -16,6 +17,8 @@ def main():
 
     sending_message = False
     window = define_gui_layout()
+
+    mqtt_client = init_mqtt_client()
 
     while True:  # Event Loop
         event, values = window.read(timeout=1)
@@ -62,13 +65,15 @@ def main():
             else:
                 sys.exit("Error: Algo raro ha pasado, tipo de emisión desconocida!")
 
-            send_message(message_data, params)
+            send_message(message_data, params, mqtt_client)
 
         if event.startswith("-TOGGLE SEC"):
             window["-SEC1-"].update(visible=values["-TOGGLE SEC1-RADIO-"])
             window["-SEC2-"].update(visible=values["-TOGGLE SEC2-RADIO-"])
 
     window.close()
+    mqtt_client.loop_stop()
+    mqtt_client.disconnect()
 
 
 def define_gui_layout():
@@ -137,11 +142,41 @@ def define_gui_layout():
     return window
 
 
-def send_message(message_data, params):
+def init_mqtt_client():
+    """Function to initialize the MQTT client."""
+
+    print("Initializing mqtt client...", flush=True)
+
+    mqtt_client = MqttClient("emisor")
+
+    mqtt_client.on_connect = mqtt_on_connect
+
+    mqtt_client.connect("mqtt-broker", 1883)
+    mqtt_client.loop_start()
+
+    return mqtt_client
+
+
+def mqtt_on_connect(client, userdata, flags, return_code):
+    """Callback function for the MQTT client to handle a connection event."""
+
+    if return_code != 0:
+        print(f"Failed to connect to mqtt server with error code {return_code}.")
+        return
+
+    print("Connected to mqtt server.", flush=True)
+
+
+def send_message(message_data, params, mqtt_client):
     """Function to send the message to the receiver dummy."""
 
     # ToDo: Enviar el mensaje y los parámetros al codificador de mensajes en pulsos de luz
     print(f"Message: {message_data} - Parameters: {params}")
+
+    mqtt_client.publish(
+        "optic-comms-message",
+        message_data,
+    )
 
 
 if __name__ == "__main__":
