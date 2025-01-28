@@ -8,6 +8,7 @@ test and interact with it.
 import os
 import sys
 
+from paho.mqtt.client import Client as MqttClient
 import PySimpleGUI as sg
 
 
@@ -16,6 +17,8 @@ def main():
 
     sending_message = False
     window = define_gui_layout()
+
+    mqtt_client = init_mqtt_client()
 
     while True:  # Event Loop
         event, values = window.read(timeout=1)
@@ -57,17 +60,17 @@ def main():
             ]
 
             if values["-TOGGLE SEC_PTEXT-RADIO-"]:
-                print([values["-MESSAGE-"], params])
+                message_data = values["-MESSAGE-"]
 
             elif values["-TOGGLE SEC_FILE-RADIO-"]:
                 file_path = os.path.join(values["-FOLDER-"], values["-FILE LIST-"][0])
                 with open(file_path, "r", encoding="utf-8-sig") as file:
-                    data = file.read()
-                    file.close()
-                    print([data, params])
+                    message_data = file.read()
 
             else:
-                sys.exit("Error: Algo raro ha pasado!")
+                sys.exit("Error: Algo raro ha pasado, tipo de emisión desconocida!")
+
+            send_message(message_data, params, mqtt_client)
 
         if event.startswith("-TOGGLE SEC"):
             # is_experiment = (
@@ -83,6 +86,8 @@ def main():
             window["-IL-PTEXT_FOLDER-"].update(visible=not values["-TOGGLE SEC_EXP-RADIO-"])
 
     window.close()
+    mqtt_client.loop_stop()
+    mqtt_client.disconnect()
 
 
 def define_gui_layout():
@@ -131,7 +136,7 @@ def define_gui_layout():
             ]
         ],
         key="-IL-PTEXT_FOLDER-",
-        visible=True, 
+        visible=True,
     )
 
     sectionPText = [
@@ -200,7 +205,7 @@ def define_gui_layout():
             ]
         ],
         key="-IL-EXP-",
-        visible=False, 
+        visible=False,
         expand_x=True
     )
     # -------------------------------------------------------------------------
@@ -236,6 +241,43 @@ def define_gui_layout():
 
     window = sg.Window("Emisor", layout)
     return window
+
+
+def init_mqtt_client():
+    """Function to initialize the MQTT client."""
+
+    print("Initializing mqtt client...", flush=True)
+
+    mqtt_client = MqttClient("emisor")
+
+    mqtt_client.on_connect = mqtt_on_connect
+
+    mqtt_client.connect("mqtt-broker", 1883)
+    mqtt_client.loop_start()
+
+    return mqtt_client
+
+
+def mqtt_on_connect(client, userdata, flags, return_code):
+    """Callback function for the MQTT client to handle a connection event."""
+
+    if return_code != 0:
+        print(f"Failed to connect to mqtt server with error code {return_code}.")
+        return
+
+    print("Connected to mqtt server.", flush=True)
+
+
+def send_message(message_data, params, mqtt_client):
+    """Function to send the message to the receiver dummy."""
+
+    # ToDo: Enviar el mensaje y los parámetros al codificador de mensajes en pulsos de luz
+    print(f"Message: {message_data} - Parameters: {params}")
+
+    mqtt_client.publish(
+        "optic-comms-message",
+        message_data,
+    )
 
 
 if __name__ == "__main__":
