@@ -47,8 +47,6 @@ def main():
             sending_message = False
 
         if sending_message:
-            # ToDo: Enviar los datos a la función de encriptado
-
             params = [
                 # values["-PARAM-EXP-ID-"],
                 # values["-PARAM-EXP-SENDER_ANGLE-"],
@@ -59,7 +57,7 @@ def main():
                 values["-PARAM-DUTY_CYCLE-"],
             ]
 
-            if values["-TOGGLE SEC_PTEXT-RADIO-"]:
+            if values["-TOGGLE SEC_PLAIN_TEXT-RADIO-"]:
                 message_data = values["-MESSAGE-"]
 
             elif values["-TOGGLE SEC_FILE-RADIO-"]:
@@ -76,14 +74,14 @@ def main():
             # is_experiment = (
             #     values["-TOGGLE SEC_EXP-RADIO-"]
             # )
-            # window["-IL-PTEXT_FOLDER-"].update(visible=not is_exp)
-            # window["-IL-PTEXT_FOLDER-"].update(visible=is_exp)
+            # window["-IL-PLAIN_TEXT_FOLDER-"].update(visible=not is_exp)
+            # window["-IL-PLAIN_TEXT_FOLDER-"].update(visible=is_exp)
 
             # Mostrar/Ocultar secciones
-            window["-SEC_PTEXT-"].update(visible=values["-TOGGLE SEC_PTEXT-RADIO-"])
+            window["-SEC_PLAIN_TEXT-"].update(visible=values["-TOGGLE SEC_PLAIN_TEXT-RADIO-"])
             window["-SEC_FILE-"].update(visible=values["-TOGGLE SEC_FILE-RADIO-"])
             window["-IL-EXP-"].update(visible=values["-TOGGLE SEC_EXP-RADIO-"])
-            window["-IL-PTEXT_FOLDER-"].update(visible=not values["-TOGGLE SEC_EXP-RADIO-"])
+            window["-IL-PLAIN_TEXT_FOLDER-"].update(visible=not values["-TOGGLE SEC_EXP-RADIO-"])
 
     window.close()
     mqtt_client.loop_stop()
@@ -121,30 +119,30 @@ def define_gui_layout():
         ],
     ]
 
-    labelInputFieldsLayout = [
+    label_input_fields_layout = [
         [
             sg.Column(labels),
             sg.Column(inputs),
         ]
     ]
 
-    inputLayoutPTextFile = sg.Column(
+    input_layout_plain_text_file = sg.Column(
         [
             [
-                sg.Column(labelInputFieldsLayout),
+                sg.Column(label_input_fields_layout),
                 sg.Column(buttons),
             ]
         ],
-        key="-IL-PTEXT_FOLDER-",
+        key="-IL-PLAIN_TEXT_FOLDER-",
         visible=True,
     )
 
-    sectionPText = [
+    section_plain_text = [
         [sg.Text("Mensaje:")],
         [sg.Multiline(size=(50, 10), key="-MESSAGE-")],
     ]
 
-    sectionFile = [
+    section_file = [
         [
             sg.Text("Archivo:"),
             sg.In(size=30, enable_events=True, key="-FOLDER-"),
@@ -154,7 +152,7 @@ def define_gui_layout():
     ]
 
     # ---------------------------- Experiment part ----------------------------
-    inputsExperiment = [
+    inputs_experiment = [
         [
             sg.In(default_text="12345678", size=10, key="-PARAM-EXP-ID-"),
         ],
@@ -176,7 +174,7 @@ def define_gui_layout():
         ],
     ]
 
-    labelsExperiment = [
+    labels_experiment = [
         [
             sg.Text("Experiment Id:",expand_x=True),
         ],
@@ -187,18 +185,18 @@ def define_gui_layout():
             sg.Text("Led Power:",expand_x=True),
         ],
         [
-            sg.Text("Blinking frecuency:",expand_x=True),
+            sg.Text("Blinking frequency:",expand_x=True),
         ],
         [
             sg.Text("Dummy distance:",expand_x=True),
         ],
     ]
 
-    inputLayoutExperiment = sg.Column(
+    input_layout_experiment = sg.Column(
         [
             [
-                sg.Column(labelsExperiment),
-                sg.Column(inputsExperiment),
+                sg.Column(labels_experiment),
+                sg.Column(inputs_experiment),
             ],
             [
                 sg.Button("Execute experiment", key="-EXEC-",expand_x=True),
@@ -218,7 +216,7 @@ def define_gui_layout():
                 "Radio",
                 default=True,
                 enable_events=True,
-                key="-TOGGLE SEC_PTEXT-RADIO-",
+                key="-TOGGLE SEC_PLAIN_TEXT-RADIO-",
             ),
             sg.Radio(
                 " Archivo", "Radio", enable_events=True, key="-TOGGLE SEC_FILE-RADIO-"
@@ -229,13 +227,13 @@ def define_gui_layout():
         ],
         [
             # Sections
-            sg.Column(sectionPText, key="-SEC_PTEXT-"),
-            sg.Column(sectionFile, key="-SEC_FILE-", visible=False),
-            inputLayoutExperiment,
+            sg.Column(section_plain_text, key="-SEC_PLAIN_TEXT-"),
+            sg.Column(section_file, key="-SEC_FILE-", visible=False),
+            input_layout_experiment,
         ],
         [
             # Input layout
-            inputLayoutPTextFile,
+            input_layout_plain_text_file,
         ],
     ]
 
