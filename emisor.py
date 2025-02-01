@@ -26,9 +26,9 @@ def main():
         if event == sg.WIN_CLOSED or event == "-EXIT-":
             break
 
-        # Folder name was filled in, make a list of files in the folder
-        if event == "-FOLDER-":
-            base_folder = values["-FOLDER-"]
+        # Directory name was filled in, make a list with the files in the provided path
+        if event == "-DIR_PATH-":
+            base_folder = values["-DIR_PATH-"]
             try:
                 file_list = os.listdir(base_folder)  # get list of files in folder
             except FileNotFoundError:
@@ -38,7 +38,7 @@ def main():
                 for file_name in file_list
                 if os.path.isfile(os.path.join(base_folder, file_name))
             ]
-            window["-FILE LIST-"].update(file_names)
+            window["-FILES_LIST-"].update(file_names)
 
         if event == "-SEND-":
             sending_message = True
@@ -46,48 +46,48 @@ def main():
         if event == "-STOP-":
             sending_message = False
 
-        if event.startswith("-TOGGLE SEC"):
-            # Mostrar/Ocultar secciones
-            window["-SEC_PLAIN_TEXT-"].update(
-                visible=values["-TOGGLE SEC_PLAIN_TEXT-RADIO-"]
-            )
-            window["-SEC_FILE-"].update(visible=values["-TOGGLE SEC_FILE-RADIO-"])
-            window["-SEC_EXP-"].update(visible=values["-TOGGLE SEC_EXP-RADIO-"])
+        if event.startswith("-TOGGLE_SEC"):
+            # Show only the selected section, hide the others
+            window["-SEC-PLAIN_TEXT-"].update(visible=values["-TOGGLE_SEC-PLAIN_TEXT-"])
+            window["-SEC-FILE-"].update(visible=values["-TOGGLE_SEC-FILE-"])
+            window["-SEC-EXP-"].update(visible=values["-TOGGLE_SEC-EXP-"])
 
         if (
-            event.startswith("-PARAM-EXP")
-            or event == "-TOGGLE SEC_EXP-RADIO-"
+            event.startswith("-PARAM")
+            or event == "-TOGGLE_SEC-EXP-"
             or event == "-SEND-"
         ):
-            # Actualizar el ID del experimento
+            # Update the experiment id based on the provided parameters
             window["-EXP-ID-"].update(
                 value="CO_"
-                + f"D{values['-PARAM-EXP-DUMMY_DISTANCE-']}-"
-                + f"A{values['-PARAM-EXP-TRANSMITTER_ANGLE-']}-"
-                + f"I{values['-PARAM-EXP-LED_INTENSITY-']}-"
-                + f"F{values['-PARAM-EXP-BLINKING_FREQUENCY-']}-"
-                + f"C{values['-PARAM-EXP-MESSAGES_BATCH-']}-"
+                + f"D{values['-PARAM-DUMMY_DISTANCE-']}-"
+                + f"A{values['-PARAM-TRANSMITTER_ANGLE-']}-"
+                + f"I{values['-PARAM-LED_INTENSITY-']}-"
+                + f"F{values['-PARAM-BLINKING_FREQUENCY-']}-"
+                + f"C{values['-PARAM-MESSAGES_BATCH-']}-"
                 + "Mm"
             )
 
         if sending_message:
             params = [
-                values["-PARAM-EXP-DUMMY_DISTANCE-"],
-                values["-PARAM-EXP-TRANSMITTER_ANGLE-"],
-                values["-PARAM-EXP-LED_INTENSITY-"],
-                values["-PARAM-EXP-BLINKING_FREQUENCY-"],
-                values["-PARAM-EXP-MESSAGES_BATCH-"],
+                values["-PARAM-DUMMY_DISTANCE-"],
+                values["-PARAM-TRANSMITTER_ANGLE-"],
+                values["-PARAM-LED_INTENSITY-"],
+                values["-PARAM-BLINKING_FREQUENCY-"],
+                values["-PARAM-MESSAGES_BATCH-"],
             ]
 
-            if values["-TOGGLE SEC_PLAIN_TEXT-RADIO-"]:
+            if values["-TOGGLE_SEC-PLAIN_TEXT-"]:
                 message_data = values["-MESSAGE-"]
 
-            elif values["-TOGGLE SEC_FILE-RADIO-"]:
-                file_path = os.path.join(values["-FOLDER-"], values["-FILE LIST-"][0])
+            elif values["-TOGGLE_SEC-FILE-"]:
+                file_path = os.path.join(
+                    values["-DIR_PATH-"], values["-FILES_LIST-"][0]
+                )
                 with open(file_path, "r", encoding="utf-8-sig") as file:
                     message_data = file.read()
 
-            elif values["-TOGGLE SEC_EXP-RADIO-"]:
+            elif values["-TOGGLE_SEC-EXP-"]:
                 # ToDo: implement this part
                 message_data = "Experiment message"
 
@@ -102,7 +102,7 @@ def main():
 
 
 def define_gui_layout():
-    """GUI layout"""
+    """Function to define the GUI layout."""
 
     sec_plain_text_visible = True
     sec_exp_visible = False
@@ -134,7 +134,7 @@ def define_gui_layout():
                 default_text="42",
                 size=5,
                 enable_events=True,
-                key="-PARAM-EXP-DUMMY_DISTANCE-",
+                key="-PARAM-DUMMY_DISTANCE-",
             ),
             sg.Text("m"),
         ],
@@ -143,7 +143,7 @@ def define_gui_layout():
                 default_text="45",
                 size=5,
                 enable_events=True,
-                key="-PARAM-EXP-TRANSMITTER_ANGLE-",
+                key="-PARAM-TRANSMITTER_ANGLE-",
             ),
             sg.Text("º"),
         ],
@@ -152,7 +152,7 @@ def define_gui_layout():
                 default_text="1",
                 size=5,
                 enable_events=True,
-                key="-PARAM-EXP-LED_INTENSITY-",
+                key="-PARAM-LED_INTENSITY-",
             ),
             sg.Text("A"),
         ],
@@ -161,7 +161,7 @@ def define_gui_layout():
                 default_text="30",
                 size=5,
                 enable_events=True,
-                key="-PARAM-EXP-BLINKING_FREQUENCY-",
+                key="-PARAM-BLINKING_FREQUENCY-",
             ),
             sg.Text("Hz"),
         ],
@@ -194,7 +194,7 @@ def define_gui_layout():
                 default_text="1",
                 size=5,
                 enable_events=True,
-                key="-PARAM-EXP-MESSAGES_BATCH-",
+                key="-PARAM-MESSAGES_BATCH-",
             ),
         ],
     ]
@@ -216,10 +216,10 @@ def define_gui_layout():
     file_section_layout = [
         [
             sg.Text("File:"),
-            sg.In(size=30, enable_events=True, key="-FOLDER-"),
+            sg.In(size=30, enable_events=True, key="-DIR_PATH-"),
             sg.FolderBrowse(),
         ],
-        [sg.Listbox(values=[], enable_events=True, size=(50, 10), key="-FILE LIST-")],
+        [sg.Listbox(values=[], enable_events=True, size=(50, 10), key="-FILES_LIST-")],
     ]
 
     experiment_section_layout = experiment_extra_settings_layout
@@ -233,21 +233,21 @@ def define_gui_layout():
                 "Radio",
                 default=sec_plain_text_visible,
                 enable_events=True,
-                key="-TOGGLE SEC_PLAIN_TEXT-RADIO-",
+                key="-TOGGLE_SEC-PLAIN_TEXT-",
             ),
             sg.Radio(
                 " File",
                 "Radio",
                 default=sec_file_visible,
                 enable_events=True,
-                key="-TOGGLE SEC_FILE-RADIO-",
+                key="-TOGGLE_SEC-FILE-",
             ),
             sg.Radio(
                 " Experiment",
                 "Radio",
                 default=sec_exp_visible,
                 enable_events=True,
-                key="-TOGGLE SEC_EXP-RADIO-",
+                key="-TOGGLE_SEC-EXP-",
             ),
         ],
     ]
@@ -256,17 +256,17 @@ def define_gui_layout():
         [
             sg.Column(
                 plain_text_section_layout,
-                key="-SEC_PLAIN_TEXT-",
+                key="-SEC-PLAIN_TEXT-",
                 visible=sec_plain_text_visible,
             ),
             sg.Column(
                 file_section_layout,
-                key="-SEC_FILE-",
+                key="-SEC-FILE-",
                 visible=sec_file_visible,
             ),
             sg.Column(
                 experiment_section_layout,
-                key="-SEC_EXP-",
+                key="-SEC-EXP-",
                 visible=sec_exp_visible,
             ),
         ]
@@ -298,7 +298,7 @@ def define_gui_layout():
 def init_mqtt_client():
     """Function to initialize the MQTT client."""
 
-    print("Initializing mqtt client...", flush=True)
+    print("Initializing transmitter mqtt client...", flush=True)
 
     mqtt_client = MqttClient("transmitter")
 
@@ -314,16 +314,18 @@ def mqtt_on_connect(client, userdata, flags, return_code):
     """Callback function for the MQTT client to handle a connection event."""
 
     if return_code != 0:
-        print(f"Failed to connect to mqtt server with error code {return_code}.")
+        print(
+            f"Failed to connect transmitter to mqtt server with error code {return_code}."
+        )
         return
 
-    print("Connected to mqtt server.", flush=True)
+    print("Connected transmitter to mqtt server.", flush=True)
 
 
 def send_message(message_data, params, mqtt_client):
     """Function to send the message to the receiver dummy."""
 
-    # ToDo: Enviar el mensaje y los parámetros al codificador de mensajes en pulsos de luz
+    # ToDo: Send the message and the parameters to the light pulses' message encoder
     print(f"Message: {message_data} - Parameters: {params}")
 
     mqtt_client.publish(
