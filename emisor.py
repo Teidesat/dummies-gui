@@ -46,6 +46,30 @@ def main():
         if event == "-STOP-":
             sending_message = False
 
+        if event.startswith("-TOGGLE SEC"):
+            # Mostrar/Ocultar secciones
+            window["-SEC_PLAIN_TEXT-"].update(
+                visible=values["-TOGGLE SEC_PLAIN_TEXT-RADIO-"]
+            )
+            window["-SEC_FILE-"].update(visible=values["-TOGGLE SEC_FILE-RADIO-"])
+            window["-SEC_EXP-"].update(visible=values["-TOGGLE SEC_EXP-RADIO-"])
+
+        if (
+            event.startswith("-PARAM-EXP")
+            or event == "-TOGGLE SEC_EXP-RADIO-"
+            or event == "-SEND-"
+        ):
+            # Actualizar el ID del experimento
+            window["-EXP-ID-"].update(
+                value="CO_"
+                + f"D{values['-PARAM-EXP-DUMMY_DISTANCE-']}-"
+                + f"A{values['-PARAM-EXP-TRANSMITTER_ANGLE-']}-"
+                + f"I{values['-PARAM-EXP-LED_INTENSITY-']}-"
+                + f"F{values['-PARAM-EXP-BLINKING_FREQUENCY-']}-"
+                + f"C{values['-PARAM-EXP-MESSAGES_BATCH-']}-"
+                + "Mm"
+            )
+
         if sending_message:
             params = [
                 values["-PARAM-EXP-DUMMY_DISTANCE-"],
@@ -71,30 +95,6 @@ def main():
                 sys.exit("Error: Something weird happened, transmission type unknown!")
 
             send_message(message_data, params, mqtt_client)
-
-        if event.startswith("-TOGGLE SEC"):
-            # Mostrar/Ocultar secciones
-            window["-SEC_PLAIN_TEXT-"].update(
-                visible=values["-TOGGLE SEC_PLAIN_TEXT-RADIO-"]
-            )
-            window["-SEC_FILE-"].update(visible=values["-TOGGLE SEC_FILE-RADIO-"])
-            window["-SEC_EXP-"].update(visible=values["-TOGGLE SEC_EXP-RADIO-"])
-
-        if (
-            event.startswith("-PARAM-EXP")
-            or event == "-TOGGLE SEC_EXP-RADIO-"
-            or event == "-SEND-"
-        ):
-            # Actualizar el ID del experimento
-            window["-EXP-ID-"].update(
-                value="CO_"
-                + f"D{values['-PARAM-EXP-DUMMY_DISTANCE-']}-"
-                + f"A{values['-PARAM-EXP-TRANSMITTER_ANGLE-']}-"
-                + f"I{values['-PARAM-EXP-LED_INTENSITY-']}-"
-                + f"F{values['-PARAM-EXP-BLINKING_FREQUENCY-']}-"
-                + f"C{values['-PARAM-EXP-MESSAGES_BATCH-']}-"
-                + "Mm"
-            )
 
     window.close()
     mqtt_client.loop_stop()
@@ -163,7 +163,7 @@ def define_gui_layout():
                 enable_events=True,
                 key="-PARAM-EXP-BLINKING_FREQUENCY-",
             ),
-            sg.Text("kbps"),
+            sg.Text("Hz"),
         ],
     ]
 
