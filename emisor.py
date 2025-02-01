@@ -28,17 +28,7 @@ def main():
 
         # Directory name was filled in, make a list with the files in the provided path
         if event == "-DIR_PATH-":
-            base_folder = values["-DIR_PATH-"]
-            try:
-                file_list = os.listdir(base_folder)  # get list of files in folder
-            except FileNotFoundError:
-                file_list = []
-            file_names = [
-                file_name
-                for file_name in file_list
-                if os.path.isfile(os.path.join(base_folder, file_name))
-            ]
-            window["-FILES_LIST-"].update(file_names)
+            window["-FILES_LIST-"].update(get_files_from_path(values["-DIR_PATH-"]))
 
         if event == "-SEND-":
             sending_message = True
@@ -320,6 +310,21 @@ def mqtt_on_connect(client, userdata, flags, return_code):
         return
 
     print("Connected transmitter to mqtt server.", flush=True)
+
+
+def get_files_from_path(target_path):
+    """Function to get a list of files from the provided path."""
+
+    try:
+        file_list = os.listdir(target_path)
+    except FileNotFoundError:
+        file_list = []
+
+    return [
+        file_name
+        for file_name in file_list
+        if os.path.isfile(os.path.join(target_path, file_name))
+    ]
 
 
 def send_message(message_data, params, mqtt_client):
