@@ -3,13 +3,13 @@ networks:
         external: true
 
 services:
-    emisor-gui:
+    transmitter-gui:
         image: dummies-gui:latest
         build:
             context: .
             dockerfile: Dockerfile
-        container_name: emisor-gui
-        hostname: emisor-gui
+        container_name: transmitter-gui
+        hostname: transmitter-gui
         depends_on:
             -   mqtt-broker
         networks:
@@ -24,15 +24,15 @@ services:
         device_cgroup_rules:
             - c 189:* rmw
         working_dir: /app
-        command: python3 emisor.py
+        command: python3 transmitter.py
 
-    receptor-gui:
+    receiver-gui:
         image: dummies-gui:latest
         build:
             context: .
             dockerfile: Dockerfile
-        container_name: receptor-gui
-        hostname: receptor-gui
+        container_name: receiver-gui
+        hostname: receiver-gui
         depends_on:
             -   mqtt-broker
         networks:
@@ -47,7 +47,7 @@ services:
         device_cgroup_rules:
             - c 189:* rmw
         working_dir: /app
-        command: python3 receptor.py
+        command: python3 receiver.py
 
     mqtt-broker:
         image: eclipse-mosquitto:2.0-openssl
