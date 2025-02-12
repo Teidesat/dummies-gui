@@ -23,7 +23,7 @@ services:
             - .:/app
         device_cgroup_rules:
             - c 189:* rmw
-        working_dir: /app
+        working_dir: /app/transmitter
         command: python3 transmitter.py
 
     receiver-gui:
@@ -46,7 +46,7 @@ services:
             - .:/app
         device_cgroup_rules:
             - c 189:* rmw
-        working_dir: /app
+        working_dir: /app/receiver
         command: python3 receiver.py
 
     mqtt-broker:
