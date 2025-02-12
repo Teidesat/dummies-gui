@@ -5,6 +5,7 @@ Program to start the execution of the transmitter dummy for the optical communic
 test and interact with it.
 """
 
+import json
 import os
 import sys
 
@@ -12,23 +13,54 @@ from paho.mqtt.client import Client as MqttClient
 import PySimpleGUI as sg
 
 
+DEFAULT_SETTINGS = {
+    "dummy_distance": 3,
+    "transmitter_angle": 0,
+    "led_intensity": 0.5,
+    "blinking_frequency": 30,
+    "messages_batch": 1,
+}
+SETTINGS_KEYS_TO_ELEMENTS_KEYS = {
+    "dummy_distance": "-PARAM-DUMMY_DISTANCE-",
+    "transmitter_angle": "-PARAM-TRANSMITTER_ANGLE-",
+    "led_intensity": "-PARAM-LED_INTENSITY-",
+    "blinking_frequency": "-PARAM-BLINKING_FREQUENCY-",
+    "messages_batch": "-PARAM-MESSAGES_BATCH-",
+}
+
+
 def main():
     """Main function to start the execution of the transmitter program."""
 
     sending_message = False
-    window = define_gui_layout()
+    main_window = define_main_gui_layout()
+    update_settings(DEFAULT_SETTINGS, main_window)
 
     mqtt_client = init_mqtt_client()
 
     while True:  # Event Loop
-        event, values = window.read(timeout=1)
+        event, values = main_window.read(timeout=1)
         # print(event, values)
         if event == sg.WIN_CLOSED or event == "-EXIT-":
             break
 
+        if event == "-LOAD_SETTINGS-":
+            load_settings(main_window)
+
+        if event == "-SAVE_SETTINGS-":
+            # ToDo: Implement this part
+            sg.popup_quick_message(
+                "Not implemented yet, work in progress.",
+                auto_close_duration=2,
+                background_color="yellow",
+                text_color="black",
+            )
+
         # Directory name was filled in, make a list with the files in the provided path
         if event == "-DIR_PATH-":
-            window["-FILES_LIST-"].update(get_files_from_path(values["-DIR_PATH-"]))
+            main_window["-FILES_LIST-"].update(
+                get_files_from_path(values["-DIR_PATH-"])
+            )
 
         if event == "-SEND-":
             sending_message = True
@@ -36,19 +68,22 @@ def main():
         if event == "-STOP-":
             sending_message = False
 
+        # Show only the selected section, hide the others
         if event.startswith("-TOGGLE_SEC"):
-            # Show only the selected section, hide the others
-            window["-SEC-PLAIN_TEXT-"].update(visible=values["-TOGGLE_SEC-PLAIN_TEXT-"])
-            window["-SEC-FILE-"].update(visible=values["-TOGGLE_SEC-FILE-"])
-            window["-SEC-EXP-"].update(visible=values["-TOGGLE_SEC-EXP-"])
+            main_window["-SEC-PLAIN_TEXT-"].update(
+                visible=values["-TOGGLE_SEC-PLAIN_TEXT-"]
+            )
+            main_window["-SEC-FILE-"].update(visible=values["-TOGGLE_SEC-FILE-"])
+            main_window["-SEC-EXP-"].update(visible=values["-TOGGLE_SEC-EXP-"])
 
         if (
             event.startswith("-PARAM")
+            or event.endswith("SETTINGS-")
             or event == "-TOGGLE_SEC-EXP-"
             or event == "-SEND-"
         ):
             # Update the experiment id based on the provided parameters
-            window["-EXP-ID-"].update(
+            main_window["-EXP-ID-"].update(
                 value="CO_"
                 + f"D{values['-PARAM-DUMMY_DISTANCE-']}-"
                 + f"A{values['-PARAM-TRANSMITTER_ANGLE-']}-"
@@ -86,13 +121,13 @@ def main():
 
             send_message(message_data, params, mqtt_client)
 
-    window.close()
+    main_window.close()
     mqtt_client.loop_stop()
     mqtt_client.disconnect()
 
 
-def define_gui_layout():
-    """Function to define the GUI layout."""
+def define_main_gui_layout():
+    """Function to define the GUI layout of the main window."""
 
     sec_plain_text_visible = True
     sec_exp_visible = False
@@ -121,7 +156,6 @@ def define_gui_layout():
     standard_settings_inputs = [
         [
             sg.In(
-                default_text="42",
                 size=5,
                 enable_events=True,
                 key="-PARAM-DUMMY_DISTANCE-",
@@ -130,7 +164,6 @@ def define_gui_layout():
         ],
         [
             sg.In(
-                default_text="45",
                 size=5,
                 enable_events=True,
                 key="-PARAM-TRANSMITTER_ANGLE-",
@@ -139,7 +172,6 @@ def define_gui_layout():
         ],
         [
             sg.In(
-                default_text="1",
                 size=5,
                 enable_events=True,
                 key="-PARAM-LED_INTENSITY-",
@@ -148,7 +180,6 @@ def define_gui_layout():
         ],
         [
             sg.In(
-                default_text="30",
                 size=5,
                 enable_events=True,
                 key="-PARAM-BLINKING_FREQUENCY-",
@@ -181,7 +212,6 @@ def define_gui_layout():
         ],
         [
             sg.In(
-                default_text="1",
                 size=5,
                 enable_events=True,
                 key="-PARAM-MESSAGES_BATCH-",
@@ -267,6 +297,10 @@ def define_gui_layout():
             sg.Column(standard_settings_layout),
         ],
         [
+            sg.Button("Load settings", key="-LOAD_SETTINGS-"),
+            sg.Button("Save settings", key="-SAVE_SETTINGS-"),
+        ],
+        [
             sg.Button("Send", key="-SEND-"),
             sg.Button("Stop", key="-STOP-"),
             sg.Button("Exit", key="-EXIT-"),
@@ -281,8 +315,53 @@ def define_gui_layout():
         common_elements_layout,
     ]
 
-    window = sg.Window("Transmitter", main_layout)
-    return window
+    main_window = sg.Window("Transmitter", main_layout, finalize=True)
+    return main_window
+
+
+def load_settings(window):
+    """
+    Function to load the settings from the selected file.
+
+    Note: This function modifies the window object in place as an intended side effect.
+    """
+
+    settings_file = sg.popup_get_file(
+        "Select the file with the settings to be loaded",
+        file_types=(
+            ("JSON files", ".json"),
+            ("ALL Files", ". *"),
+        ),
+        no_window=True,
+    )
+
+    if settings_file is None:
+        sg.popup("File selection canceled, no settings were loaded.")
+        return
+
+    try:
+        with open(settings_file, "r") as file:
+            settings = json.load(file)
+
+        update_settings(settings, window)
+
+    except (
+        FileNotFoundError,
+        json.JSONDecodeError,
+        KeyError,
+    ):
+        sg.popup("Error loading settings from file, please try again.")
+
+
+def update_settings(settings, window):
+    """
+    Function to update the GUI elements with the provided settings.
+
+    Note: This function modifies the window object in place as an intended side effect.
+    """
+
+    for setting_key, element_key in SETTINGS_KEYS_TO_ELEMENTS_KEYS.items():
+        window[element_key].update(value=settings[setting_key])
 
 
 def init_mqtt_client():
