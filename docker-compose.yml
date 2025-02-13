@@ -24,7 +24,7 @@ services:
         device_cgroup_rules:
             - c 189:* rmw
         working_dir: /app/transmitter
-        command: python3 transmitter.py
+        command: python3 transmitter-gui.py
 
     receiver-gui:
         image: dummies-gui:latest
@@ -47,7 +47,7 @@ services:
         device_cgroup_rules:
             - c 189:* rmw
         working_dir: /app/receiver
-        command: python3 receiver.py
+        command: python3 receiver-gui.py
 
     mqtt-broker:
         image: eclipse-mosquitto:2.0-openssl
