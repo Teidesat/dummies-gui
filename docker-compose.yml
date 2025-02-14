@@ -10,8 +10,6 @@ services:
             dockerfile: Dockerfile
         container_name: transmitter-gui
         hostname: transmitter-gui
-        depends_on:
-            -   mqtt-broker
         networks:
             - dummies-network
         environment:
@@ -33,8 +31,6 @@ services:
             dockerfile: Dockerfile
         container_name: receiver-gui
         hostname: receiver-gui
-        depends_on:
-            -   mqtt-broker
         networks:
             - dummies-network
         environment:
@@ -48,16 +44,3 @@ services:
             - c 189:* rmw
         working_dir: /app/receiver
         command: python3 receiver-gui.py
-
-    mqtt-broker:
-        image: eclipse-mosquitto:2.0-openssl
-        container_name: mqtt-broker
-        hostname: mqtt-broker
-        networks:
-            - dummies-network
-        ports:
-            - "1883:1883"
-        volumes:
-            - ./mosquitto.conf:/mosquitto/config/mosquitto.conf:z
-        tty: true
-        command: mosquitto -c /mosquitto/config/mosquitto.conf

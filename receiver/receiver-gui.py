@@ -7,8 +7,8 @@ and interact with it.
 
 import os
 
-from paho.mqtt.client import Client as MqttClient
 import PySimpleGUI as sg
+from requests import get as get_request
 
 
 # Global variable to store the received message
@@ -23,8 +23,6 @@ def main():
     directory_path = None
     receiving_message = False
     window = define_gui_layout()
-
-    mqtt_client = init_mqtt_client()
 
     while True:  # Event Loop
         event, values = window.read(timeout=1)
@@ -58,7 +56,12 @@ def main():
             window["-MESSAGE-"].update(value="")
 
         if values["-TOGGLE_SEC-SHOW_TEXT-"] and receiving_message:
+            received_message = receive_message()
             window["-MESSAGE-"].update(value=received_message)
+
+            # ToDo: Change from deactivating the receiving mode to a timeout to update
+            #  the message continuously
+            receiving_message = False
 
         # Show only the selected section, hide the others
         if event.startswith("-TOGGLE_SEC"):
@@ -66,8 +69,6 @@ def main():
             window["-SEC-SAVE_FILE-"].update(visible=values["-TOGGLE_SEC-SAVE_FILE-"])
 
     window.close()
-    mqtt_client.loop_stop()
-    mqtt_client.disconnect()
 
 
 def define_gui_layout():
@@ -160,47 +161,20 @@ def define_gui_layout():
     return window
 
 
-def init_mqtt_client():
-    """Function to initialize the MQTT client."""
+def receive_message():
+    """Function to receive the message from the transmitter server."""
 
-    print("Initializing receiver mqtt client...", flush=True)
+    # ToDo: Change request address and endpoint to receive the message from the receiver
+    #  dummy's server instead of the transmitter server, it's currently the same server
+    #  to test the communication between the two dummies GUIs.
+    response = get_request("http://transmitter-server:5000/get_message")
 
-    mqtt_client = MqttClient("receiver")
-
-    mqtt_client.on_connect = mqtt_on_connect
-    mqtt_client.on_message = mqtt_on_message
-
-    mqtt_client.connect("mqtt-broker", 1883)
-    mqtt_client.loop_start()
-
-    return mqtt_client
-
-
-def mqtt_on_connect(client, userdata, flags, return_code):
-    """Callback function for the MQTT client to handle a connection event."""
-
-    if return_code != 0:
-        print(
-            f"Failed to connect receiver to mqtt server with error code {return_code}."
+    if response.status_code != 200:
+        raise ConnectionError(
+            f"Failed to receive message from server with error code {response.status_code}."
         )
-        return
 
-    print("Connected receiver to mqtt server.", flush=True)
-
-    client.subscribe("optic-comms-message")
-
-    print("Receiver subscribed to optic-comms-message topic.", flush=True)
-
-
-def mqtt_on_message(client, userdata, message):
-    """Callback function for the MQTT client to handle a message reception event."""
-
-    if message.topic == "optic-comms-message":
-        latest_message = message.payload.decode()
-        print(f"Received message: {latest_message}", flush=True)
-
-        global received_message
-        received_message += latest_message + "\n"
+    return response.text
 
 
 if __name__ == "__main__":

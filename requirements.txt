@@ -1,2 +1,2 @@
 pysimplegui==4.70.1
-paho-mqtt==1.6.1
+requests==2.32.3
