@@ -50,6 +50,20 @@ To receive a message from the transmitter, you have to select the message type b
 
 Then, if the message type is text, you can press the "Recibir" button to start the reception process, the "Parar" button to stop it and the "Limpiar" button to clear the text box content; otherwise, if the message type is file, you can press the "Recibir" button to start the reception process and the "Parar" button to stop it.
 
+## Troubleshooting
+
+If you get the following error message when trying to run the program:
+
+    _tkinter.TclError: couldn't connect to display "$DISPLAY"
+
+It could be because the program is trying to open a window in the display `$DISPLAY`, but it is not allowed. To solve this issue, you need to allow the program to open a window in the display `$DISPLAY`.
+
+You can try to run the following command in the terminal:
+   
+```bash
+xhost +local:
+```
+
 
 ## Disclaimer
 
