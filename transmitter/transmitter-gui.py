@@ -9,8 +9,12 @@ import json
 import os
 import sys
 
-from paho.mqtt.client import Client as MqttClient
 import PySimpleGUI as sg
+from requests import post as post_request
+
+
+# Set the debug mode to True to print logs in the console
+DEBUG_MODE = True
 
 
 DEFAULT_SETTINGS = {
@@ -32,15 +36,12 @@ SETTINGS_KEYS_TO_ELEMENTS_KEYS = {
 def main():
     """Main function to start the execution of the transmitter program."""
 
-    sending_message = False
     main_window = define_main_gui_layout()
     update_settings(DEFAULT_SETTINGS, main_window)
 
-    mqtt_client = init_mqtt_client()
-
     while True:  # Event Loop
         event, values = main_window.read(timeout=1)
-        # print(event, values)
+        # print(event, values, flush=DEBUG_MODE)
         if event == sg.WIN_CLOSED or event == "-EXIT-":
             break
 
@@ -48,7 +49,8 @@ def main():
             load_settings(main_window)
 
         if event == "-SAVE_SETTINGS-":
-            # ToDo: Implement this part
+            # ToDo: Save the settings to a JSON file
+            # save_settings(values)
             sg.popup_quick_message(
                 "Not implemented yet, work in progress.",
                 auto_close_duration=2,
@@ -61,12 +63,6 @@ def main():
             main_window["-FILES_LIST-"].update(
                 get_files_from_path(values["-DIR_PATH-"])
             )
-
-        if event == "-SEND-":
-            sending_message = True
-
-        if event == "-STOP-":
-            sending_message = False
 
         # Show only the selected section, hide the others
         if event.startswith("-TOGGLE_SEC"):
@@ -82,26 +78,22 @@ def main():
             or event == "-TOGGLE_SEC-EXP-"
             or event == "-SEND-"
         ):
-            # Update the experiment id based on the provided parameters
+            # Update the experiment id based on the currently provided settings
             main_window["-EXP-ID-"].update(
-                value="CO_"
-                + f"D{values['-PARAM-DUMMY_DISTANCE-']}-"
-                + f"A{values['-PARAM-TRANSMITTER_ANGLE-']}-"
-                + f"I{values['-PARAM-LED_INTENSITY-']}-"
-                + f"F{values['-PARAM-BLINKING_FREQUENCY-']}-"
-                + f"C{values['-PARAM-MESSAGES_BATCH-']}-"
-                + "Mm"
+                get_current_experiment_id(get_current_settings(values))
             )
 
-        if sending_message:
-            params = [
-                values["-PARAM-DUMMY_DISTANCE-"],
-                values["-PARAM-TRANSMITTER_ANGLE-"],
-                values["-PARAM-LED_INTENSITY-"],
-                values["-PARAM-BLINKING_FREQUENCY-"],
-                values["-PARAM-MESSAGES_BATCH-"],
-            ]
+        if event == "-STOP-":
+            # ToDo: Send a request to stop the optical communications
+            # stop_optical_communications()
+            sg.popup_quick_message(
+                "Not implemented yet, work in progress.",
+                auto_close_duration=2,
+                background_color="yellow",
+                text_color="black",
+            )
 
+        if event == "-SEND-":
             if values["-TOGGLE_SEC-PLAIN_TEXT-"]:
                 message_data = values["-MESSAGE-"]
 
@@ -113,17 +105,18 @@ def main():
                     message_data = file.read()
 
             elif values["-TOGGLE_SEC-EXP-"]:
-                # ToDo: implement this part
+                # ToDo: Obtain the experiment messages from the selected messages batch
+                #  and adapt the code as needed to handle this case
+                # messages_batch = get_messages_batch(values["-PARAM-MESSAGES_BATCH-"])
                 message_data = "Experiment message"
 
             else:
+                # ToDo: Change this to a popup quick message
                 sys.exit("Error: Something weird happened, transmission type unknown!")
 
-            send_message(message_data, params, mqtt_client)
+            send_message(message_data, get_current_settings(values))
 
     main_window.close()
-    mqtt_client.loop_stop()
-    mqtt_client.disconnect()
 
 
 def define_main_gui_layout():
@@ -364,31 +357,31 @@ def update_settings(settings, window):
         window[element_key].update(value=settings[setting_key])
 
 
-def init_mqtt_client():
-    """Function to initialize the MQTT client."""
+def get_current_settings(values):
+    """Function to get the current settings based on the provided values."""
 
-    print("Initializing transmitter mqtt client...", flush=True)
+    settings = {
+        setting_key: float(values[element_key])
+        for setting_key, element_key in SETTINGS_KEYS_TO_ELEMENTS_KEYS.items()
+    }
 
-    mqtt_client = MqttClient("transmitter")
-
-    mqtt_client.on_connect = mqtt_on_connect
-
-    mqtt_client.connect("mqtt-broker", 1883)
-    mqtt_client.loop_start()
-
-    return mqtt_client
+    return settings
 
 
-def mqtt_on_connect(client, userdata, flags, return_code):
-    """Callback function for the MQTT client to handle a connection event."""
+def get_current_experiment_id(settings):
+    """Function to get the current experiment ID based on the provided settings."""
 
-    if return_code != 0:
-        print(
-            f"Failed to connect transmitter to mqtt server with error code {return_code}."
-        )
-        return
+    experiment_id = (
+        "CO_"
+        + f"D{settings['dummy_distance']}-"
+        + f"A{settings['transmitter_angle']}-"
+        + f"I{settings['led_intensity']}-"
+        + f"F{settings['blinking_frequency']}-"
+        + f"L{settings['messages_batch']}-"
+        + "Mm"
+    )
 
-    print("Connected transmitter to mqtt server.", flush=True)
+    return experiment_id
 
 
 def get_files_from_path(target_path):
@@ -406,16 +399,33 @@ def get_files_from_path(target_path):
     ]
 
 
-def send_message(message_data, params, mqtt_client):
+def send_message(message_data, settings):
     """Function to send the message to the receiver dummy."""
 
-    # ToDo: Send the message and the parameters to the light pulses' message encoder
-    print(f"Message: {message_data} - Parameters: {params}")
+    experiment_id = get_current_experiment_id(settings)
 
-    mqtt_client.publish(
-        "optic-comms-message",
-        message_data,
+    print(
+        f"Experiment ID: {experiment_id} "
+        + f"\n  - Message: {message_data} "
+        + f"\n  - Settings: {settings}",
+        flush=DEBUG_MODE,
     )
+
+    response = post_request(
+        "http://transmitter-server:5000/start_optical_communications",
+        headers={"Content-Type": "application/json"},
+        json={
+            "experiment_id": experiment_id,
+            "message": message_data,
+            "settings": settings,
+        },
+    )
+
+    if response.status_code != 200:
+        # ToDo: Catch this exception to show a popup message
+        raise ConnectionError(
+            f"Failed to send message to server with error code {response.status_code}."
+        )
 
 
 if __name__ == "__main__":
