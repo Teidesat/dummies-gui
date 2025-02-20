@@ -148,7 +148,8 @@ def define_main_gui_layout():
 
     standard_settings_inputs = [
         [
-            sg.In(
+            sg.Combo(
+                values=retrieve_combo_values("distance"),
                 size=5,
                 enable_events=True,
                 key="-PARAM-DUMMY_DISTANCE-",
@@ -156,7 +157,8 @@ def define_main_gui_layout():
             sg.Text("m"),
         ],
         [
-            sg.In(
+            sg.Combo(
+                values=retrieve_combo_values("angle"),
                 size=5,
                 enable_events=True,
                 key="-PARAM-TRANSMITTER_ANGLE-",
@@ -164,7 +166,8 @@ def define_main_gui_layout():
             sg.Text("º"),
         ],
         [
-            sg.In(
+            sg.Combo(
+                values=retrieve_combo_values("power"),
                 size=5,
                 enable_events=True,
                 key="-PARAM-LED_INTENSITY-",
@@ -172,7 +175,8 @@ def define_main_gui_layout():
             sg.Text("A"),
         ],
         [
-            sg.In(
+            sg.Combo(
+                values=retrieve_combo_values("frecuency"),
                 size=5,
                 enable_events=True,
                 key="-PARAM-BLINKING_FREQUENCY-",
@@ -427,6 +431,14 @@ def send_message(message_data, settings):
             f"Failed to send message to server with error code {response.status_code}."
         )
 
+def retrieve_combo_values(experimentParam):
+    """Retrieves the combo box values of a given experiment parameter from its corresponding file. 
+       
+       Adds .txt at the end of the given parameter."""
+    file = open("combobox-values/" + experimentParam + ".txt", "r")
+    values = file.read()
+    file.close()
+    return values.split()
 
 if __name__ == "__main__":
     main()
