@@ -35,10 +35,10 @@ SETTINGS_KEYS_TO_ELEMENTS_KEYS = {
 
 def main():
     """Main function to start the execution of the transmitter program."""
-
     main_window = define_main_gui_layout()
     update_settings(DEFAULT_SETTINGS, main_window)
-
+    # Since Chooser Buttons like FileSaveAs are not considered events, this variables tracks changes
+    previous_save_path = None
     while True:  # Event Loop
         event, values = main_window.read(timeout=1)
         # print(event, values, flush=DEBUG_MODE)
@@ -48,15 +48,10 @@ def main():
         if event == "-LOAD_SETTINGS-":
             load_settings(main_window)
 
-        if event == "-SAVE_SETTINGS-":
+        if previous_save_path != values["-SAVE_SETTINGS-"]:
             # ToDo: Save the settings to a JSON file
-            # save_settings(values)
-            sg.popup_quick_message(
-                "Not implemented yet, work in progress.",
-                auto_close_duration=2,
-                background_color="yellow",
-                text_color="black",
-            )
+            previous_save_path = values["-SAVE_SETTINGS-"]
+            save_settings(values, values["-SAVE_SETTINGS-"])
 
         # Directory name was filled in, make a list with the files in the provided path
         if event == "-DIR_PATH-":
@@ -295,7 +290,10 @@ def define_main_gui_layout():
         ],
         [
             sg.Button("Load settings", key="-LOAD_SETTINGS-"),
-            sg.Button("Save settings", key="-SAVE_SETTINGS-"),
+            sg.FileSaveAs("Save settings", key="-SAVE_SETTINGS-", file_types=(
+                ("JSON files", ".json"),
+                ("ALL Files", ". *"),),
+            )
         ],
         [
             sg.Button("Send", key="-SEND-"),
@@ -440,5 +438,17 @@ def retrieve_combo_values(experimentParam):
     file.close()
     return values.split()
 
+def save_settings(values, path):
+    """Save the settings in a given file"""
+    if path == None or path == "":
+        return
+    try:
+        file = open(path, "w")
+    except:
+        sg.popup_error("File could not be opened")
+        return
+    json.dump(get_current_settings(values), file, indent=2)
+    return
+        
 if __name__ == "__main__":
     main()
