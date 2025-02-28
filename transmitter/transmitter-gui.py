@@ -59,6 +59,11 @@ def main():
                 get_files_from_path(values["-DIR_PATH-"])
             )
 
+        if event == "-FILES_PATH-":
+            main_window["-FILES_LIST-"].update(
+                values["-FILES_PATH-"]
+            )
+
         # Show only the selected section, hide the others
         if event.startswith("-TOGGLE_SEC"):
             main_window["-SEC-PLAIN_TEXT-"].update(
@@ -66,6 +71,7 @@ def main():
             )
             main_window["-SEC-FILE-"].update(visible=values["-TOGGLE_SEC-FILE-"])
             main_window["-SEC-EXP-"].update(visible=values["-TOGGLE_SEC-EXP-"])
+            main_window["-SEC-SEQ-"].update(visible=values["-TOGGLE_SEC-SEQ-"])
 
         if (
             event.startswith("-PARAM")
@@ -103,7 +109,14 @@ def main():
                 # ToDo: Obtain the experiment messages from the selected messages batch
                 #  and adapt the code as needed to handle this case
                 # messages_batch = get_messages_batch(values["-PARAM-MESSAGES_BATCH-"])
-                message_data = "Experiment message"
+                #send_experiment(get_current_settings(values))
+                pass
+
+            elif values["-TOGGLE_SEC-SEQ-"]:
+                for file_path in values["-FILES_LIST-"]:
+                    pass
+                    #send_experiment()
+                continue # Skip sending the message again
 
             else:
                 # ToDo: Change this to a popup quick message
@@ -120,9 +133,10 @@ def define_main_gui_layout():
     sec_plain_text_visible = True
     sec_exp_visible = False
     sec_file_visible = False
+    sec_seq_visible = False
 
-    assert (sec_plain_text_visible or sec_exp_visible or sec_file_visible) == True
-    assert (sec_plain_text_visible + sec_exp_visible + sec_file_visible) == 1
+    assert (sec_plain_text_visible or sec_exp_visible or sec_file_visible or sec_seq_visible) == True
+    assert (sec_plain_text_visible + sec_exp_visible + sec_file_visible + sec_seq_visible) == 1
 
     # ---------------------------------------------------------------------------------
 
@@ -236,6 +250,14 @@ def define_main_gui_layout():
 
     experiment_section_layout = experiment_extra_settings_layout
 
+    sequence_section_layout = [
+        [
+            sg.Text("File:"),
+            sg.In(size=30, enable_events=True, key="-FILES_PATH-"),
+            sg.FilesBrowse(),
+        ],
+        [sg.Listbox(values=[], enable_events=True, size=(50, 10), key="-FILES_LIST-")],
+    ]
     # ---------------------------------------------------------------------------------
 
     radio_selector_layout = [
@@ -261,6 +283,13 @@ def define_main_gui_layout():
                 enable_events=True,
                 key="-TOGGLE_SEC-EXP-",
             ),
+            sg.Radio(
+                " Sequence",
+                "Radio",
+                default=sec_seq_visible,
+                enable_events=True,
+                key="-TOGGLE_SEC-SEQ-",
+            ),
         ],
     ]
 
@@ -280,6 +309,11 @@ def define_main_gui_layout():
                 experiment_section_layout,
                 key="-SEC-EXP-",
                 visible=sec_exp_visible,
+            ),
+            sg.Column(
+                sequence_section_layout,
+                key="-SEC-SEQ-",
+                visible=sec_seq_visible,
             ),
         ]
     ]
