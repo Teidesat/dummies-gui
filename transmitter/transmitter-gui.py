@@ -10,12 +10,11 @@ import os
 import sys
 
 import PySimpleGUI as sg
-from requests import post as post_request
 
-
-# Set the debug mode to True to print logs in the console
-DEBUG_MODE = True
-
+from callbacks import *
+from keys import *
+from utils import *
+from layout import define_main_gui_layout
 
 DEFAULT_SETTINGS = {
     "dummy_distance": 3,
@@ -24,13 +23,27 @@ DEFAULT_SETTINGS = {
     "blinking_frequency": 30,
     "messages_batch": 1,
 }
-SETTINGS_KEYS_TO_ELEMENTS_KEYS = {
-    "dummy_distance": "-PARAM-DUMMY_DISTANCE-",
-    "transmitter_angle": "-PARAM-TRANSMITTER_ANGLE-",
-    "led_intensity": "-PARAM-LED_INTENSITY-",
-    "blinking_frequency": "-PARAM-BLINKING_FREQUENCY-",
-    "messages_batch": "-PARAM-MESSAGES_BATCH-",
+
+# Callbacks must be able to receive two parameters: window and values.
+EVENT_CALLBACK_DICT = {
+  Keys.LOAD_SETTINGS.value: load_settings,
+  # Directory path filled
+  Keys.DIR_PATH.value: lambda window, values: window[Keys.FILES_LIST.value]
+                                        .update(get_files_from_path(values[Keys.DIR_PATH.value])),
+  Keys.FILES_PATH.value: lambda window, values: window[Keys.FILES_LIST.value]
+                                          .update(values[Keys.FILES_PATH.value]),
+  # ToDo: Send a request to stop the optical communications
+  Keys.STOP.value: lambda window, values: sg.popup_quick_message(
+                                        "Not implemented yet, work in progress.",
+                                        auto_close_duration=2,
+                                        background_color="yellow",
+                                        text_color="black"
+                                    ),
+  Keys.SEND.value: send_callback
 }
+
+EVENT_CALLBACK_DICT.update(dict.fromkeys([Keys.TOGGLE_PLAIN_TEXT.value, Keys.TOGGLE_FILE.value,
+                                          Keys.TOGGLE_EXP.value, Keys.TOGGLE_SEQ.value], update_visibility))
 
 
 def main():
@@ -42,37 +55,18 @@ def main():
     while True:  # Event Loop
         event, values = main_window.read(timeout=1)
         # print(event, values, flush=DEBUG_MODE)
-        if event == sg.WIN_CLOSED or event == "-EXIT-":
+        if event == sg.WIN_CLOSED or event == Keys.EXIT.value:
             break
 
-        if event == "-LOAD_SETTINGS-":
-            load_settings(main_window)
+        if previous_save_path != values[Keys.SAVE_SETTINGS.value]:
+            previous_save_path = values[Keys.SAVE_SETTINGS.value]
+            save_settings(values, values[Keys.SAVE_SETTINGS.value])
 
-        if previous_save_path != values["-SAVE_SETTINGS-"]:
-            # ToDo: Save the settings to a JSON file
-            previous_save_path = values["-SAVE_SETTINGS-"]
-            save_settings(values, values["-SAVE_SETTINGS-"])
+        if event in EVENT_CALLBACK_DICT:
+            EVENT_CALLBACK_DICT[event](main_window, values)
 
-        # Directory name was filled in, make a list with the files in the provided path
-        if event == "-DIR_PATH-":
-            main_window["-FILES_LIST-"].update(
-                get_files_from_path(values["-DIR_PATH-"])
-            )
-
-        if event == "-FILES_PATH-":
-            main_window["-FILES_LIST-"].update(
-                values["-FILES_PATH-"]
-            )
-
-        # Show only the selected section, hide the others
-        if event.startswith("-TOGGLE_SEC"):
-            main_window["-SEC-PLAIN_TEXT-"].update(
-                visible=values["-TOGGLE_SEC-PLAIN_TEXT-"]
-            )
-            main_window["-SEC-FILE-"].update(visible=values["-TOGGLE_SEC-FILE-"])
-            main_window["-SEC-EXP-"].update(visible=values["-TOGGLE_SEC-EXP-"])
-            main_window["-SEC-SEQ-"].update(visible=values["-TOGGLE_SEC-SEQ-"])
-
+        # ToDo: Figure out how to add this to the callback dictionary. 
+        # As an alternative, call this function together with the events that trigger it.
         if (
             event.startswith("-PARAM")
             or event.endswith("SETTINGS-")
@@ -80,409 +74,11 @@ def main():
             or event == "-SEND-"
         ):
             # Update the experiment id based on the currently provided settings
-            main_window["-EXP-ID-"].update(
+            main_window[Keys.EXP_ID.value].update(
                 get_current_experiment_id(get_current_settings(values))
             )
 
-        if event == "-STOP-":
-            # ToDo: Send a request to stop the optical communications
-            # stop_optical_communications()
-            sg.popup_quick_message(
-                "Not implemented yet, work in progress.",
-                auto_close_duration=2,
-                background_color="yellow",
-                text_color="black",
-            )
-
-        if event == "-SEND-":
-            if values["-TOGGLE_SEC-PLAIN_TEXT-"]:
-                message_data = values["-MESSAGE-"]
-
-            elif values["-TOGGLE_SEC-FILE-"]:
-                file_path = os.path.join(
-                    values["-DIR_PATH-"], values["-FILES_LIST-"][0]
-                )
-                with open(file_path, "r", encoding="utf-8-sig") as file:
-                    message_data = file.read()
-
-            elif values["-TOGGLE_SEC-EXP-"]:
-                # ToDo: Obtain the experiment messages from the selected messages batch
-                #  and adapt the code as needed to handle this case
-                # messages_batch = get_messages_batch(values["-PARAM-MESSAGES_BATCH-"])
-                #send_experiment(get_current_settings(values))
-                pass
-
-            elif values["-TOGGLE_SEC-SEQ-"]:
-                for file_path in values["-FILES_LIST-"]:
-                    pass
-                    #send_experiment()
-                continue # Skip sending the message again
-
-            else:
-                # ToDo: Change this to a popup quick message
-                sys.exit("Error: Something weird happened, transmission type unknown!")
-
-            send_message(message_data, get_current_settings(values))
-
     main_window.close()
 
-
-def define_main_gui_layout():
-    """Function to define the GUI layout of the main window."""
-
-    sec_plain_text_visible = True
-    sec_exp_visible = False
-    sec_file_visible = False
-    sec_seq_visible = False
-
-    assert (sec_plain_text_visible or sec_exp_visible or sec_file_visible or sec_seq_visible) == True
-    assert (sec_plain_text_visible + sec_exp_visible + sec_file_visible + sec_seq_visible) == 1
-
-    # ---------------------------------------------------------------------------------
-
-    standard_settings_labels = [
-        [
-            sg.Text("Dummies distance:", expand_x=True),
-        ],
-        [
-            sg.Text("Transmitter angle:", expand_x=True),
-        ],
-        [
-            sg.Text("LEDs intensity:", expand_x=True),
-        ],
-        [
-            sg.Text("Blinking frequency:", expand_x=True),
-        ],
-    ]
-
-    standard_settings_inputs = [
-        [
-            sg.Combo(
-                values=retrieve_combo_values("distance"),
-                size=5,
-                enable_events=True,
-                key="-PARAM-DUMMY_DISTANCE-",
-            ),
-            sg.Text("m"),
-        ],
-        [
-            sg.Combo(
-                values=retrieve_combo_values("angle"),
-                size=5,
-                enable_events=True,
-                key="-PARAM-TRANSMITTER_ANGLE-",
-            ),
-            sg.Text("º"),
-        ],
-        [
-            sg.Combo(
-                values=retrieve_combo_values("power"),
-                size=5,
-                enable_events=True,
-                key="-PARAM-LED_INTENSITY-",
-            ),
-            sg.Text("A"),
-        ],
-        [
-            sg.Combo(
-                values=retrieve_combo_values("frecuency"),
-                size=5,
-                enable_events=True,
-                key="-PARAM-BLINKING_FREQUENCY-",
-            ),
-            sg.Text("Hz"),
-        ],
-    ]
-
-    standard_settings_layout = [
-        [
-            sg.Column(standard_settings_labels),
-            sg.Column(standard_settings_inputs),
-        ]
-    ]
-
-    # ---------------------------------------------------------------------------------
-
-    experiment_extra_settings_labels = [
-        [
-            sg.Text("Experiment Id:", expand_x=True),
-        ],
-        [
-            sg.Text("Messages batch:", expand_x=True),
-        ],
-    ]
-
-    experiment_extra_settings_inputs = [
-        [
-            sg.Text(text="CO_Dd-Aa-Ii-Ff-Cc-Mm", key="-EXP-ID-"),
-        ],
-        [
-            sg.In(
-                size=5,
-                enable_events=True,
-                key="-PARAM-MESSAGES_BATCH-",
-            ),
-        ],
-    ]
-
-    experiment_extra_settings_layout = [
-        [
-            sg.Column(experiment_extra_settings_labels),
-            sg.Column(experiment_extra_settings_inputs),
-        ]
-    ]
-
-    # ---------------------------------------------------------------------------------
-
-    plain_text_section_layout = [
-        [sg.Text("Message:")],
-        [sg.Multiline(size=(50, 10), key="-MESSAGE-")],
-    ]
-
-    file_section_layout = [
-        [
-            sg.Text("File:"),
-            sg.In(size=30, enable_events=True, key="-DIR_PATH-"),
-            sg.FolderBrowse(),
-        ],
-        [sg.Listbox(values=[], enable_events=True, size=(50, 10), key="-FILES_LIST-")],
-    ]
-
-    experiment_section_layout = experiment_extra_settings_layout
-
-    sequence_section_layout = [
-        [
-            sg.Text("File:"),
-            sg.In(size=30, enable_events=True, key="-FILES_PATH-"),
-            sg.FilesBrowse(),
-        ],
-        [sg.Listbox(values=[], enable_events=True, size=(50, 10), key="-FILES_LIST-")],
-    ]
-    # ---------------------------------------------------------------------------------
-
-    radio_selector_layout = [
-        [
-            sg.Radio(
-                " Plain text",
-                "Radio",
-                default=sec_plain_text_visible,
-                enable_events=True,
-                key="-TOGGLE_SEC-PLAIN_TEXT-",
-            ),
-            sg.Radio(
-                " File",
-                "Radio",
-                default=sec_file_visible,
-                enable_events=True,
-                key="-TOGGLE_SEC-FILE-",
-            ),
-            sg.Radio(
-                " Experiment",
-                "Radio",
-                default=sec_exp_visible,
-                enable_events=True,
-                key="-TOGGLE_SEC-EXP-",
-            ),
-            sg.Radio(
-                " Sequence",
-                "Radio",
-                default=sec_seq_visible,
-                enable_events=True,
-                key="-TOGGLE_SEC-SEQ-",
-            ),
-        ],
-    ]
-
-    sub_sections_layout = [
-        [
-            sg.Column(
-                plain_text_section_layout,
-                key="-SEC-PLAIN_TEXT-",
-                visible=sec_plain_text_visible,
-            ),
-            sg.Column(
-                file_section_layout,
-                key="-SEC-FILE-",
-                visible=sec_file_visible,
-            ),
-            sg.Column(
-                experiment_section_layout,
-                key="-SEC-EXP-",
-                visible=sec_exp_visible,
-            ),
-            sg.Column(
-                sequence_section_layout,
-                key="-SEC-SEQ-",
-                visible=sec_seq_visible,
-            ),
-        ]
-    ]
-
-    common_elements_layout = [
-        [
-            sg.Column(standard_settings_layout),
-        ],
-        [
-            sg.Button("Load settings", key="-LOAD_SETTINGS-"),
-            sg.FileSaveAs("Save settings", key="-SAVE_SETTINGS-", file_types=(
-                ("JSON files", ".json"),
-                ("ALL Files", ". *"),),
-            )
-        ],
-        [
-            sg.Button("Send", key="-SEND-"),
-            sg.Button("Stop", key="-STOP-"),
-            sg.Button("Exit", key="-EXIT-"),
-        ],
-    ]
-
-    # ---------------------------------------------------------------------------------
-
-    main_layout = [
-        radio_selector_layout,
-        sub_sections_layout,
-        common_elements_layout,
-    ]
-
-    main_window = sg.Window("Transmitter", main_layout, finalize=True)
-    return main_window
-
-
-def load_settings(window):
-    """
-    Function to load the settings from the selected file.
-
-    Note: This function modifies the window object in place as an intended side effect.
-    """
-
-    settings_file = sg.popup_get_file(
-        "Select the file with the settings to be loaded",
-        file_types=(
-            ("JSON files", ".json"),
-            ("ALL Files", ". *"),
-        ),
-        no_window=True,
-    )
-
-    if settings_file is None:
-        sg.popup("File selection canceled, no settings were loaded.")
-        return
-
-    try:
-        with open(settings_file, "r") as file:
-            settings = json.load(file)
-
-        update_settings(settings, window)
-
-    except (
-        FileNotFoundError,
-        json.JSONDecodeError,
-        KeyError,
-    ):
-        sg.popup("Error loading settings from file, please try again.")
-
-
-def update_settings(settings, window):
-    """
-    Function to update the GUI elements with the provided settings.
-
-    Note: This function modifies the window object in place as an intended side effect.
-    """
-
-    for setting_key, element_key in SETTINGS_KEYS_TO_ELEMENTS_KEYS.items():
-        window[element_key].update(value=settings[setting_key])
-
-
-def get_current_settings(values):
-    """Function to get the current settings based on the provided values."""
-
-    settings = {
-        setting_key: float(values[element_key])
-        for setting_key, element_key in SETTINGS_KEYS_TO_ELEMENTS_KEYS.items()
-    }
-
-    return settings
-
-
-def get_current_experiment_id(settings):
-    """Function to get the current experiment ID based on the provided settings."""
-
-    experiment_id = (
-        "CO_"
-        + f"D{settings['dummy_distance']}-"
-        + f"A{settings['transmitter_angle']}-"
-        + f"I{settings['led_intensity']}-"
-        + f"F{settings['blinking_frequency']}-"
-        + f"L{settings['messages_batch']}-"
-        + "Mm"
-    )
-
-    return experiment_id
-
-
-def get_files_from_path(target_path):
-    """Function to get a list of files from the provided path."""
-
-    try:
-        file_list = os.listdir(target_path)
-    except FileNotFoundError:
-        file_list = []
-
-    return [
-        file_name
-        for file_name in file_list
-        if os.path.isfile(os.path.join(target_path, file_name))
-    ]
-
-
-def send_message(message_data, settings):
-    """Function to send the message to the receiver dummy."""
-
-    experiment_id = get_current_experiment_id(settings)
-
-    print(
-        f"Experiment ID: {experiment_id} "
-        + f"\n  - Message: {message_data} "
-        + f"\n  - Settings: {settings}",
-        flush=DEBUG_MODE,
-    )
-
-    response = post_request(
-        "http://transmitter-server:5000/start_optical_communications",
-        headers={"Content-Type": "application/json"},
-        json={
-            "experiment_id": experiment_id,
-            "message": message_data,
-            "settings": settings,
-        },
-    )
-
-    if response.status_code != 200:
-        # ToDo: Catch this exception to show a popup message
-        raise ConnectionError(
-            f"Failed to send message to server with error code {response.status_code}."
-        )
-
-def retrieve_combo_values(experimentParam):
-    """Retrieves the combo box values of a given experiment parameter from its corresponding file. 
-       
-       Adds .txt at the end of the given parameter."""
-    file = open("combobox-values/" + experimentParam + ".txt", "r")
-    values = file.read()
-    file.close()
-    return values.split()
-
-def save_settings(values, path):
-    """Save the settings in a given file"""
-    if path == None or path == "":
-        return
-    try:
-        file = open(path, "w")
-    except:
-        sg.popup_error("File could not be opened")
-        return
-    json.dump(get_current_settings(values), file, indent=2)
-    return
-        
 if __name__ == "__main__":
     main()
