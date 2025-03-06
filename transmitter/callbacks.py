@@ -45,31 +45,31 @@ def load_settings(window, values):
         sg.popup("Error loading settings from file, please try again.")
 
 def update_visibility(window, values):
-    window[Keys.SEC_PLAIN_TEXT.value].update(visible=values[Keys.TOGGLE_PLAIN_TEXT.value])
-    window[Keys.SEC_FILE.value].update(visible=values[Keys.TOGGLE_FILE.value])
-    window[Keys.SEC_EXP.value].update(visible=values[Keys.TOGGLE_EXP.value])
-    window[Keys.SEC_SEQ.value].update(visible=values[Keys.TOGGLE_SEQ.value])
+    window[Keys.SEC_PLAIN_TEXT].update(visible=values[Keys.TOGGLE_PLAIN_TEXT])
+    window[Keys.SEC_FILE].update(visible=values[Keys.TOGGLE_FILE])
+    window[Keys.SEC_EXP].update(visible=values[Keys.TOGGLE_EXP])
+    window[Keys.SEC_SEQ].update(visible=values[Keys.TOGGLE_SEQ])
 
 def send_callback(window, values):
-    if values[Keys.TOGGLE_PLAIN_TEXT.value]:
-        message_data = values[Keys.MESSAGE.value]
+    if values[Keys.TOGGLE_PLAIN_TEXT]:
+        message_data = values[Keys.MESSAGE]
 
-    elif values[Keys.TOGGLE_FILE.value]:
+    elif values[Keys.TOGGLE_FILE]:
         file_path = os.path.join(
-            values[Keys.DIR_PATH.value], values[Keys.FILES_LIST.value][0]
+            values[Keys.DIR_PATH], values[Keys.FILES_LIST][0]
         )
         with open(file_path, "r", encoding="utf-8-sig") as file:
             message_data = file.read()
 
-    elif values[Keys.TOGGLE_EXP.value]:
+    elif values[Keys.TOGGLE_EXP]:
         # ToDo: Obtain the experiment messages from the selected messages batch
         #  and adapt the code as needed to handle this case
         # messages_batch = get_messages_batch(values["-PARAM-MESSAGES_BATCH-"])
         send_experiment(get_current_settings(values))
         pass
 
-    elif values[Keys.TOGGLE_SEQ.value]:
-        for file_path in values[Keys.FILES_LIST.value]:
+    elif values[Keys.TOGGLE_SEQ]:
+        for file_path in values[Keys.FILES_LIST]:
             send_experiment()
         return # Skip sending the message again
 

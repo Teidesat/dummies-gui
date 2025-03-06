@@ -26,25 +26,29 @@ DEFAULT_SETTINGS = {
 
 # Callbacks must be able to receive two parameters: window and values.
 EVENT_CALLBACK_DICT = {
-  Keys.LOAD_SETTINGS.value: load_settings,
+  Keys.LOAD_SETTINGS: load_settings,
   # Directory path filled
-  Keys.DIR_PATH.value: lambda window, values: window[Keys.FILES_LIST.value]
-                                        .update(get_files_from_path(values[Keys.DIR_PATH.value])),
-  Keys.FILES_PATH.value: lambda window, values: window[Keys.FILES_LIST.value]
-                                          .update(values[Keys.FILES_PATH.value]),
+  Keys.DIR_PATH: lambda window, values: window[Keys.FILES_LIST]
+                                        .update(get_files_from_path(values[Keys.DIR_PATH])),
+  Keys.FILES_PATH: lambda window, values: window[Keys.FILES_LIST]
+                                          .update(values[Keys.FILES_PATH]),
   # ToDo: Send a request to stop the optical communications
-  Keys.STOP.value: lambda window, values: sg.popup_quick_message(
+  Keys.STOP: lambda window, values: sg.popup_quick_message(
                                         "Not implemented yet, work in progress.",
                                         auto_close_duration=2,
                                         background_color="yellow",
                                         text_color="black"
                                     ),
-  Keys.SEND.value: send_callback
+  Keys.SEND: send_callback
 }
 
-EVENT_CALLBACK_DICT.update(dict.fromkeys([Keys.TOGGLE_PLAIN_TEXT.value, Keys.TOGGLE_FILE.value,
-                                          Keys.TOGGLE_EXP.value, Keys.TOGGLE_SEQ.value], update_visibility))
+EVENT_CALLBACK_DICT.update(dict.fromkeys([Keys.TOGGLE_PLAIN_TEXT, Keys.TOGGLE_FILE,
+                                          Keys.TOGGLE_EXP, Keys.TOGGLE_SEQ], update_visibility))
 
+
+EVENT_CALLBACK_DICT.update(dict.fromkeys(PARAMETER_KEYS, 
+                                         lambda window, values: window[Keys.EXP_ID].update(
+                                            get_current_experiment_id(get_current_settings(values)))))
 
 def main():
     """Main function to start the execution of the transmitter program."""
@@ -55,28 +59,15 @@ def main():
     while True:  # Event Loop
         event, values = main_window.read(timeout=1)
         # print(event, values, flush=DEBUG_MODE)
-        if event == sg.WIN_CLOSED or event == Keys.EXIT.value:
+        if event == sg.WIN_CLOSED or event == Keys.EXIT:
             break
 
-        if previous_save_path != values[Keys.SAVE_SETTINGS.value]:
-            previous_save_path = values[Keys.SAVE_SETTINGS.value]
-            save_settings(values, values[Keys.SAVE_SETTINGS.value])
+        if previous_save_path != values[Keys.SAVE_SETTINGS]:
+            previous_save_path = values[Keys.SAVE_SETTINGS]
+            save_settings(values, values[Keys.SAVE_SETTINGS])
 
         if event in EVENT_CALLBACK_DICT:
             EVENT_CALLBACK_DICT[event](main_window, values)
-
-        # ToDo: Figure out how to add this to the callback dictionary. 
-        # As an alternative, call this function together with the events that trigger it.
-        if (
-            event.startswith("-PARAM")
-            or event.endswith("SETTINGS-")
-            or event == "-TOGGLE_SEC-EXP-"
-            or event == "-SEND-"
-        ):
-            # Update the experiment id based on the currently provided settings
-            main_window[Keys.EXP_ID.value].update(
-                get_current_experiment_id(get_current_settings(values))
-            )
 
     main_window.close()
 

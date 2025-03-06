@@ -1,5 +1,10 @@
+"""
+File defining the layout of the GUI
+"""
+
 import PySimpleGUI as sg
 from utils import retrieve_combo_values
+from keys import *
 
 def define_main_gui_layout():
     """Function to define the GUI layout of the main window."""
@@ -35,7 +40,7 @@ def define_main_gui_layout():
                 values=retrieve_combo_values("distance"),
                 size=5,
                 enable_events=True,
-                key="-PARAM-DUMMY_DISTANCE-",
+                key=Keys.PARAM_DUMMY_DISTANCE,
             ),
             sg.Text("m"),
         ],
@@ -44,7 +49,7 @@ def define_main_gui_layout():
                 values=retrieve_combo_values("angle"),
                 size=5,
                 enable_events=True,
-                key="-PARAM-TRANSMITTER_ANGLE-",
+                key=Keys.PARAM_TRANSMITTER_ANGLE,
             ),
             sg.Text("º"),
         ],
@@ -53,7 +58,7 @@ def define_main_gui_layout():
                 values=retrieve_combo_values("power"),
                 size=5,
                 enable_events=True,
-                key="-PARAM-LED_INTENSITY-",
+                key=Keys.PARAM_LED_INTENSITY,
             ),
             sg.Text("A"),
         ],
@@ -62,7 +67,7 @@ def define_main_gui_layout():
                 values=retrieve_combo_values("frecuency"),
                 size=5,
                 enable_events=True,
-                key="-PARAM-BLINKING_FREQUENCY-",
+                key=Keys.PARAM_BLINKING_FREQUENCY,
             ),
             sg.Text("Hz"),
         ],
@@ -88,13 +93,13 @@ def define_main_gui_layout():
 
     experiment_extra_settings_inputs = [
         [
-            sg.Text(text="CO_Dd-Aa-Ii-Ff-Cc-Mm", key="-EXP-ID-"),
+            sg.Text(text="CO_Dd-Aa-Ii-Ff-Cc-Mm", key=Keys.EXP_ID),
         ],
         [
             sg.In(
                 size=5,
                 enable_events=True,
-                key="-PARAM-MESSAGES_BATCH-",
+                key=Keys.PARAM_MESSAGES_BATCH,
             ),
         ],
     ]
@@ -110,16 +115,16 @@ def define_main_gui_layout():
 
     plain_text_section_layout = [
         [sg.Text("Message:")],
-        [sg.Multiline(size=(50, 10), key="-MESSAGE-")],
+        [sg.Multiline(size=(50, 10), key=Keys.MESSAGE)],
     ]
 
     file_section_layout = [
         [
             sg.Text("File:"),
-            sg.In(size=30, enable_events=True, key="-DIR_PATH-"),
+            sg.In(size=30, enable_events=True, key=Keys.DIR_PATH),
             sg.FolderBrowse(),
         ],
-        [sg.Listbox(values=[], enable_events=True, size=(50, 10), key="-FILES_LIST-")],
+        [sg.Listbox(values=[], enable_events=True, size=(50, 10), key=Keys.FILES_LIST)],
     ]
 
     experiment_section_layout = experiment_extra_settings_layout
@@ -127,10 +132,10 @@ def define_main_gui_layout():
     sequence_section_layout = [
         [
             sg.Text("File:"),
-            sg.In(size=30, enable_events=True, key="-FILES_PATH-"),
+            sg.In(size=30, enable_events=True, key=Keys.FILES_PATH),
             sg.FilesBrowse(),
         ],
-        [sg.Listbox(values=[], enable_events=True, size=(50, 10), key="-FILES_LIST-")],
+        [sg.Listbox(values=[], enable_events=True, size=(50, 10), key=Keys.FILES_LIST)],
     ]
     # ---------------------------------------------------------------------------------
 
@@ -141,28 +146,28 @@ def define_main_gui_layout():
                 "Radio",
                 default=sec_plain_text_visible,
                 enable_events=True,
-                key="-TOGGLE_SEC-PLAIN_TEXT-",
+                key=Keys.TOGGLE_PLAIN_TEXT,
             ),
             sg.Radio(
                 " File",
                 "Radio",
                 default=sec_file_visible,
                 enable_events=True,
-                key="-TOGGLE_SEC-FILE-",
+                key=Keys.TOGGLE_FILE,
             ),
             sg.Radio(
                 " Experiment",
                 "Radio",
                 default=sec_exp_visible,
                 enable_events=True,
-                key="-TOGGLE_SEC-EXP-",
+                key=Keys.TOGGLE_EXP,
             ),
             sg.Radio(
                 " Sequence",
                 "Radio",
                 default=sec_seq_visible,
                 enable_events=True,
-                key="-TOGGLE_SEC-SEQ-",
+                key=Keys.TOGGLE_SEQ,
             ),
         ],
     ]
@@ -171,22 +176,22 @@ def define_main_gui_layout():
         [
             sg.Column(
                 plain_text_section_layout,
-                key="-SEC-PLAIN_TEXT-",
+                key=Keys.SEC_PLAIN_TEXT,
                 visible=sec_plain_text_visible,
             ),
             sg.Column(
                 file_section_layout,
-                key="-SEC-FILE-",
+                key=Keys.SEC_FILE,
                 visible=sec_file_visible,
             ),
             sg.Column(
                 experiment_section_layout,
-                key="-SEC-EXP-",
+                key=Keys.SEC_EXP,
                 visible=sec_exp_visible,
             ),
             sg.Column(
                 sequence_section_layout,
-                key="-SEC-SEQ-",
+                key=Keys.SEC_SEQ,
                 visible=sec_seq_visible,
             ),
         ]
@@ -197,16 +202,16 @@ def define_main_gui_layout():
             sg.Column(standard_settings_layout),
         ],
         [
-            sg.Button("Load settings", key="-LOAD_SETTINGS-"),
-            sg.FileSaveAs("Save settings", key="-SAVE_SETTINGS-", file_types=(
+            sg.Button("Load settings", key=Keys.LOAD_SETTINGS),
+            sg.FileSaveAs("Save settings", key=Keys.SAVE_SETTINGS, file_types=(
                 ("JSON files", ".json"),
                 ("ALL Files", ". *"),),
             )
         ],
         [
-            sg.Button("Send", key="-SEND-"),
-            sg.Button("Stop", key="-STOP-"),
-            sg.Button("Exit", key="-EXIT-"),
+            sg.Button("Send", key=Keys.SEND),
+            sg.Button("Stop", key=Keys.STOP),
+            sg.Button("Exit", key=Keys.EXIT),
         ],
     ]
 

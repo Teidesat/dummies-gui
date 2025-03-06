@@ -13,11 +13,11 @@ from keys import *
 DEBUG_MODE = True
 
 SETTINGS_KEYS_TO_ELEMENTS_KEYS = {
-    "dummy_distance": "-PARAM-DUMMY_DISTANCE-",
-    "transmitter_angle": "-PARAM-TRANSMITTER_ANGLE-",
-    "led_intensity": "-PARAM-LED_INTENSITY-",
-    "blinking_frequency": "-PARAM-BLINKING_FREQUENCY-",
-    "messages_batch": "-PARAM-MESSAGES_BATCH-",
+    "dummy_distance": Keys.PARAM_DUMMY_DISTANCE,
+    "transmitter_angle": Keys.PARAM_TRANSMITTER_ANGLE,
+    "led_intensity": Keys.PARAM_LED_INTENSITY,
+    "blinking_frequency": Keys.PARAM_BLINKING_FREQUENCY,
+    "messages_batch": Keys.PARAM_MESSAGES_BATCH,
 }
 
 
