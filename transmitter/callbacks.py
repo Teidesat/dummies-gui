@@ -69,8 +69,9 @@ def send_callback(window, values):
         pass
 
     elif values[Keys.TOGGLE_SEQ]:
-        for file_path in values[Keys.FILES_LIST]:
-            send_experiment()
+        for file_path in window[Keys.FILES_PATH].get_list_values():
+            # TODO: Need to update the settings for each file of the experiment
+            send_experiment(get_current_settings(values))
         return # Skip sending the message again
 
     else:
@@ -83,3 +84,18 @@ def send_callback(window, values):
         )
 
     send_message(message_data, get_current_settings(values))
+
+def add_files(window, values):
+    new_files = sg.popup_get_file("Select the file(s): ", multiple_files=True)
+    if new_files == None:
+        return
+    new_files = new_files.split(";") # ; is the default file delimitator
+    current_files = window[Keys.FILES_PATH].get_list_values()
+    new_files = [file for file in new_files if file not in current_files]
+    window[Keys.FILES_PATH].update(current_files + new_files)
+
+def remove_files(window, values):
+    files_to_remove = values[Keys.FILES_PATH]
+    current_files = window[Keys.FILES_PATH].get_list_values()
+    final_files = [file for file in current_files if file not in files_to_remove]
+    window[Keys.FILES_PATH].update(final_files)

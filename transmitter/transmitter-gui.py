@@ -39,7 +39,9 @@ EVENT_CALLBACK_DICT = {
                                         background_color="yellow",
                                         text_color="black"
                                     ),
-  Keys.SEND: send_callback
+  Keys.SEND: send_callback,
+  Keys.NEW_FILES: add_files,
+  Keys.REMOVE_SELECTED_FILES: remove_files
 }
 
 EVENT_CALLBACK_DICT.update(dict.fromkeys([Keys.TOGGLE_PLAIN_TEXT, Keys.TOGGLE_FILE,

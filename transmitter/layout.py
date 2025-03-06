@@ -130,12 +130,11 @@ def define_main_gui_layout():
     experiment_section_layout = experiment_extra_settings_layout
 
     sequence_section_layout = [
-        [
-            sg.Text("File:"),
-            sg.In(size=30, enable_events=True, key=Keys.FILES_PATH),
-            sg.FilesBrowse(),
-        ],
-        [sg.Listbox(values=[], enable_events=True, size=(50, 10), key=Keys.FILES_LIST)],
+        
+        [sg.Text("Files:")],
+        [sg.Listbox(values=[], enable_events=True, size=(50, 10), key=Keys.FILES_PATH, select_mode=sg.LISTBOX_SELECT_MODE_MULTIPLE)],
+        [sg.Button("Add file(s)", key=Keys.NEW_FILES), sg.Button("Remove file(s)", key=Keys.REMOVE_SELECTED_FILES)]
+        #[sg.Listbox(values=[], enable_events=True, size=(50, 10), key=Keys.FILES_LIST, visible=False)],
     ]
     # ---------------------------------------------------------------------------------
 
