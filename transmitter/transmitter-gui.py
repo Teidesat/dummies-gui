@@ -26,7 +26,7 @@ DEFAULT_SETTINGS = {
 
 # Callbacks must be able to receive two parameters: window and values.
 EVENT_CALLBACK_DICT = {
-  Keys.LOAD_SETTINGS: load_settings,
+  Keys.LOAD_SETTINGS: load_settings_callback,
   # Directory path filled
   Keys.DIR_PATH: lambda window, values: window[Keys.FILES_LIST]
                                         .update(get_files_from_path(values[Keys.DIR_PATH])),
@@ -50,7 +50,7 @@ EVENT_CALLBACK_DICT.update(dict.fromkeys([Keys.TOGGLE_PLAIN_TEXT, Keys.TOGGLE_FI
 
 EVENT_CALLBACK_DICT.update(dict.fromkeys(PARAMETER_KEYS, 
                                          lambda window, values: window[Keys.EXP_ID].update(
-                                            get_current_experiment_id(get_current_settings(values)))))
+                                            get_current_experiment_id(get_current_settings(window)))))
 
 def main():
     """Main function to start the execution of the transmitter program."""
@@ -66,7 +66,7 @@ def main():
 
         if previous_save_path != values[Keys.SAVE_SETTINGS]:
             previous_save_path = values[Keys.SAVE_SETTINGS]
-            save_settings(values, values[Keys.SAVE_SETTINGS])
+            save_settings(main_window, values[Keys.SAVE_SETTINGS])
 
         if event in EVENT_CALLBACK_DICT:
             EVENT_CALLBACK_DICT[event](main_window, values)

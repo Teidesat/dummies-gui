@@ -11,7 +11,7 @@ import os
 from utils import *
 from keys import *
 
-def load_settings(window, values):
+def load_settings_callback(window, values):
     """
     Function to load the settings from the selected file.
 
@@ -30,13 +30,8 @@ def load_settings(window, values):
     if settings_file is None:
         sg.popup("File selection canceled, no settings were loaded.")
         return
-
     try:
-        with open(settings_file, "r") as file:
-            settings = json.load(file)
-
-        update_settings(settings, window)
-
+        load_settings(settings_file, window)
     except (
         FileNotFoundError,
         json.JSONDecodeError,
@@ -51,6 +46,9 @@ def update_visibility(window, values):
     window[Keys.SEC_SEQ].update(visible=values[Keys.TOGGLE_SEQ])
 
 def send_callback(window, values):
+    """
+    Callback for the Send event.
+    """
     if values[Keys.TOGGLE_PLAIN_TEXT]:
         message_data = values[Keys.MESSAGE]
 
@@ -65,25 +63,32 @@ def send_callback(window, values):
         # ToDo: Obtain the experiment messages from the selected messages batch
         #  and adapt the code as needed to handle this case
         # messages_batch = get_messages_batch(values["-PARAM-MESSAGES_BATCH-"])
-        send_experiment(get_current_settings(values))
+        send_experiment(get_current_settings(window))
         pass
 
     elif values[Keys.TOGGLE_SEQ]:
+        failed_files = []
         for file_path in window[Keys.FILES_PATH].get_list_values():
-            # TODO: Need to update the settings for each file of the experiment
-            send_experiment(get_current_settings(values))
+            try:
+                load_settings(file_path, window)
+                send_experiment(get_current_settings(window))
+            except:
+                failed_files.append(file_path)
+        if len(failed_files) != 0:
+            sg.popup("Error sending the following experiment(s):\n" + "\n".join(failed_files))
+
         return # Skip sending the message again
 
     else:
         # ToDo: Change this to a popup quick message
-        sg.sg.popup_quick_message(
+        sg.popup_quick_message(
             "Error: Something weird happened, transmission type unknown!",
             auto_close_duration=2,
             background_color="yellow",
             text_color="black"
         )
 
-    send_message(message_data, get_current_settings(values))
+    send_message(message_data, get_current_settings(window))
 
 def add_files(window, values):
     new_files = sg.popup_get_file("Select the file(s): ", multiple_files=True)

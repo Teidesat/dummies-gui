@@ -32,11 +32,11 @@ def update_settings(settings, window):
         window[element_key].update(value=settings[setting_key])
 
 
-def get_current_settings(values):
-    """Function to get the current settings based on the provided values."""
+def get_current_settings(window):
+    """Function to get the current settings based on the provided window."""
 
     settings = {
-        setting_key: float(values[element_key])
+        setting_key: float(window[element_key].get() if window[element_key].get() != "" else 0) # Gets the focused element
         for setting_key, element_key in SETTINGS_KEYS_TO_ELEMENTS_KEYS.items()
     }
 
@@ -102,7 +102,7 @@ def send_message(message_data, settings):
             f"Failed to send message to server with error code {response.status_code}."
         )
 
-def save_settings(values, path):
+def save_settings(window, path):
     """Save the settings in a given file"""
     if path == None or path == "":
         return
@@ -111,16 +111,17 @@ def save_settings(values, path):
     except:
         sg.popup_error("File could not be opened")
         return
-    json.dump(get_current_settings(values), file, indent=2)
+    json.dump(get_current_settings(window), file, indent=2)
     return
 
 def send_experiment(settings):
     message_batch = int(settings["messages_batch"]) # Asserting is just an integer
-    message_batch_file_name = "message-batches/batch-" + str(message_batch) + ".csv"
+    message_batch_file_name = os.getcwd() + "/message-batches/batch-" + str(message_batch) + ".csv"
     try:
         with open(message_batch_file_name, "r") as file:
             for message in file:
-                send_message(message, settings)
+                print(message.strip())
+                send_message(message.strip(), settings)
     except:
         sg.popup_error("Experiment file \"" + message_batch_file_name + "\" could not be found")
 
@@ -132,3 +133,14 @@ def retrieve_combo_values(experimentParam):
     values = file.read()
     file.close()
     return values.split()
+
+def load_settings(path, window):
+    """
+    Load settings from the given path.
+
+    This function may throw if there is an error opening the file
+    """
+    with open(path, "r") as file:
+        settings = json.load(file)
+
+    update_settings(settings, window)
