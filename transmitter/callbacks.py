@@ -118,11 +118,19 @@ def move_file_callback_generator(isMoveUp: bool):
         raise "ERROR: The 'isMoveUp' argument expected a bool value"
     def move_file_callback(window, values):
         selected_files = window[Keys.FILES_PATH].get_indexes()
+        if offset > 0:
+            iterator = reversed(selected_files)
+        else:
+            iterator = iter(selected_files)
         all_files = window[Keys.FILES_PATH].get_list_values()
-        for ind in selected_files:
-            ind_to_swap_with = ind + offset
-            if ind_to_swap_with >= 0 and ind_to_swap_with < len(all_files):
-                all_files[ind], all_files[ind_to_swap_with] = all_files[ind_to_swap_with], all_files[ind]
-        window[Keys.FILES_PATH].update(all_files)     
+        highlight_indexes = []
+        for i in iterator:
+            ind_to_swap_with = i + offset
+            if ind_to_swap_with >= 0 and ind_to_swap_with < len(all_files) and not ind_to_swap_with in highlight_indexes:
+                all_files[i], all_files[ind_to_swap_with] = all_files[ind_to_swap_with], all_files[i]
+                highlight_indexes.append(ind_to_swap_with)
+            else: # Can't move the item
+                highlight_indexes.append(i)
+        window[Keys.FILES_PATH].update(all_files, set_to_index=highlight_indexes)     
 
     return move_file_callback
