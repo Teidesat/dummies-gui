@@ -41,7 +41,9 @@ EVENT_CALLBACK_DICT = {
                                     ),
   Keys.SEND: send_callback,
   Keys.NEW_FILES: add_files,
-  Keys.REMOVE_SELECTED_FILES: remove_files
+  Keys.REMOVE_SELECTED_FILES: remove_files,
+  Keys.MOVE_UP: move_file_callback_generator(isMoveUp=True),
+  Keys.MOVE_DOWN: move_file_callback_generator(isMoveUp=False)
 }
 
 EVENT_CALLBACK_DICT.update(dict.fromkeys([Keys.TOGGLE_PLAIN_TEXT, Keys.TOGGLE_FILE,

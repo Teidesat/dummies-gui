@@ -96,11 +96,33 @@ def add_files(window, values):
         return
     new_files = new_files.split(";") # ; is the default file delimitator
     current_files = window[Keys.FILES_PATH].get_list_values()
-    new_files = [file for file in new_files if file not in current_files]
     window[Keys.FILES_PATH].update(current_files + new_files)
 
 def remove_files(window, values):
-    files_to_remove = values[Keys.FILES_PATH]
+    files_to_remove = window[Keys.FILES_PATH].get_indexes()
     current_files = window[Keys.FILES_PATH].get_list_values()
-    final_files = [file for file in current_files if file not in files_to_remove]
+    final_files = [file for [ind, file] in enumerate(current_files) if ind not in files_to_remove]
     window[Keys.FILES_PATH].update(final_files)
+
+def move_file_callback_generator(isMoveUp: bool):
+    """
+    Generates a callback to move the selected files up or down, depending on the given parameter
+
+    Argument `isMoveUp` must be a boolean
+    """
+    if isMoveUp == True:
+        offset = -1
+    elif isMoveUp == False:
+        offset = 1
+    else:
+        raise "ERROR: The 'isMoveUp' argument expected a bool value"
+    def move_file_callback(window, values):
+        selected_files = window[Keys.FILES_PATH].get_indexes()
+        all_files = window[Keys.FILES_PATH].get_list_values()
+        for ind in selected_files:
+            ind_to_swap_with = ind + offset
+            if ind_to_swap_with >= 0 and ind_to_swap_with < len(all_files):
+                all_files[ind], all_files[ind_to_swap_with] = all_files[ind_to_swap_with], all_files[ind]
+        window[Keys.FILES_PATH].update(all_files)     
+
+    return move_file_callback

@@ -132,8 +132,9 @@ def define_main_gui_layout():
     sequence_section_layout = [
         
         [sg.Text("Files:")],
-        [sg.Listbox(values=[], enable_events=True, size=(50, 10), key=Keys.FILES_PATH, select_mode=sg.LISTBOX_SELECT_MODE_MULTIPLE)],
-        [sg.Button("Add file(s)", key=Keys.NEW_FILES), sg.Button("Remove file(s)", key=Keys.REMOVE_SELECTED_FILES)]
+        [sg.Listbox(values=[], enable_events=True, size=(50, 10), expand_x=True, key=Keys.FILES_PATH, select_mode=sg.LISTBOX_SELECT_MODE_MULTIPLE)],
+        [sg.Button("Add file(s)", key=Keys.NEW_FILES), sg.Button("Remove file(s)", key=Keys.REMOVE_SELECTED_FILES),
+         sg.Button("Move file(s) up", key=Keys.MOVE_UP), sg.Button("Move file(s) down", key=Keys.MOVE_DOWN)] # Buttons to change the ordering of selected files.
         #[sg.Listbox(values=[], enable_events=True, size=(50, 10), key=Keys.FILES_LIST, visible=False)],
     ]
     # ---------------------------------------------------------------------------------
