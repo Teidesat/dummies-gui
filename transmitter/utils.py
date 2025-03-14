@@ -43,9 +43,10 @@ def get_current_settings(window):
     return settings
 
 
-def get_current_experiment_id(settings):
+def get_current_experiment_id(settings, id = None):
     """Function to get the current experiment ID based on the provided settings."""
-
+    if id == None:
+        id = "m"
     experiment_id = (
         "CO_"
         + f"D{settings['dummy_distance']}-"
@@ -53,7 +54,7 @@ def get_current_experiment_id(settings):
         + f"I{settings['led_intensity']}-"
         + f"F{settings['blinking_frequency']}-"
         + f"L{settings['messages_batch']}-"
-        + "Mm"
+        + f"M{id}"
     )
 
     return experiment_id
@@ -74,10 +75,10 @@ def get_files_from_path(target_path):
     ]
 
 
-def send_message(message_data, settings):
+def send_message(message_data, settings, id):
     """Function to send the message to the receiver dummy."""
 
-    experiment_id = get_current_experiment_id(settings)
+    experiment_id = get_current_experiment_id(settings, id)
 
     print(
         f"Experiment ID: {experiment_id} "
@@ -119,9 +120,10 @@ def send_experiment(settings):
     message_batch_file_name = os.getcwd() + "/message-batches/batch-" + str(message_batch) + ".csv"
     try:
         with open(message_batch_file_name, "r") as file:
-            for message in file:
-                print(message.strip())
-                send_message(message.strip(), settings)
+            for line in file:
+                line = line.strip()
+                [id, messsage] = line.split(",")
+                send_message(line, settings, id)
     except:
         sg.popup_error("Experiment file \"" + message_batch_file_name + "\" could not be found")
 
