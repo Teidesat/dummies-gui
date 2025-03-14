@@ -202,7 +202,8 @@ def define_main_gui_layout():
 
     common_elements_layout = [
         [
-            sg.Column(standard_settings_layout),
+            # The pin function helps with visibility changes, shrinking the space the invisible element was occupying
+            sg.pin(sg.Column(standard_settings_layout, key=Keys.STANDARD_SETTINGS)),
         ],
         [
             sg.Button("Load settings", key=Keys.LOAD_SETTINGS),

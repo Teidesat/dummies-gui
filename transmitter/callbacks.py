@@ -44,6 +44,8 @@ def update_visibility(window, values):
     window[Keys.SEC_FILE].update(visible=values[Keys.TOGGLE_FILE])
     window[Keys.SEC_EXP].update(visible=values[Keys.TOGGLE_EXP])
     window[Keys.SEC_SEQ].update(visible=values[Keys.TOGGLE_SEQ])
+    settings_visibility = not values[Keys.TOGGLE_SEQ]
+    window[Keys.STANDARD_SETTINGS].update(visible=settings_visibility)
 
 def send_callback(window, values):
     """
