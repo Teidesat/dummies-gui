@@ -68,13 +68,17 @@ def send_callback(window, values):
 
     elif values[Keys.TOGGLE_SEQ]:
         failed_files = []
-        for file_path in window[Keys.FILES_PATH].get_list_values():
+        failed_files_ind = []
+        #for file_path in window[Keys.FILES_PATH].get_list_values():
+        for [ind, [file_path]] in enumerate(window[Keys.FILES_PATH].Values):
             try:
                 load_settings(file_path, window)
                 send_experiment(get_current_settings(window))
             except:
                 failed_files.append(file_path)
+                failed_files_ind.append(ind)
         if len(failed_files) != 0:
+            window[Keys.FILES_PATH].update(row_colors=list(zip(failed_files_ind, ["red"] * len(failed_files_ind))))
             sg.popup("Error sending the following experiment(s):\n" + "\n".join(failed_files))
 
         return # Skip sending the message again
@@ -95,12 +99,19 @@ def add_files(window, values):
     if new_files == None:
         return
     new_files = new_files.split(";") # ; is the default file delimitator
-    current_files = window[Keys.FILES_PATH].get_list_values()
+    #current_files = window[Keys.FILES_PATH].get_list_values()
+    current_files = window[Keys.FILES_PATH].Values
+    #num_current_files = len(current_files)
+    #new_files = zip(range(num_current_files, num_current_files + len(new_files)), new_files)
+    #new_files = list(new_files)
+    new_files = list(map(lambda file: [file], new_files))
     window[Keys.FILES_PATH].update(current_files + new_files)
 
 def remove_files(window, values):
-    files_to_remove = window[Keys.FILES_PATH].get_indexes()
-    current_files = window[Keys.FILES_PATH].get_list_values()
+    #files_to_remove = window[Keys.FILES_PATH].get_indexes()
+    files_to_remove = window[Keys.FILES_PATH].get()
+    #current_files = window[Keys.FILES_PATH].get_list_values()
+    current_files = window[Keys.FILES_PATH].Values
     final_files = [file for [ind, file] in enumerate(current_files) if ind not in files_to_remove]
     window[Keys.FILES_PATH].update(final_files)
 
@@ -117,12 +128,14 @@ def move_file_callback_generator(isMoveUp: bool):
     else:
         raise "ERROR: The 'isMoveUp' argument expected a bool value"
     def move_file_callback(window, values):
-        selected_files = window[Keys.FILES_PATH].get_indexes()
+        #selected_files = window[Keys.FILES_PATH].get_indexes()
+        selected_files = window[Keys.FILES_PATH].get()
         if offset > 0:
             iterator = reversed(selected_files)
         else:
             iterator = iter(selected_files)
-        all_files = window[Keys.FILES_PATH].get_list_values()
+        #all_files = window[Keys.FILES_PATH].get_list_values()
+        all_files = window[Keys.FILES_PATH].Values
         highlight_indexes = []
         for i in iterator:
             ind_to_swap_with = i + offset
@@ -131,6 +144,7 @@ def move_file_callback_generator(isMoveUp: bool):
                 highlight_indexes.append(ind_to_swap_with)
             else: # Can't move the item
                 highlight_indexes.append(i)
-        window[Keys.FILES_PATH].update(all_files, set_to_index=highlight_indexes)     
+        #window[Keys.FILES_PATH].update(all_files, set_to_index=highlight_indexes)
+        window[Keys.FILES_PATH].update(all_files, select_rows=highlight_indexes)   
 
     return move_file_callback
