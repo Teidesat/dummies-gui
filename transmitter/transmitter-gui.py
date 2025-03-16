@@ -68,7 +68,10 @@ def main():
 
         if previous_save_path != values[Keys.SAVE_SETTINGS]:
             previous_save_path = values[Keys.SAVE_SETTINGS]
-            save_settings(main_window, values[Keys.SAVE_SETTINGS])
+            if values[Keys.TOGGLE_SEQ]:
+                save_sequence(main_window, values[Keys.SAVE_SETTINGS])
+            else:
+                save_settings(main_window, values[Keys.SAVE_SETTINGS])
 
         if event in EVENT_CALLBACK_DICT:
             EVENT_CALLBACK_DICT[event](main_window, values)

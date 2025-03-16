@@ -30,6 +30,11 @@ def load_settings_callback(window, values):
     if settings_file is None:
         sg.popup("File selection canceled, no settings were loaded.")
         return
+    
+    if values[Keys.TOGGLE_SEQ]:
+        load_sequence(settings_file, window)
+        return
+
     try:
         load_settings(settings_file, window)
     except (

@@ -146,3 +146,28 @@ def load_settings(path, window):
         settings = json.load(file)
 
     update_settings(settings, window)
+
+def save_sequence(window, path: str):
+    """
+    Saves the current experiment sequence in the specified path
+    """
+    savedSequence = ""
+    for [expPath] in window[Keys.FILES_PATH].Values:
+        savedSequence += expPath + "\n"
+    savedSequence = savedSequence.strip()
+    try:
+        with open(path, "w") as file:
+            file.write(savedSequence)
+    except:
+        sg.popup_error("There was an error while saving the sequence")
+    
+def load_sequence(path: str, window):
+    try: 
+        new_sequence = []
+        with open(path, "r") as file:
+            for line in file:
+                stripped_line = line.strip()
+                new_sequence.append([stripped_line])
+        window[Keys.FILES_PATH].update(values=new_sequence)
+    except:
+        sg.popup_error("There was an error while loading the sequence")
