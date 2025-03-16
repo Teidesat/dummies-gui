@@ -75,8 +75,10 @@ def define_main_gui_layout():
 
     standard_settings_layout = [
         [
+            sg.Push(),
             sg.Column(standard_settings_labels),
             sg.Column(standard_settings_inputs),
+            sg.Push()
         ]
     ]
 
@@ -144,6 +146,7 @@ def define_main_gui_layout():
 
     radio_selector_layout = [
         [
+            sg.Push(),
             sg.Radio(
                 " Plain text",
                 "Radio",
@@ -172,11 +175,13 @@ def define_main_gui_layout():
                 enable_events=True,
                 key=Keys.TOGGLE_SEQ,
             ),
+            sg.Push()
         ],
     ]
 
     sub_sections_layout = [
         [
+            sg.Push(),
             sg.Column(
                 plain_text_section_layout,
                 key=Keys.SEC_PLAIN_TEXT,
@@ -197,25 +202,32 @@ def define_main_gui_layout():
                 key=Keys.SEC_SEQ,
                 visible=sec_seq_visible,
             ),
+            sg.Push()
         ]
     ]
 
     common_elements_layout = [
         [
+            sg.Push(),
             # The pin function helps with visibility changes, shrinking the space the invisible element was occupying
             sg.pin(sg.Column(standard_settings_layout, key=Keys.STANDARD_SETTINGS)),
+            sg.Push()
         ],
         [
+            sg.Push(),
             sg.Button("Load settings", key=Keys.LOAD_SETTINGS),
             sg.FileSaveAs("Save settings", key=Keys.SAVE_SETTINGS, file_types=(
                 ("JSON files", ".json"),
                 ("ALL Files", ". *"),),
-            )
+            ),
+            sg.Push()
         ],
         [
+            sg.Push(),
             sg.Button("Send", key=Keys.SEND),
             sg.Button("Stop", key=Keys.STOP),
             sg.Button("Exit", key=Keys.EXIT),
+            sg.Push()
         ],
     ]
 
@@ -227,5 +239,7 @@ def define_main_gui_layout():
         common_elements_layout,
     ]
 
-    main_window = sg.Window("Transmitter", main_layout, finalize=True, grab_anywhere_using_control=False)
+
+    main_window = sg.Window("Transmitter", main_layout, finalize=True, grab_anywhere_using_control=False,
+                            icon="../img/window_icon.png")
     return main_window
