@@ -67,11 +67,8 @@ def send_callback(window, values):
             message_data = file.read()
 
     elif values[Keys.TOGGLE_EXP]:
-        # ToDo: Obtain the experiment messages from the selected messages batch
-        #  and adapt the code as needed to handle this case
-        # messages_batch = get_messages_batch(values["-PARAM-MESSAGES_BATCH-"])
         send_experiment(get_current_settings(window))
-        pass
+        return # Skip sending the message again
 
     elif values[Keys.TOGGLE_SEQ]:
         failed_files = []
