@@ -120,28 +120,8 @@ def define_gui_layout():
         ],
     ]
     sequence_section_layout = [
-            sg.Text("Files:"),
-            [
-                sg.Table(
-                    values=[],
-                    headings=["Experiment file"],
-                    display_row_numbers=True,
-                    justification="center",
-                    enable_events=True,
-                    size=(50, 10),
-                    expand_x=True,
-                    key="-FILES_PATH-",
-                    background_color="white",
-                    text_color="black",
-                    alternating_row_color="lightgray",
-                )
-            ],
-            [
-                sg.Button("Add file(s)", key="-NEW_FILES-"),
-                sg.Button("Remove file(s)", key="-REMOVE_SELECTED_FILES-"),
-                sg.Button("Move file(s) up", key="-MOVE_UP-"),
-                sg.Button("Move file(s) down", key="-MOVE_DOWN-"),
-            ],
+        [sg.Text("Sequence")],
+        [sg.Button("Exit", key="-EXIT-3-")],
             
     ]
 
@@ -185,7 +165,7 @@ def define_gui_layout():
         sg.Column(
             sequence_section_layout,
             key="-SEC-SEQUENCE-",
-            visible=sec_save_file_visible,
+            visible=sec_sequence_visible,
         ),
     ]
 
