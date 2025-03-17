@@ -10,4 +10,4 @@ RUN apt update \
 
 # Install python dependencies
 COPY requirements.txt /tmp/requirements.txt
-RUN pip3 install --break-system-packages --no-cache-dir --requirement /tmp/requirements.txt
+RUN pip3 install --break-system-packages --no-cache-dir --requirement /tmp/requirements.txt --extra-index-url https://PySimpleGUI.net/install

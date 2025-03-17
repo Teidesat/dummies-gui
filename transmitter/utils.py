@@ -75,7 +75,7 @@ def get_files_from_path(target_path):
     ]
 
 
-def send_message(message_data, settings, id):
+def send_message(message_data, settings, id=None):
     """Function to send the message to the receiver dummy."""
 
     experiment_id = get_current_experiment_id(settings, id)

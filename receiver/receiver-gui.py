@@ -67,6 +67,7 @@ def main():
         if event.startswith("-TOGGLE_SEC"):
             window["-SEC-SHOW_TEXT-"].update(visible=values["-TOGGLE_SEC-SHOW_TEXT-"])
             window["-SEC-SAVE_FILE-"].update(visible=values["-TOGGLE_SEC-SAVE_FILE-"])
+            window["-SEC-SEQUENCE-"].update(visible=values["-TOGGLE_SEC-SEQUENCE-"])
 
     window.close()
 
@@ -76,9 +77,10 @@ def define_gui_layout():
 
     sec_show_text_visible = True
     sec_save_file_visible = False
-
-    assert (sec_show_text_visible or sec_save_file_visible) == True
-    assert (sec_show_text_visible + sec_save_file_visible) == 1
+    sec_sequence_visible = False
+    
+    assert (sec_show_text_visible or sec_save_file_visible or sec_sequence_visible) == True
+    assert (sec_show_text_visible + sec_save_file_visible + sec_sequence_visible) == 1
 
     # ---------------------------------------------------------------------------------
 
@@ -117,6 +119,31 @@ def define_gui_layout():
             sg.Button("Exit", key="-EXIT-2-"),
         ],
     ]
+    sequence_section_layout = [
+            sg.Text("Files:"),
+            [
+                sg.Table(
+                    values=[],
+                    headings=["Experiment file"],
+                    display_row_numbers=True,
+                    justification="center",
+                    enable_events=True,
+                    size=(50, 10),
+                    expand_x=True,
+                    key="-FILES_PATH-",
+                    background_color="white",
+                    text_color="black",
+                    alternating_row_color="lightgray",
+                )
+            ],
+            [
+                sg.Button("Add file(s)", key="-NEW_FILES-"),
+                sg.Button("Remove file(s)", key="-REMOVE_SELECTED_FILES-"),
+                sg.Button("Move file(s) up", key="-MOVE_UP-"),
+                sg.Button("Move file(s) down", key="-MOVE_DOWN-"),
+            ],
+            
+    ]
 
     # ---------------------------------------------------------------------------------
 
@@ -135,6 +162,13 @@ def define_gui_layout():
             enable_events=True,
             key="-TOGGLE_SEC-SAVE_FILE-",
         ),
+        sg.Radio(
+            " Sequence",
+            "Radio",
+            default=sec_sequence_visible,
+            enable_events=True,
+            key="-TOGGLE_SEC-SEQUENCE-",
+        ),
     ]
 
     sub_sections_layout = [
@@ -148,6 +182,11 @@ def define_gui_layout():
             key="-SEC-SAVE_FILE-",
             visible=sec_save_file_visible,
         ),
+        sg.Column(
+            sequence_section_layout,
+            key="-SEC-SEQUENCE-",
+            visible=sec_save_file_visible,
+        ),
     ]
 
     # ---------------------------------------------------------------------------------
@@ -155,6 +194,7 @@ def define_gui_layout():
     main_layout = [
         radio_selector_layout,
         sub_sections_layout,
+        sequence_section_layout
     ]
 
     window = sg.Window("Receiver", main_layout)
@@ -167,7 +207,7 @@ def receive_message():
     # ToDo: Change request address and endpoint to receive the message from the receiver
     #  dummy's server instead of the transmitter server, it's currently the same server
     #  to test the communication between the two dummies GUIs.
-    response = get_request("http://transmitter-server:5000/get_message")
+    response = get_request("http://transmitter-server:5000/get_message_data")
 
     if response.status_code != 200:
         raise ConnectionError(
