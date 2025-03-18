@@ -1,0 +1,29 @@
+"""The keys used for the events or layout elements in the GUI"""
+
+import enum
+
+class Keys(enum.Enum):
+  EXIT = "-EXIT-"
+  MESSAGE = "-MESSAGE-"
+  RECEIVE = "-RECEIVE-"
+  STOP = "-STOP-"
+  CLEAN = "-CLEAN-"
+  DIR_NAME = "-DIR_NAME-"
+  FILE_NAME = "-FILE_NAME-"
+  PATH_ERROR_MSG = "-PATH-ERROR-MSG-"
+  SAVE = "-SAVE-"
+  SAVE_ALL = "-SAVE_ALL-"
+  # Visibility related keys
+  TOGGLE_SEC_SAVE_FILE = "-TOGGLE_SEC-SAVE_FILE-"
+  TOGGLE_SEC_SHOW_TEXT = "-TOGGLE_SEC-SHOW_TEXT-"
+  TOGGLE_SEC_SEQUENCE = "-TOGGLE_SEC-SEQUENCE-"
+  # Section related keys
+  SEC_SHOW_TEXT = "-SEC-SHOW_TEXT-"
+  SEC_SAVE_FILE =  "-SEC-SAVE_FILE-"
+  SEC_SEQUENCE =  "-SEC-SEQUENCE-"
+
+VISIBILITY_KEYS = [
+  Keys.TOGGLE_SEC_SAVE_FILE,
+  Keys.TOGGLE_SEC_SHOW_TEXT,
+  Keys.TOGGLE_SEC_SEQUENCE
+]
