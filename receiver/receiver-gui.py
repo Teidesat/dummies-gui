@@ -91,7 +91,7 @@ def define_gui_layout():
             sg.Button("Receive", key="-RECEIVE-"),
             sg.Button("Stop", key="-STOP-"),
             sg.Button("Clean", key="-CLEAN-"),
-            sg.Button("Exit", key="-EXIT-1-"),
+            sg.Button("Exit", key="-EXIT-"),
         ],
     ]
 
@@ -116,13 +116,16 @@ def define_gui_layout():
         ],
         [
             sg.Button("Save to file", key="-SAVE-"),
-            sg.Button("Exit", key="-EXIT-2-"),
+            sg.Button("Exit", key="-EXIT-"),
         ],
     ]
     sequence_section_layout = [
-        [sg.Text("Sequence")],
-        [sg.Button("Exit", key="-EXIT-3-")],
-            
+        [sg.Text("Received Files:")],
+        
+        [sg.Table(values=[], headings=["Experiment file"], display_row_numbers=True, justification="center", 
+                  enable_events=True, size=(50, 10), expand_x=True, key="-FILES_PATH-", 
+                  background_color="white", text_color="black", alternating_row_color="lightgray")],
+        [sg.Button("Exit", key="-EXIT-")]        
     ]
 
     # ---------------------------------------------------------------------------------
@@ -148,7 +151,7 @@ def define_gui_layout():
             default=sec_sequence_visible,
             enable_events=True,
             key="-TOGGLE_SEC-SEQUENCE-",
-        ),
+        )
     ]
 
     sub_sections_layout = [
@@ -166,7 +169,7 @@ def define_gui_layout():
             sequence_section_layout,
             key="-SEC-SEQUENCE-",
             visible=sec_sequence_visible,
-        ),
+        )
     ]
 
     # ---------------------------------------------------------------------------------
@@ -174,7 +177,6 @@ def define_gui_layout():
     main_layout = [
         radio_selector_layout,
         sub_sections_layout,
-        sequence_section_layout
     ]
 
     window = sg.Window("Receiver", main_layout)
