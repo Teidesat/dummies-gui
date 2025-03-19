@@ -11,6 +11,7 @@ class Keys(enum.Enum):
   DIR_NAME = "-DIR_NAME-"
   FILE_NAME = "-FILE_NAME-"
   PATH_ERROR_MSG = "-PATH-ERROR-MSG-"
+  REMOVE_SELECTED_FILES = "-REMOVE_SELECTED_FILES-"
   SAVE = "-SAVE-"
   SAVE_ALL = "-SAVE_ALL-"
   # Visibility related keys
@@ -21,6 +22,7 @@ class Keys(enum.Enum):
   SEC_SHOW_TEXT = "-SEC-SHOW_TEXT-"
   SEC_SAVE_FILE =  "-SEC-SAVE_FILE-"
   SEC_SEQUENCE =  "-SEC-SEQUENCE-"
+
 
 VISIBILITY_KEYS = [
   Keys.TOGGLE_SEC_SAVE_FILE,

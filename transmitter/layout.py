@@ -2,7 +2,7 @@
 File defining the layout of the GUI
 """
 
-import PySimpleGUI as sg
+import FreeSimpleGUI as sg
 from utils import retrieve_combo_values
 from keys import *
 

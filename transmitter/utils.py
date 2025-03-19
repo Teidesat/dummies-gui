@@ -2,7 +2,7 @@
 Various utility functions 
 """
 
-import PySimpleGUI as sg
+import FreeSimpleGUI as sg
 import json
 import os
 from requests import post as post_request

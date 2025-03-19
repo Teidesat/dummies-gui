@@ -9,7 +9,7 @@ import json
 import os
 import sys
 
-import PySimpleGUI as sg
+import FreeSimpleGUI as sg
 
 from callbacks import *
 from keys import *

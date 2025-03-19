@@ -2,7 +2,7 @@
   Defines the structure and style of PySimpleGUI's elements
 """
 
-import PySimpleGUI as sg
+import FreeSimpleGUI as sg
 
 from keys import Keys
 
@@ -53,11 +53,8 @@ def define_gui_layout():
     ]
     sequence_layout = [
         [sg.Text("Received Files:")],
-        [sg.Multiline(size=(50, 10), disabled=True, key=Keys.MESSAGE)],
-        [
-            sg.Button("Save All", key=Keys.SAVE_ALL),
-            sg.Button("Clean", key=Keys.CLEAN),
-        ],
+        [sg.Button("Clean", key=Keys.CLEAN), sg.Button("Save all)", key=Keys.SAVE_ALL)],
+        
     ]
 
     # ---------------------------------------------------------------------------------

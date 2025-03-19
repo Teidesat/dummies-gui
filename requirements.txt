@@ -1,2 +1,2 @@
-pysimplegui
+freesimplegui
 requests==2.32.3
