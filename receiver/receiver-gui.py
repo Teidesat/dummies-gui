@@ -7,7 +7,7 @@ and interact with it.
 
 import os
 
-import PySimpleGUI as sg
+import FreeSimpleGUI as sg
 
 from gui_data import GUIData
 from utils import *
