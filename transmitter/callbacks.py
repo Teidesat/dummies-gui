@@ -4,7 +4,7 @@ Callback functions to use with the events created by PySimpleGUI
 Functions must have two parameters: window (representing the PySimpleGUI's Window Object) and values
 """
 
-import PySimpleGUI as sg
+import FreeSimpleGUI as sg
 import json
 import os
 
