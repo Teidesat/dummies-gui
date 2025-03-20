@@ -12,6 +12,7 @@ def visibility_callback(window, values, data: GUIData):
   """
   window[Keys.SEC_SHOW_TEXT].update(visible=values[Keys.TOGGLE_SEC_SHOW_TEXT])
   window[Keys.SEC_SAVE_FILE].update(visible=values[Keys.TOGGLE_SEC_SAVE_FILE])
+  window[Keys.SEC_EXPERIMENT].update(visible=values[Keys.TOGGLE_SEC_EXPERIMENT])
 
 
 def save_message(window, values, data: GUIData):
