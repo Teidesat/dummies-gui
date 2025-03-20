@@ -2,7 +2,7 @@
   Defines the structure and style of PySimpleGUI's elements
 """
 
-import PySimpleGUI as sg
+import FreeSimpleGUI as sg
 
 from keys import Keys
 
