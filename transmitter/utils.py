@@ -122,8 +122,8 @@ def send_experiment(settings):
         with open(message_batch_file_name, "r") as file:
             for line in file:
                 line = line.strip()
-                [id, messsage] = line.split(",")
-                send_message(line, settings, id)
+                [id, message] = line.split(",")
+                send_message(message, settings, id)
     except:
         sg.popup_error("Experiment file \"" + message_batch_file_name + "\" could not be found")
 
