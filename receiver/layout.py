@@ -54,19 +54,25 @@ def define_gui_layout():
     ]
 
     params_layout = [[
-        sg.Text("Distance: "), sg.Text("0"),
-        sg.Text("Angle: "), sg.Text("0"),
-        sg.Text("Intensity: "), sg.Text("0"),
-        sg.Text("Frequency: "), sg.Text("0"),
-        sg.Text("Message Batch: "), sg.Text("0")
+        sg.Text("Distance:"), sg.Text("0"),
+        sg.Text("Angle:"), sg.Text("0"),
+        sg.Text("Intensity:"), sg.Text("0"),
+        sg.Text("Frequency:"), sg.Text("0"),
+        sg.Text("Message Batch:"), sg.Text("0")
     ]]
 
     experiment_section_layout = [
-        [sg.Text("Experiment ID: "), sg.Text("EXPERIMENT_ID", key=Keys.EXPERIMENT_ID)],
+        [sg.Text("Experiment ID:"), sg.Text("CO_Dd-Aa-Ii-Ff-Ll-Mm", key=Keys.EXPERIMENT_ID)],
         [sg.Text("Messages:")],
         [sg.Table(values=[], headings=["ID", "Message"], enable_events=True, expand_x=True, key=Keys.EXPERIMENT_TABLE,
                   background_color="white", text_color="black", alternating_row_color="lightgray")],
-        [sg.Frame("Parameters", layout=params_layout, visible=True)]
+        [sg.Frame("Parameters", layout=params_layout, visible=True)],
+        [
+            sg.Text("Save Directory:"),
+            sg.In(size=30, enable_events=True, key=Keys.EXP_SAVE_DIR),
+            sg.FolderBrowse(),
+        ],
+        [sg.Button("Get experiment", key= Keys.GET_EXPERIMENT), sg.Button("Exit", key=Keys.EXIT_3)]
     ]
 
 

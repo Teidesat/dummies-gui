@@ -5,6 +5,7 @@ import enum
 class Keys(enum.Enum):
   EXIT_1 = "-EXIT-1-"
   EXIT_2 = "-EXIT-2-"
+  EXIT_3 = "-EXIT-3-"
   MESSAGE = "-MESSAGE-"
   RECEIVE = "-RECEIVE-"
   STOP = "-STOP-"
@@ -15,6 +16,8 @@ class Keys(enum.Enum):
   SAVE = "-SAVE-"
   EXPERIMENT_ID = "-EXPERIMENT_ID-"
   EXPERIMENT_TABLE = "-EXPERIMENT_TABLE-"
+  GET_EXPERIMENT = "-GET_EXPERIMENT-"
+  EXP_SAVE_DIR = "-EXP_SAVE_DIR-"
   # Visibility related keys
   TOGGLE_SEC_SAVE_FILE = "-TOGGLE_SEC-SAVE_FILE-"
   TOGGLE_SEC_SHOW_TEXT = "-TOGGLE_SEC-SHOW_TEXT-"
@@ -32,5 +35,6 @@ VISIBILITY_KEYS = [
 
 EXIT_KEYS = [
   Keys.EXIT_1,
-  Keys.EXIT_2
+  Keys.EXIT_2,
+  Keys.EXIT_3
 ]
