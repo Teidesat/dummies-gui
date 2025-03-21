@@ -36,8 +36,9 @@ def get_experiment_callback(window: sg.Window, values, data: GUIData):
   save_directory = values[Keys.EXP_SAVE_DIR]
   if not assert_directory(save_directory):
     return
-  id, settings = get_experiment()
+  id, settings, messages = get_experiment()
   window[Keys.EXPERIMENT_ID].update(id)
-  messages = get_messages(id)
+  update_params(window, settings)
+  #messages = get_messages(id)
   window[Keys.EXPERIMENT_TABLE].update(messages)
   save_messages_to_csv(messages, save_directory, id)

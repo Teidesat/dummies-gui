@@ -3,7 +3,9 @@
 """
 import os
 import FreeSimpleGUI as sg
+import re
 
+from keys import *
 from requests import get as get_request
 
 def receive_message():
@@ -24,32 +26,44 @@ def receive_message():
 def get_experiment():
     """
     Function to retrieve an experiment from the receiver's server
-
-    TODO: Currently mocking the server for UI development purposes, change to use the server.
     """
-    id = "CO_D60-A45-I3-F90-L1-Mm"
+    # id = "CO_D60-A45-I3-F90-L1-Mm"
+    #settings = {
+    #    "distance": "60",
+    #    "angle": "45",
+    #    "intensity": "3",
+    #    "frequency": "90",
+    #    "batch": "1"
+    #}
+    data = get_request("http://receiver-server:5000/experiment")
+    if data.status_code != 200:
+        print(data)
+        exit(-1)
+    data = data.json()
+    id = data["id"]
+    settings = parse_id(id)
+    messages = data["messages"]
+    return id, settings, messages
+
+def parse_id(experiment_id: str):
+    """
+    Parses the given experiment id to retrieve the parameters and the return them as settings.
+    """
+    number_re = R"\d+(?:\.\d+)?"
+    match = re.fullmatch(fR"CO_D({number_re})-A({number_re})-I({number_re})-F({number_re})-L({number_re})-Mm",
+                         experiment_id)
+    if match == None:
+        raise ValueError(f"Unexpected error when parsing the ID '{experiment_id}'")
+    match = match.groups()
+    print(match)
     settings = {
-        "distance": "60",
-        "angle": "45",
-        "intensity": "3",
-        "frequency": "90",
-        "batch": "1"
+        "distance": match[0],
+        "angle": match[1],
+        "intensity": match[2],
+        "frequency": match[3],
+        "batch": match[4]
     }
-    return id, settings
-
-def get_messages(exp_id):
-    """
-    Function to retrieve the messages from a certain experiment.
-
-    TODO: Currently mocking the server for UI development purposes, change to use the server. 
-    Also, exp_id alone may not be enough to identify the experiment. A timestamp might be useful.
-    """
-    messages = [["1", "hello"],
-                ["2", "teidesat"],
-                ["3", "cubesat"],
-                ["4", "hyperspace"]
-                ]
-    return messages
+    return settings
 
 def assert_directory(directory_path):
     """
@@ -77,3 +91,13 @@ def save_messages_to_csv(messages, directory, name):
         messages = map(lambda val: ",".join(val), messages)
         messages = "\n".join(messages)
         file.write(messages)
+
+def update_params(window: sg.Window, settings):
+    """
+    Function to update the parameters from the experiment section.
+    """
+    window[Keys.DISTANCE_PARAM].update(settings["distance"])
+    window[Keys.ANGLE_PARAM].update(settings["angle"])
+    window[Keys.INTENSITY_PARAM].update(settings["intensity"])
+    window[Keys.FREQUENCY_PARAM].update(settings["frequency"])
+    window[Keys.BATCH_PARAM].update(settings["batch"])

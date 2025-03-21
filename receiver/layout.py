@@ -54,11 +54,11 @@ def define_gui_layout():
     ]
 
     params_layout = [[
-        sg.Text("Distance:"), sg.Text("0"),
-        sg.Text("Angle:"), sg.Text("0"),
-        sg.Text("Intensity:"), sg.Text("0"),
-        sg.Text("Frequency:"), sg.Text("0"),
-        sg.Text("Message Batch:"), sg.Text("0")
+        sg.Text("Distance:"), sg.Text("0", key=Keys.DISTANCE_PARAM),
+        sg.Text("Angle:"), sg.Text("0", key=Keys.ANGLE_PARAM),
+        sg.Text("Intensity:"), sg.Text("0", key=Keys.INTENSITY_PARAM),
+        sg.Text("Frequency:"), sg.Text("0", key=Keys.FREQUENCY_PARAM),
+        sg.Text("Message Batch:"), sg.Text("0", key=Keys.BATCH_PARAM)
     ]]
 
     experiment_section_layout = [
