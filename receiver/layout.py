@@ -51,10 +51,23 @@ def define_gui_layout():
             sg.Button("Save to file", key=Keys.SAVE),
         ],
     ]
-    sequence_layout = [
-        [sg.Text("Received Files:")],
-        [sg.Button("Clean", key=Keys.CLEAN), sg.Button("Save all)", key=Keys.SAVE_ALL)],
+    table = sg.Table(values=[], headings=["Messages"], display_row_numbers=True, justification="center", 
+                  enable_events=True, size=(50, 10), expand_x=True, key=Keys.FILES_PATH, 
+                  background_color="white", text_color="black", alternating_row_color="lightgray")
+    table.RowHeaderText = "Order"
+    sequence_section_layout = [
         
+        [
+            sg.Text("Files:")
+        ],
+        [
+            table
+        ],
+        [
+            sg.Button("Receive", key=Keys.RECEIVE_SEQUENCE),
+            sg.Button("Remove Message(s)", key=Keys.REMOVE_SELECTED_FILES), 
+            sg.Button("Save all", key=Keys.SAVE_ALL)
+        ]
     ]
 
     # ---------------------------------------------------------------------------------
@@ -95,7 +108,7 @@ def define_gui_layout():
             visible=sec_save_file_visible,
         ),
         sg.Column(
-            sequence_layout,
+            sequence_section_layout,
             key=Keys.SEC_SEQUENCE,
             visible=sec_sequence_visible,
         ),

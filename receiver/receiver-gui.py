@@ -10,7 +10,6 @@ import os
 import FreeSimpleGUI as sg
 
 from gui_data import GUIData
-from utils import *
 from layout import *
 from keys import *
 from callbacks import *
@@ -19,10 +18,13 @@ from callbacks import *
 # Callbacks must be able to receive three parameters: window, values and a GUIData object.
 EVENT_CALLBACK_DICT = {
   Keys.SAVE: save_message,
+  Keys.RECEIVE: receive,
   Keys.DIR_NAME: lambda w, v, data: data.setDirectoryPath(v[Keys.DIR_NAME]),
   Keys.STOP: lambda w, v, data: data.setReceivingMessage(False),
-  Keys.RECEIVE: lambda w, v, data: data.setReceivingMessage(True),
-  Keys.CLEAN: lambda w, v, data: w[Keys.MESSAGE].update(value=data.setMessage(""))
+  Keys.CLEAN: lambda w, v, data: w[Keys.MESSAGE].update(value=data.setMessage("")),
+  Keys.RECEIVE_SEQUENCE: receive_sequence,
+  Keys.REMOVE_SELECTED_FILES: remove_files,
+  Keys.SAVE_ALL: save_all
 }
 
 EVENT_CALLBACK_DICT.update(dict.fromkeys(VISIBILITY_KEYS, visibility_callback))
@@ -32,24 +34,19 @@ def main():
 
     data = GUIData("", None, False)
     window = define_gui_layout()
-
     while True:  # Event Loop
         event, values = window.read(timeout=1)
         #if event != "__TIMEOUT__":
-        #    print(event, values)
+
         if event == sg.WIN_CLOSED or event == Keys.EXIT:
             break
         
         if event in EVENT_CALLBACK_DICT:
             EVENT_CALLBACK_DICT[event](window, values, data) 
-
-        if values[Keys.TOGGLE_SEC_SHOW_TEXT] and data.receiving_message:
-            data.message = receive_message()
-            window[Keys.MESSAGE].update(value=data.message)
-
-            # ToDo: Change from deactivating the receiving mode to a timeout to update
-            #  the message continuously
-            data.receiving_message = False
+            
+        if data.receiving_message:
+            receive(window, values, data)
+            
 
     window.close()
 

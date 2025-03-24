@@ -4,6 +4,8 @@
 
 from requests import get as get_request
 
+from keys import *
+
 def receive_message():
     """Function to receive the message from the transmitter server."""
 
@@ -16,5 +18,5 @@ def receive_message():
         raise ConnectionError(
             f"Failed to receive message from server with error code {response.status_code}."
         )
-
     return response.text
+    
