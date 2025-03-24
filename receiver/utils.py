@@ -9,6 +9,8 @@ from keys import *
 from requests import get as get_request
 from layout import DEFAULT_EXP_ID
 
+from keys import *
+
 def receive_message():
     """Function to receive the message from the transmitter server."""
 
@@ -109,3 +111,5 @@ def update_params(window: sg.Window, settings):
     window[Keys.INTENSITY_PARAM].update(settings["intensity"] if settings != None else 0)
     window[Keys.FREQUENCY_PARAM].update(settings["frequency"] if settings != None else 0)
     window[Keys.BATCH_PARAM].update(settings["batch"] if settings != None else 0)
+    return response.text
+    
