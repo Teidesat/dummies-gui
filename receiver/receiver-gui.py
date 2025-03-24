@@ -6,7 +6,7 @@ and interact with it.
 """
 
 import os
-
+import time
 import FreeSimpleGUI as sg
 
 from gui_data import GUIData
@@ -31,7 +31,9 @@ EVENT_CALLBACK_DICT.update(dict.fromkeys(VISIBILITY_KEYS, visibility_callback))
 
 def main():
     """Main function to start the execution of the receiver program."""
-
+    last_receive_time = 0
+    receive_interval = 2
+    
     data = GUIData("", None, False)
     window = define_gui_layout()
     while True:  # Event Loop
@@ -44,8 +46,9 @@ def main():
         if event in EVENT_CALLBACK_DICT:
             EVENT_CALLBACK_DICT[event](window, values, data) 
             
-        if data.receiving_message:
+        if data.receiving_message and (time.time() - last_receive_time > receive_interval):
             receive(window, values, data)
+            last_receive_time = time.time()
             
 
     window.close()
