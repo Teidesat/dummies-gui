@@ -111,5 +111,4 @@ def update_params(window: sg.Window, settings):
     window[Keys.INTENSITY_PARAM].update(settings["intensity"] if settings != None else 0)
     window[Keys.FREQUENCY_PARAM].update(settings["frequency"] if settings != None else 0)
     window[Keys.BATCH_PARAM].update(settings["batch"] if settings != None else 0)
-    return response.text
     

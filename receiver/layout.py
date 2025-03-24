@@ -90,7 +90,7 @@ def define_gui_layout():
             sg.In(size=30, enable_events=True, key=Keys.EXP_SAVE_DIR),
             sg.FolderBrowse(),
         ],
-        [sg.Button("Get experiment", key= Keys.GET_EXPERIMENT), sg.Button("Exit", key=Keys.EXIT_3)]
+        [sg.Button("Get experiment", key= Keys.GET_EXPERIMENT)]
     ]
 
 
@@ -152,9 +152,9 @@ def define_gui_layout():
     
     common_elements_layout = [
         [
-            sg.Push(),
+            #sg.Push(),
             sg.Button("Exit", key=Keys.EXIT),
-            sg.Push()
+            #sg.Push()
         ],
     ]
 

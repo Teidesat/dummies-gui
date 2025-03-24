@@ -3,9 +3,6 @@
 import enum
 
 class Keys(enum.Enum):
-  EXIT_1 = "-EXIT-1-"
-  EXIT_2 = "-EXIT-2-"
-  EXIT_3 = "-EXIT-3-"
   EXIT = "-EXIT-"
   MESSAGE = "-MESSAGE-"
   RECEIVE = "-RECEIVE-"
@@ -40,6 +37,7 @@ class Keys(enum.Enum):
   SEC_SHOW_TEXT = "-SEC_SHOW_TEXT-"
   SEC_SAVE_FILE =  "-SEC_SAVE_FILE-"
   SEC_SEQUENCE =  "-SEC_SEQUENCE-"
+  SEC_EXPERIMENT = "-SEC_EXPERIMENT-"
 
 
 VISIBILITY_KEYS = [
