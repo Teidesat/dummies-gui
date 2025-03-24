@@ -6,6 +6,8 @@ import FreeSimpleGUI as sg
 
 from keys import Keys
 
+DEFAULT_EXP_ID = "CO_Dd-Aa-Ii-Ff-Ll-Mm"
+
 def define_gui_layout():
     """Function to define the GUI layout."""
 
@@ -62,7 +64,7 @@ def define_gui_layout():
     ]]
 
     experiment_section_layout = [
-        [sg.Text("Experiment ID:"), sg.Text("CO_Dd-Aa-Ii-Ff-Ll-Mm", key=Keys.EXPERIMENT_ID)],
+        [sg.Text("Experiment ID:"), sg.Text(DEFAULT_EXP_ID, key=Keys.EXPERIMENT_ID)],
         [sg.Text("Messages:")],
         [sg.Table(values=[], headings=["ID", "Message"], enable_events=True, expand_x=True, key=Keys.EXPERIMENT_TABLE,
                   background_color="white", text_color="black", alternating_row_color="lightgray")],

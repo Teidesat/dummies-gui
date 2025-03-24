@@ -41,4 +41,5 @@ def get_experiment_callback(window: sg.Window, values, data: GUIData):
   update_params(window, settings)
   #messages = get_messages(id)
   window[Keys.EXPERIMENT_TABLE].update(messages)
-  save_messages_to_csv(messages, save_directory, id)
+  if len(messages) != 0:
+    save_messages_to_csv(messages, save_directory, id)

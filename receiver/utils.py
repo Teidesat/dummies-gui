@@ -7,6 +7,7 @@ import re
 
 from keys import *
 from requests import get as get_request
+from layout import DEFAULT_EXP_ID
 
 def receive_message():
     """Function to receive the message from the transmitter server."""
@@ -35,11 +36,17 @@ def get_experiment():
     #    "frequency": "90",
     #    "batch": "1"
     #}
-    data = get_request("http://receiver-server:5000/experiment")
+    data = get_request("http://receiver-server:5001/experiment",
+                       headers={"Content-Type": "application/json"},
+                       )
     if data.status_code != 200:
         print(data)
         exit(-1)
-    data = data.json()
+    try:
+        data = data.json()
+    except:
+        sg.popup("There is no experiment ready")
+        return DEFAULT_EXP_ID, None, []
     id = data["id"]
     settings = parse_id(id)
     messages = data["messages"]
@@ -95,9 +102,10 @@ def save_messages_to_csv(messages, directory, name):
 def update_params(window: sg.Window, settings):
     """
     Function to update the parameters from the experiment section.
+    Writes 0 if the settings param is None
     """
-    window[Keys.DISTANCE_PARAM].update(settings["distance"])
-    window[Keys.ANGLE_PARAM].update(settings["angle"])
-    window[Keys.INTENSITY_PARAM].update(settings["intensity"])
-    window[Keys.FREQUENCY_PARAM].update(settings["frequency"])
-    window[Keys.BATCH_PARAM].update(settings["batch"])
+    window[Keys.DISTANCE_PARAM].update(settings["distance"] if settings != None else 0)
+    window[Keys.ANGLE_PARAM].update(settings["angle"] if settings != None else 0)
+    window[Keys.INTENSITY_PARAM].update(settings["intensity"] if settings != None else 0)
+    window[Keys.FREQUENCY_PARAM].update(settings["frequency"] if settings != None else 0)
+    window[Keys.BATCH_PARAM].update(settings["batch"] if settings != None else 0)
