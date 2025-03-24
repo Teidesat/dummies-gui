@@ -47,7 +47,7 @@ def receive_sequence(window, values, data: GUIData):
     except json.JSONDecodeError:
       print("Error decoding JSON message")
       return
-    # TODO make the id column display the actual id of the message
+    
     for message in messages:
       current_values = window[Keys.EXPERIMENTS].Values
       updated_values = current_values + [[message, messages[message]]]
@@ -73,7 +73,7 @@ def receive(window, values, data: GUIData):
   window[Keys.MESSAGE].update(value=data.message)
   
 def save_all(window, values, data: GUIData):
-# Get table data
+
     table_values = window[Keys.EXPERIMENTS].Values
     print(table_values)
     
@@ -81,7 +81,6 @@ def save_all(window, values, data: GUIData):
         sg.popup_error("No data to save!")
         return
     
-    # Open file save dialog
     file_path = sg.popup_get_file(
         "Save As", 
         save_as=True, 
@@ -90,14 +89,13 @@ def save_all(window, values, data: GUIData):
     )
     
     if not file_path:
-        return  # User canceled
+        return
 
-    # Write data to CSV
     try:
         with open(file_path, mode="w", newline="") as file:
             writer = csv.writer(file)
-            writer.writerow(["ID", "Message"])  # Header row
-            writer.writerows(table_values)  # Write data
+            writer.writerow(["ID", "Message"])
+            writer.writerows(table_values)
 
         sg.popup("File saved successfully!", title="Success")
 
