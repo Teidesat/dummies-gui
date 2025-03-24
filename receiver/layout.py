@@ -13,9 +13,10 @@ def define_gui_layout():
 
     sec_show_text_visible = True
     sec_save_file_visible = False
-    sec_experiment_visible = False
-    assert (sec_show_text_visible or sec_save_file_visible or sec_experiment_visible) == True
-    assert (sec_show_text_visible + sec_save_file_visible + sec_experiment_visible) == 1
+    sec_sequence_visible = False
+
+    assert (sec_show_text_visible or sec_save_file_visible or sec_sequence_visible) == True
+    assert (sec_show_text_visible + sec_save_file_visible + sec_sequence_visible) == 1
 
     # ---------------------------------------------------------------------------------
 
@@ -26,7 +27,6 @@ def define_gui_layout():
             sg.Button("Receive", key=Keys.RECEIVE),
             sg.Button("Stop", key=Keys.STOP),
             sg.Button("Clean", key=Keys.CLEAN),
-            sg.Button("Exit", key=Keys.EXIT_1),
         ],
     ]
 
@@ -51,8 +51,24 @@ def define_gui_layout():
         ],
         [
             sg.Button("Save to file", key=Keys.SAVE),
-            sg.Button("Exit", key=Keys.EXIT_2),
         ],
+    ]
+    table = sg.Table(values=[], headings=["ID", "Messages"], display_row_numbers=False, justification="center", 
+                  enable_events=True, size=(50, 10), expand_x=True, key=Keys.EXPERIMENTS, 
+                  background_color="white", text_color="black", alternating_row_color="lightgray", auto_size_columns=True)
+    sequence_section_layout = [
+        
+        [
+            sg.Text("Files:")
+        ],
+        [
+            table
+        ],
+        [
+            sg.Button("Receive", key=Keys.RECEIVE_SEQUENCE),
+            sg.Button("Remove Message(s)", key=Keys.REMOVE_SELECTED_FILES), 
+            sg.Button("Save all", key=Keys.SAVE_ALL)
+        ]
     ]
 
     params_layout = [[
@@ -96,12 +112,12 @@ def define_gui_layout():
             key=Keys.TOGGLE_SEC_SAVE_FILE,
         ),
         sg.Radio(
-            " Experiment",
+            " Sequence",
             "Radio",
-            default=sec_experiment_visible,
+            default=sec_sequence_visible,
             enable_events=True,
-            key=Keys.TOGGLE_SEC_EXPERIMENT,
-        )
+            key=Keys.TOGGLE_SEC_SEQUENCE,
+        ),
     ]
 
     sub_sections_layout = [
@@ -116,10 +132,18 @@ def define_gui_layout():
             visible=sec_save_file_visible,
         ),
         sg.Column(
-            experiment_section_layout,
-            key=Keys.SEC_EXPERIMENT,
-            visible=sec_experiment_visible
-        )
+            sequence_section_layout,
+            key=Keys.SEC_SEQUENCE,
+            visible=sec_sequence_visible,
+        ),
+    ]
+    
+    common_elements_layout = [
+        [
+            sg.Push(),
+            sg.Button("Exit", key=Keys.EXIT),
+            sg.Push()
+        ],
     ]
 
     # ---------------------------------------------------------------------------------
@@ -127,6 +151,7 @@ def define_gui_layout():
     main_layout = [
         radio_selector_layout,
         sub_sections_layout,
+        common_elements_layout
     ]
 
     window = sg.Window("Receiver", main_layout)

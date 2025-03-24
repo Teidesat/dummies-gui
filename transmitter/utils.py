@@ -118,12 +118,14 @@ def save_settings(window, path):
 def send_experiment(settings):
     message_batch = int(settings["messages_batch"]) # Asserting is just an integer
     message_batch_file_name = os.getcwd() + "/message-batches/batch-" + str(message_batch) + ".csv"
+    temp = {}
     try:
         with open(message_batch_file_name, "r") as file:
             for line in file:
                 line = line.strip()
-                [id, message] = line.split(",")
-                send_message(message, settings, id)
+                [id, messsage] = line.split(",")
+                temp[id] = messsage
+            send_message(temp, settings, "_Batch")
     except:
         sg.popup_error("Experiment file \"" + message_batch_file_name + "\" could not be found")
 
