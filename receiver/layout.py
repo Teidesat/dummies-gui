@@ -6,14 +6,16 @@ import FreeSimpleGUI as sg
 
 from keys import Keys
 
+DEFAULT_EXP_ID = "CO_Dd-Aa-Ii-Ff-Ll-Mm"
+
 def define_gui_layout():
     """Function to define the GUI layout."""
 
     sec_show_text_visible = True
     sec_save_file_visible = False
-
-    assert (sec_show_text_visible or sec_save_file_visible) == True
-    assert (sec_show_text_visible + sec_save_file_visible) == 1
+    sec_experiment_visible = False
+    assert (sec_show_text_visible or sec_save_file_visible or sec_experiment_visible) == True
+    assert (sec_show_text_visible + sec_save_file_visible + sec_experiment_visible) == 1
 
     # ---------------------------------------------------------------------------------
 
@@ -53,6 +55,29 @@ def define_gui_layout():
         ],
     ]
 
+    params_layout = [[
+        sg.Text("Distance:"), sg.Text("0", key=Keys.DISTANCE_PARAM),
+        sg.Text("Angle:"), sg.Text("0", key=Keys.ANGLE_PARAM),
+        sg.Text("Intensity:"), sg.Text("0", key=Keys.INTENSITY_PARAM),
+        sg.Text("Frequency:"), sg.Text("0", key=Keys.FREQUENCY_PARAM),
+        sg.Text("Message Batch:"), sg.Text("0", key=Keys.BATCH_PARAM)
+    ]]
+
+    experiment_section_layout = [
+        [sg.Text("Experiment ID:"), sg.Text(DEFAULT_EXP_ID, key=Keys.EXPERIMENT_ID)],
+        [sg.Text("Messages:")],
+        [sg.Table(values=[], headings=["ID", "Message"], enable_events=True, expand_x=True, key=Keys.EXPERIMENT_TABLE,
+                  background_color="white", text_color="black", alternating_row_color="lightgray")],
+        [sg.Frame("Parameters", layout=params_layout, visible=True)],
+        [
+            sg.Text("Save Directory:"),
+            sg.In(size=30, enable_events=True, key=Keys.EXP_SAVE_DIR),
+            sg.FolderBrowse(),
+        ],
+        [sg.Button("Get experiment", key= Keys.GET_EXPERIMENT), sg.Button("Exit", key=Keys.EXIT_3)]
+    ]
+
+
     # ---------------------------------------------------------------------------------
 
     radio_selector_layout = [
@@ -70,6 +95,13 @@ def define_gui_layout():
             enable_events=True,
             key=Keys.TOGGLE_SEC_SAVE_FILE,
         ),
+        sg.Radio(
+            " Experiment",
+            "Radio",
+            default=sec_experiment_visible,
+            enable_events=True,
+            key=Keys.TOGGLE_SEC_EXPERIMENT,
+        )
     ]
 
     sub_sections_layout = [
@@ -83,6 +115,11 @@ def define_gui_layout():
             key=Keys.SEC_SAVE_FILE,
             visible=sec_save_file_visible,
         ),
+        sg.Column(
+            experiment_section_layout,
+            key=Keys.SEC_EXPERIMENT,
+            visible=sec_experiment_visible
+        )
     ]
 
     # ---------------------------------------------------------------------------------

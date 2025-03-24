@@ -43,4 +43,4 @@ services:
         device_cgroup_rules:
             - c 189:* rmw
         working_dir: /app/receiver
-        command: python3 receiver-gui.py
+        command: python3 -u receiver-gui.py

@@ -20,6 +20,8 @@ from callbacks import *
 EVENT_CALLBACK_DICT = {
   Keys.SAVE: save_message,
   Keys.DIR_NAME: lambda w, v, data: data.setDirectoryPath(v[Keys.DIR_NAME]),
+  Keys.EXP_SAVE_DIR: lambda w, v, data: data.setDirectoryPath(v[Keys.EXP_SAVE_DIR]),
+  Keys.GET_EXPERIMENT: get_experiment_callback,
   Keys.STOP: lambda w, v, data: data.setReceivingMessage(False),
   Keys.RECEIVE: lambda w, v, data: data.setReceivingMessage(True),
   Keys.CLEAN: lambda w, v, data: w[Keys.MESSAGE].update(value=data.setMessage(""))
