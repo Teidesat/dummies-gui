@@ -3,10 +3,13 @@
 """
 import os
 import json
+import csv
+import FreeSimpleGUI as sg
 
 from keys import *
 from utils import *
 from gui_data import GUIData
+
 
 def visibility_callback(window, values, data: GUIData):
   """
@@ -44,19 +47,19 @@ def receive_sequence(window, values, data: GUIData):
     except json.JSONDecodeError:
       print("Error decoding JSON message")
       return
-    print(messages, len(messages))
+    # TODO make the id column display the actual id of the message
     for message in messages:
-      current_values = window[Keys.FILES_PATH].Values
-      updated_values = current_values + [[messages[message]]]
-      window[Keys.FILES_PATH].update(values=updated_values)
+      current_values = window[Keys.EXPERIMENTS].Values
+      updated_values = current_values + [[message, messages[message]]]
+      window[Keys.EXPERIMENTS].update(values=updated_values)
         
     
 
 def remove_files(window, values, data: GUIData):
-    files_to_remove = window[Keys.FILES_PATH].get()
-    current_files = window[Keys.FILES_PATH].Values
+    files_to_remove = window[Keys.EXPERIMENTS].get()
+    current_files = window[Keys.EXPERIMENTS].Values
     final_files = [file for [ind, file] in enumerate(current_files) if ind not in files_to_remove]
-    window[Keys.FILES_PATH].update(final_files)
+    window[Keys.EXPERIMENTS].update(final_files)
   
 def receive(window, values, data: GUIData):
   """
@@ -70,12 +73,33 @@ def receive(window, values, data: GUIData):
   window[Keys.MESSAGE].update(value=data.message)
   
 def save_all(window, values, data: GUIData):
-  """
-  Saves all messages in the table to a file
-  """
-  messages = window[Keys.FILES_PATH].Values
-  file_path = os.path.join(data.directory_path, values[Keys.FILE_NAME])
-  with open(file_path, "w") as file:
-    for message in messages:
-      file.write(message + ", " + messages[message] + "\n")
-  window[Keys.FILES_PATH].update(values=[])
+# Get table data
+    table_values = window[Keys.EXPERIMENTS].Values
+    print(table_values)
+    
+    if not table_values:
+        sg.popup_error("No data to save!")
+        return
+    
+    # Open file save dialog
+    file_path = sg.popup_get_file(
+        "Save As", 
+        save_as=True, 
+        default_extension=".csv", 
+        file_types=(("CSV Files", "*.csv"), ("All Files", "*.*"))
+    )
+    
+    if not file_path:
+        return  # User canceled
+
+    # Write data to CSV
+    try:
+        with open(file_path, mode="w", newline="") as file:
+            writer = csv.writer(file)
+            writer.writerow(["ID", "Message"])  # Header row
+            writer.writerows(table_values)  # Write data
+
+        sg.popup("File saved successfully!", title="Success")
+
+    except Exception as e:
+        sg.popup_error(f"Error saving file: {e}")

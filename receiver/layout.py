@@ -51,10 +51,9 @@ def define_gui_layout():
             sg.Button("Save to file", key=Keys.SAVE),
         ],
     ]
-    table = sg.Table(values=[], headings=["Messages"], display_row_numbers=True, justification="center", 
-                  enable_events=True, size=(50, 10), expand_x=True, key=Keys.FILES_PATH, 
-                  background_color="white", text_color="black", alternating_row_color="lightgray")
-    table.RowHeaderText = "Order"
+    table = sg.Table(values=[], headings=["ID", "Messages"], display_row_numbers=False, justification="center", 
+                  enable_events=True, size=(50, 10), expand_x=True, key=Keys.EXPERIMENTS, 
+                  background_color="white", text_color="black", alternating_row_color="lightgray", auto_size_columns=True)
     sequence_section_layout = [
         
         [
