@@ -34,9 +34,14 @@ def save_message(window, values, data: GUIData):
   else:
     window[Keys.PATH_ERROR_MSG].update(visible=False)
     file_path = os.path.join(directory_path, values[Keys.FILE_NAME])
-
-    # ToDo: Save received message to file
-    print(file_path)
+    try:
+      with open(file_path, "w") as file:
+        message = receive_message()
+        file.write(message)
+    except:
+      sg.popup_error(f"There was an error while saving the message in {file_path}")
+      return
+    sg.popup(f"File {file_path} was correctly saved")
 
 def get_experiment_callback(window: sg.Window, values, data: GUIData):
   save_directory = values[Keys.EXP_SAVE_DIR]
