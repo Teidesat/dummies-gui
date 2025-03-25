@@ -95,7 +95,7 @@ def send_callback(window, values):
             background_color="yellow",
             text_color="black"
         )
-
+    message_data = str_to_binary_str(message_data)
     send_message(message_data, get_current_settings(window))
 
 def add_files(window, values):

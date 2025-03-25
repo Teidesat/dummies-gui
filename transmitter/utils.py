@@ -171,3 +171,13 @@ def load_sequence(path: str, window):
         window[Keys.FILES_PATH].update(values=new_sequence)
     except:
         sg.popup_error("There was an error while loading the sequence")
+
+def str_to_binary_str(string: str) -> str:
+    """
+    Transforms the given string into a binary string.
+    Each character is turned into an one byte value.
+    """
+    result = ""
+    for char in string:
+        result += format(ord(char), "08b")
+    return result
