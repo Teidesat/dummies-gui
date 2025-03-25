@@ -24,9 +24,11 @@ def define_gui_layout():
         [sg.Text("Message:")],
         [sg.Multiline(size=(50, 10), disabled=True, key=Keys.MESSAGE)],
         [
+            sg.Push(),
             sg.Button("Receive", key=Keys.RECEIVE),
             sg.Button("Stop", key=Keys.STOP),
             sg.Button("Clean", key=Keys.CLEAN),
+            sg.Push()
         ],
     ]
 
@@ -50,7 +52,9 @@ def define_gui_layout():
             ),
         ],
         [
+            sg.Push(),
             sg.Button("Save to file", key=Keys.SAVE),
+            sg.Push()
         ],
     ]
     table = sg.Table(values=[], headings=["ID", "Messages"], display_row_numbers=False, justification="center", 
@@ -65,9 +69,11 @@ def define_gui_layout():
             table
         ],
         [
+            sg.Push(),
             sg.Button("Receive", key=Keys.RECEIVE_SEQUENCE),
             sg.Button("Remove Message(s)", key=Keys.REMOVE_SELECTED_FILES), 
-            sg.Button("Save all", key=Keys.SAVE_ALL)
+            sg.Button("Save all", key=Keys.SAVE_ALL),
+            sg.Push()
         ]
     ]
 
@@ -90,7 +96,9 @@ def define_gui_layout():
             sg.In(size=30, enable_events=True, key=Keys.EXP_SAVE_DIR),
             sg.FolderBrowse(),
         ],
-        [sg.Button("Get experiment", key= Keys.GET_EXPERIMENT)]
+        [   sg.Push(),
+            sg.Button("Get experiment", key= Keys.GET_EXPERIMENT),
+            sg.Push()]
     ]
 
 
@@ -152,9 +160,9 @@ def define_gui_layout():
     
     common_elements_layout = [
         [
-            #sg.Push(),
+            sg.Push(),
             sg.Button("Exit", key=Keys.EXIT),
-            #sg.Push()
+            sg.Push()
         ],
     ]
 
