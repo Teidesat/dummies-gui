@@ -109,3 +109,31 @@ def update_params(window: sg.Window, settings):
     window[Keys.FREQUENCY_PARAM].update(settings["frequency"] if settings != None else 0)
     window[Keys.BATCH_PARAM].update(settings["batch"] if settings != None else 0)
     
+def ascii_to_binary(ascii_str: str):
+    """
+    Transforms the given ASCII string to a binary string
+    """
+    try:
+        result = ""
+        for char in ascii_str:
+            result += format(ord(char), "08b")
+        return result
+    except:
+        sg.popup_error(f"Failed to transform {ascii_str} into a binary string")
+        return ascii_str
+
+def binary_to_ascii(binary_str: str):
+    """
+    Transforms the given binary string to ASCII
+    """
+    try:
+        result = ""
+        for ind in range(0, len(binary_str), 8):
+            binary_char =  binary_str[ind:ind + 8]
+            ascii_code = int(binary_char, 2)
+            ascii_char = format(ascii_code, "c")
+            result += ascii_char
+        return result
+    except:
+        sg.popup_error(f"Failed to transform {binary_str} into an ASCII string")
+        return binary_str

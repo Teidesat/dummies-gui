@@ -27,7 +27,8 @@ EVENT_CALLBACK_DICT = {
   Keys.CLEAN: lambda w, v, data: w[Keys.MESSAGE].update(value=data.setMessage("")),
   Keys.RECEIVE_SEQUENCE: receive_sequence,
   Keys.REMOVE_SELECTED_FILES: remove_files,
-  Keys.SAVE_ALL: save_all
+  Keys.SAVE_ALL: save_all,
+  Keys.USE_BINARY: transform_binary_ascii
 }
 
 EVENT_CALLBACK_DICT.update(dict.fromkeys(VISIBILITY_KEYS, visibility_callback))

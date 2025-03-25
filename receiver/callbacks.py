@@ -84,8 +84,10 @@ def receive(window, values, data: GUIData):
     Receives a single message
   """
   data.receiving_message = True
-  try: 
+  try:     
     data.message=receive_message()
+    if not values[Keys.USE_BINARY]:
+      data.message = binary_to_ascii(data.message)
   except:
     data.message="Error receiving message"
   window[Keys.MESSAGE].update(value=data.message)
@@ -119,3 +121,13 @@ def save_all(window, values, data: GUIData):
 
     except Exception as e:
         sg.popup_error(f"Error saving file: {e}")
+
+def transform_binary_ascii(window: sg.Window, values, data: GUIData):
+  """
+  Transforms the text in the text section into binary or ASCII
+  """
+  if values[Keys.USE_BINARY]:
+    data.message = ascii_to_binary(values[Keys.MESSAGE])
+  else:
+    data.message = binary_to_ascii(values[Keys.MESSAGE])
+  window[Keys.MESSAGE].update(data.message)

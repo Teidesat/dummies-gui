@@ -25,6 +25,10 @@ def define_gui_layout():
         [sg.Multiline(size=(50, 10), disabled=True, key=Keys.MESSAGE)],
         [
             sg.Push(),
+            sg.Checkbox("Use binary", default=True, key=Keys.USE_BINARY, enable_events=True),
+            sg.Push()],
+        [
+            sg.Push(),
             sg.Button("Receive", key=Keys.RECEIVE),
             sg.Button("Stop", key=Keys.STOP),
             sg.Button("Clean", key=Keys.CLEAN),
