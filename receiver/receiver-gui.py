@@ -25,9 +25,8 @@ EVENT_CALLBACK_DICT = {
   Keys.GET_EXPERIMENT: get_experiment_callback,
   Keys.STOP: lambda w, v, data: data.setReceivingMessage(False),
   Keys.CLEAN: lambda w, v, data: w[Keys.MESSAGE].update(value=data.setMessage("")),
+  Keys.SEQ_CLEAN: lambda w, v, data: w[Keys.SEQUENCES_TABLE].update(values=[]),
   Keys.RECEIVE_SEQUENCE: receive_sequence,
-  Keys.REMOVE_SELECTED_FILES: remove_files,
-  Keys.SAVE_ALL: save_all,
   Keys.USE_BINARY: transform_binary_ascii
 }
 

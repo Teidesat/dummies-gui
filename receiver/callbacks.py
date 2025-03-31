@@ -5,6 +5,7 @@ import os
 import json
 import csv
 import FreeSimpleGUI as sg
+import datetime
 
 from utils import *
 from keys import *
@@ -43,6 +44,7 @@ def save_message(window, values, data: GUIData):
       return
     sg.popup(f"File {file_path} was correctly saved")
 
+
 def get_experiment_callback(window: sg.Window, values, data: GUIData):
   save_directory = values[Keys.EXP_SAVE_DIR]
   if not assert_directory(save_directory):
@@ -55,30 +57,32 @@ def get_experiment_callback(window: sg.Window, values, data: GUIData):
   if len(messages) != 0:
     save_messages_to_csv(messages, save_directory, id)
 
-def receive_sequence(window, values, data: GUIData):
-    """
-    Receives a sequence of messages and updates the table
-    """
-    data.message = receive_message()
-    try:
-      messages = json.loads(data.message)
-    except json.JSONDecodeError:
-      print("Error decoding JSON message")
-      return
-    
-    for message in messages:
-      current_values = window[Keys.EXPERIMENTS].Values
-      updated_values = current_values + [[message, messages[message]]]
-      window[Keys.EXPERIMENTS].update(values=updated_values)
-        
-    
 
-def remove_files(window, values, data: GUIData):
-    files_to_remove = window[Keys.EXPERIMENTS].get()
-    current_files = window[Keys.EXPERIMENTS].Values
-    final_files = [file for [ind, file] in enumerate(current_files) if ind not in files_to_remove]
-    window[Keys.EXPERIMENTS].update(final_files)
-  
+def receive_sequence(window, values, data: GUIData):
+  """
+  Receives a sequence of messages and updates the table
+  """
+  save_directory = values[Keys.SEQ_SAVE_DIR]
+  if not assert_directory(save_directory):
+    return
+  exp_size = get_buffer_size()
+  if exp_size == 0:
+    sg.popup("There is no experiment ready")
+    return
+  existing_data = window[Keys.SEQUENCES_TABLE].Values  # Get current table values
+  if existing_data is None:
+    existing_data = []
+  new_data = []
+  for i in range(int(exp_size)):
+    id, settings, messages = get_experiment()
+    if len(messages) != 0:
+      for message in messages:
+        new_data.append(message)
+      id = id + '_' + str(datetime.datetime.now().isoformat())
+      save_messages_to_csv(messages, save_directory, id) 
+  window[Keys.SEQUENCES_TABLE].update(existing_data + new_data)
+    
+    
 def receive(window, values, data: GUIData):
   """
     Receives a single message
@@ -91,36 +95,7 @@ def receive(window, values, data: GUIData):
   except:
     data.message="Error receiving message"
   window[Keys.MESSAGE].update(value=data.message)
-  
-def save_all(window, values, data: GUIData):
 
-    table_values = window[Keys.EXPERIMENTS].Values
-    print(table_values)
-    
-    if not table_values:
-        sg.popup_error("No data to save!")
-        return
-    
-    file_path = sg.popup_get_file(
-        "Save As", 
-        save_as=True, 
-        default_extension=".csv", 
-        file_types=(("CSV Files", "*.csv"), ("All Files", "*.*"))
-    )
-    
-    if not file_path:
-        return
-
-    try:
-        with open(file_path, mode="w", newline="") as file:
-            writer = csv.writer(file)
-            writer.writerow(["ID", "Message"])
-            writer.writerows(table_values)
-
-        sg.popup("File saved successfully!", title="Success")
-
-    except Exception as e:
-        sg.popup_error(f"Error saving file: {e}")
 
 def transform_binary_ascii(window: sg.Window, values, data: GUIData):
   """

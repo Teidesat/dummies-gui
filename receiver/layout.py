@@ -62,10 +62,10 @@ def define_gui_layout():
         ],
     ]
     table = sg.Table(values=[], headings=["ID", "Messages"], display_row_numbers=False, justification="center", 
-                  enable_events=True, size=(50, 10), expand_x=True, key=Keys.EXPERIMENTS, 
+                  enable_events=True, size=(150, 10), expand_x=True, key=Keys.SEQUENCES_TABLE, 
                   background_color="white", text_color="black", alternating_row_color="lightgray", auto_size_columns=True)
+    default_folder = "/app/receiver/message-batches"
     sequence_section_layout = [
-        
         [
             sg.Text("Files:")
         ],
@@ -75,10 +75,14 @@ def define_gui_layout():
         [
             sg.Push(),
             sg.Button("Receive", key=Keys.RECEIVE_SEQUENCE),
-            sg.Button("Remove Message(s)", key=Keys.REMOVE_SELECTED_FILES), 
-            sg.Button("Save all", key=Keys.SAVE_ALL),
+            sg.Button("Clean", key=Keys.SEQ_CLEAN),
             sg.Push()
-        ]
+        ],
+        [
+            sg.Text("Save Directory:"),
+            sg.In(size=30, enable_events=True, key=Keys.SEQ_SAVE_DIR, default_text=default_folder),
+            sg.FolderBrowse(),
+        ],
     ]
 
     params_layout = [[

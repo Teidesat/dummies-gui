@@ -51,6 +51,17 @@ def get_experiment():
     messages = data["messages"]
     return id, settings, messages
 
+def get_buffer_size():
+    """
+    Function to retrieve the size of the experiment buffer from the receiver's server
+    """
+    data = get_request("http://receiver-server:5001/buffer_size",
+                       headers={"Content-Type": "application/json"},
+                       )
+    if data.status_code != 200:
+        exit(-1)
+    return data.text
+
 def parse_id(experiment_id: str):
     """
     Parses the given experiment id to retrieve the parameters and the return them as settings.
