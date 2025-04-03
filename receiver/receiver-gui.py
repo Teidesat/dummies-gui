@@ -50,7 +50,7 @@ def main():
             EVENT_CALLBACK_DICT[event](window, values, data) 
             
         if data.receiving_message and (time.time() - last_receive_time > receive_interval):
-            receive(window, values, data)
+            receive_sequence(window, values, data)
             last_receive_time = time.time()
             
 

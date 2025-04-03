@@ -30,7 +30,6 @@ def define_gui_layout():
         [
             sg.Push(),
             sg.Button("Receive", key=Keys.RECEIVE),
-            sg.Button("Stop", key=Keys.STOP),
             sg.Button("Clean", key=Keys.CLEAN),
             sg.Push()
         ],
@@ -61,29 +60,42 @@ def define_gui_layout():
             sg.Push()
         ],
     ]
-    table = sg.Table(values=[], headings=["ID", "Messages"], display_row_numbers=False, justification="center", 
-                  enable_events=True, size=(150, 10), expand_x=True, key=Keys.SEQUENCES_TABLE, 
-                  background_color="white", text_color="black", alternating_row_color="lightgray", auto_size_columns=True)
+    table = sg.Table(
+    values=[], 
+    headings=["ID", "Messages"], 
+    display_row_numbers=False, 
+    justification="center", 
+    enable_events=True, 
+    size=(None, 20),  # Increase height (rows displayed) 
+    expand_x=True,  # Allows it to stretch horizontally
+    expand_y=True,  # Allows it to stretch vertically
+    key=Keys.SEQUENCES_TABLE, 
+    background_color="white", 
+    text_color="black", 
+    alternating_row_color="lightgray", 
+    auto_size_columns=False,  # Disable auto-sizing to manually set column widths
+    col_widths=[40, 30]  # Make the "ID" column wider than "Messages"
+    )
+
     default_folder = "/app/receiver/message-batches"
+
     sequence_section_layout = [
-        [
-            sg.Text("Files:")
-        ],
-        [
-            table
-        ],
+        [sg.Text("Files:")],
+        [sg.Column([[table]], expand_x=True, expand_y=True)],  # Wrap table in a column for better resizing
         [
             sg.Push(),
             sg.Button("Receive", key=Keys.RECEIVE_SEQUENCE),
+            sg.Button("Stop", key=Keys.STOP),
             sg.Button("Clean", key=Keys.SEQ_CLEAN),
             sg.Push()
         ],
         [
             sg.Text("Save Directory:"),
-            sg.In(size=30, enable_events=True, key=Keys.SEQ_SAVE_DIR, default_text=default_folder),
+            sg.In(size=(50, 1), enable_events=True, key=Keys.SEQ_SAVE_DIR, default_text=default_folder),  # Widen input box
             sg.FolderBrowse(),
         ],
     ]
+
 
     params_layout = [[
         sg.Text("Distance:"), sg.Text("0", key=Keys.DISTANCE_PARAM),

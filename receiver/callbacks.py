@@ -62,6 +62,7 @@ def receive_sequence(window, values, data: GUIData):
   """
   Receives a sequence of messages and updates the table
   """
+  data.receiving_message = True
   save_directory = values[Keys.SEQ_SAVE_DIR]
   if not assert_directory(save_directory):
     return
@@ -87,7 +88,7 @@ def receive(window, values, data: GUIData):
   """
     Receives a single message
   """
-  data.receiving_message = True
+
   try:     
     data.message=receive_message()
     if not values[Keys.USE_BINARY]:
