@@ -1,5 +1,5 @@
 """
-  Defines the structure and style of PySimpleGUI's elements
+Defines the structure and style of PySimpleGUI's elements
 """
 
 import FreeSimpleGUI as sg
@@ -8,6 +8,7 @@ from keys import Keys
 
 DEFAULT_EXP_ID = "CO_Dd-Aa-Ii-Ff-Ll-Mm"
 
+
 def define_gui_layout():
     """Function to define the GUI layout."""
 
@@ -15,8 +16,18 @@ def define_gui_layout():
     sec_save_file_visible = False
     sec_experiment_visible = False
     sec_sequence_visible = False
-    assert (sec_show_text_visible or sec_save_file_visible or sec_experiment_visible or sec_sequence_visible) == True
-    assert (sec_show_text_visible + sec_save_file_visible + sec_experiment_visible + sec_sequence_visible) == 1
+    assert (
+        sec_show_text_visible
+        or sec_save_file_visible
+        or sec_experiment_visible
+        or sec_sequence_visible
+    ) == True
+    assert (
+        sec_show_text_visible
+        + sec_save_file_visible
+        + sec_experiment_visible
+        + sec_sequence_visible
+    ) == 1
 
     # ---------------------------------------------------------------------------------
 
@@ -25,13 +36,16 @@ def define_gui_layout():
         [sg.Multiline(size=(50, 10), disabled=True, key=Keys.MESSAGE)],
         [
             sg.Push(),
-            sg.Checkbox("Use binary", default=True, key=Keys.USE_BINARY, enable_events=True),
-            sg.Push()],
+            sg.Checkbox(
+                "Use binary", default=True, key=Keys.USE_BINARY, enable_events=True
+            ),
+            sg.Push(),
+        ],
         [
             sg.Push(),
             sg.Button("Receive", key=Keys.RECEIVE),
             sg.Button("Clean", key=Keys.CLEAN),
-            sg.Push()
+            sg.Push(),
         ],
     ]
 
@@ -54,73 +68,89 @@ def define_gui_layout():
                 key=Keys.PATH_ERROR_MSG,
             ),
         ],
-        [
-            sg.Push(),
-            sg.Button("Save to file", key=Keys.SAVE),
-            sg.Push()
-        ],
+        [sg.Push(), sg.Button("Save to file", key=Keys.SAVE), sg.Push()],
     ]
     table = sg.Table(
-    values=[], 
-    headings=["ID", "Messages"], 
-    display_row_numbers=False, 
-    justification="center", 
-    enable_events=True, 
-    size=(None, 20),  # Increase height (rows displayed) 
-    expand_x=True,  # Allows it to stretch horizontally
-    expand_y=True,  # Allows it to stretch vertically
-    key=Keys.SEQUENCES_TABLE, 
-    background_color="white", 
-    text_color="black", 
-    alternating_row_color="lightgray", 
-    auto_size_columns=False,  # Disable auto-sizing to manually set column widths
-    col_widths=[40, 30]  # Make the "ID" column wider than "Messages"
+        values=[],
+        headings=["ID", "Messages"],
+        display_row_numbers=False,
+        justification="center",
+        enable_events=True,
+        size=(None, 20),  # Increase height (rows displayed)
+        expand_x=True,  # Allows it to stretch horizontally
+        expand_y=True,  # Allows it to stretch vertically
+        key=Keys.SEQUENCES_TABLE,
+        background_color="white",
+        text_color="black",
+        alternating_row_color="lightgray",
+        auto_size_columns=False,  # Disable auto-sizing to manually set column widths
+        col_widths=[40, 30],  # Make the "ID" column wider than "Messages"
     )
 
     default_folder = "/app/receiver/message-batches"
 
     sequence_section_layout = [
         [sg.Text("Files:")],
-        [sg.Column([[table]], expand_x=True, expand_y=True)],  # Wrap table in a column for better resizing
+        [
+            sg.Column([[table]], expand_x=True, expand_y=True)
+        ],  # Wrap table in a column for better resizing
         [
             sg.Push(),
             sg.Button("Receive", key=Keys.RECEIVE_SEQUENCE),
             sg.Button("Stop", key=Keys.STOP),
             sg.Button("Clean", key=Keys.SEQ_CLEAN),
-            sg.Push()
+            sg.Push(),
         ],
         [
             sg.Text("Save Directory:"),
-            sg.In(size=(50, 1), enable_events=True, key=Keys.SEQ_SAVE_DIR, default_text=default_folder),  # Widen input box
+            sg.In(
+                size=(50, 1),
+                enable_events=True,
+                key=Keys.SEQ_SAVE_DIR,
+                default_text=default_folder,
+            ),  # Widen input box
             sg.FolderBrowse(),
         ],
     ]
 
-
-    params_layout = [[
-        sg.Text("Distance:"), sg.Text("0", key=Keys.DISTANCE_PARAM),
-        sg.Text("Angle:"), sg.Text("0", key=Keys.ANGLE_PARAM),
-        sg.Text("Intensity:"), sg.Text("0", key=Keys.INTENSITY_PARAM),
-        sg.Text("Frequency:"), sg.Text("0", key=Keys.FREQUENCY_PARAM),
-        sg.Text("Message Batch:"), sg.Text("0", key=Keys.BATCH_PARAM)
-    ]]
+    params_layout = [
+        [
+            sg.Text("Distance:"),
+            sg.Text("0", key=Keys.DISTANCE_PARAM),
+            sg.Text("Angle:"),
+            sg.Text("0", key=Keys.ANGLE_PARAM),
+            sg.Text("Intensity:"),
+            sg.Text("0", key=Keys.INTENSITY_PARAM),
+            sg.Text("Frequency:"),
+            sg.Text("0", key=Keys.FREQUENCY_PARAM),
+            sg.Text("Message Batch:"),
+            sg.Text("0", key=Keys.BATCH_PARAM),
+        ]
+    ]
 
     experiment_section_layout = [
         [sg.Text("Experiment ID:"), sg.Text(DEFAULT_EXP_ID, key=Keys.EXPERIMENT_ID)],
         [sg.Text("Messages:")],
-        [sg.Table(values=[], headings=["ID", "Message"], enable_events=True, expand_x=True, key=Keys.EXPERIMENT_TABLE,
-                  background_color="white", text_color="black", alternating_row_color="lightgray")],
+        [
+            sg.Table(
+                values=[],
+                headings=["ID", "Message"],
+                enable_events=True,
+                expand_x=True,
+                key=Keys.EXPERIMENT_TABLE,
+                background_color="white",
+                text_color="black",
+                alternating_row_color="lightgray",
+            )
+        ],
         [sg.Frame("Parameters", layout=params_layout, visible=True)],
         [
             sg.Text("Save Directory:"),
             sg.In(size=30, enable_events=True, key=Keys.EXP_SAVE_DIR),
             sg.FolderBrowse(),
         ],
-        [   sg.Push(),
-            sg.Button("Get experiment", key= Keys.GET_EXPERIMENT),
-            sg.Push()]
+        [sg.Push(), sg.Button("Get experiment", key=Keys.GET_EXPERIMENT), sg.Push()],
     ]
-
 
     # ---------------------------------------------------------------------------------
 
@@ -169,7 +199,7 @@ def define_gui_layout():
         sg.Column(
             experiment_section_layout,
             key=Keys.SEC_EXPERIMENT,
-            visible=sec_experiment_visible
+            visible=sec_experiment_visible,
         ),
         sg.Column(
             sequence_section_layout,
@@ -177,22 +207,14 @@ def define_gui_layout():
             visible=sec_sequence_visible,
         ),
     ]
-    
+
     common_elements_layout = [
-        [
-            sg.Push(),
-            sg.Button("Exit", key=Keys.EXIT),
-            sg.Push()
-        ],
+        [sg.Push(), sg.Button("Exit", key=Keys.EXIT), sg.Push()],
     ]
 
     # ---------------------------------------------------------------------------------
 
-    main_layout = [
-        radio_selector_layout,
-        sub_sections_layout,
-        common_elements_layout
-    ]
+    main_layout = [radio_selector_layout, sub_sections_layout, common_elements_layout]
 
     window = sg.Window("Receiver", main_layout)
     return window

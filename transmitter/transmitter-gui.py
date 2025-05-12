@@ -26,33 +26,45 @@ DEFAULT_SETTINGS = {
 
 # Callbacks must be able to receive two parameters: window and values.
 EVENT_CALLBACK_DICT = {
-  Keys.LOAD_SETTINGS: load_settings_callback,
-  # Directory path filled
-  Keys.DIR_PATH: lambda window, values: window[Keys.FILES_LIST]
-                                        .update(get_files_from_path(values[Keys.DIR_PATH])),
-  Keys.FILES_PATH: lambda window, values: window[Keys.FILES_LIST]
-                                          .update(values[Keys.FILES_PATH]),
-  # ToDo: Send a request to stop the optical communications
-  Keys.STOP: lambda window, values: sg.popup_quick_message(
-                                        "Not implemented yet, work in progress.",
-                                        auto_close_duration=2,
-                                        background_color="yellow",
-                                        text_color="black"
-                                    ),
-  Keys.SEND: send_callback,
-  Keys.NEW_FILES: add_files,
-  Keys.REMOVE_SELECTED_FILES: remove_files,
-  Keys.MOVE_UP: move_file_callback_generator(isMoveUp=True),
-  Keys.MOVE_DOWN: move_file_callback_generator(isMoveUp=False)
+    Keys.LOAD_SETTINGS: load_settings_callback,
+    # Directory path filled
+    Keys.DIR_PATH: lambda window, values: window[Keys.FILES_LIST].update(
+        get_files_from_path(values[Keys.DIR_PATH])
+    ),
+    Keys.FILES_PATH: lambda window, values: window[Keys.FILES_LIST].update(
+        values[Keys.FILES_PATH]
+    ),
+    # ToDo: Send a request to stop the optical communications
+    Keys.STOP: lambda window, values: sg.popup_quick_message(
+        "Not implemented yet, work in progress.",
+        auto_close_duration=2,
+        background_color="yellow",
+        text_color="black",
+    ),
+    Keys.SEND: send_callback,
+    Keys.NEW_FILES: add_files,
+    Keys.REMOVE_SELECTED_FILES: remove_files,
+    Keys.MOVE_UP: move_file_callback_generator(isMoveUp=True),
+    Keys.MOVE_DOWN: move_file_callback_generator(isMoveUp=False),
 }
 
-EVENT_CALLBACK_DICT.update(dict.fromkeys([Keys.TOGGLE_PLAIN_TEXT, Keys.TOGGLE_FILE,
-                                          Keys.TOGGLE_EXP, Keys.TOGGLE_SEQ], update_visibility))
+EVENT_CALLBACK_DICT.update(
+    dict.fromkeys(
+        [Keys.TOGGLE_PLAIN_TEXT, Keys.TOGGLE_FILE, Keys.TOGGLE_EXP, Keys.TOGGLE_SEQ],
+        update_visibility,
+    )
+)
 
 
-EVENT_CALLBACK_DICT.update(dict.fromkeys(PARAMETER_KEYS, 
-                                         lambda window, values: window[Keys.EXP_ID].update(
-                                            get_current_experiment_id(get_current_settings(window)))))
+EVENT_CALLBACK_DICT.update(
+    dict.fromkeys(
+        PARAMETER_KEYS,
+        lambda window, values: window[Keys.EXP_ID].update(
+            get_current_experiment_id(get_current_settings(window))
+        ),
+    )
+)
+
 
 def main():
     """Main function to start the execution of the transmitter program."""
@@ -77,6 +89,7 @@ def main():
             EVENT_CALLBACK_DICT[event](main_window, values)
 
     main_window.close()
+
 
 if __name__ == "__main__":
     main()

@@ -6,6 +6,7 @@ import FreeSimpleGUI as sg
 from utils import retrieve_combo_values
 from keys import *
 
+
 def define_main_gui_layout():
     """Function to define the GUI layout of the main window."""
 
@@ -14,8 +15,12 @@ def define_main_gui_layout():
     sec_file_visible = False
     sec_seq_visible = False
 
-    assert (sec_plain_text_visible or sec_exp_visible or sec_file_visible or sec_seq_visible) == True
-    assert (sec_plain_text_visible + sec_exp_visible + sec_file_visible + sec_seq_visible) == 1
+    assert (
+        sec_plain_text_visible or sec_exp_visible or sec_file_visible or sec_seq_visible
+    ) == True
+    assert (
+        sec_plain_text_visible + sec_exp_visible + sec_file_visible + sec_seq_visible
+    ) == 1
 
     # ---------------------------------------------------------------------------------
 
@@ -78,7 +83,7 @@ def define_main_gui_layout():
             sg.Push(),
             sg.Column(standard_settings_labels),
             sg.Column(standard_settings_inputs),
-            sg.Push()
+            sg.Push(),
         ]
     ]
 
@@ -131,19 +136,31 @@ def define_main_gui_layout():
 
     experiment_section_layout = experiment_extra_settings_layout
 
-
-    table = sg.Table(values=[], headings=["Experiment file"], display_row_numbers=True, justification="center", 
-                  enable_events=True, size=(50, 10), expand_x=True, key=Keys.FILES_PATH, 
-                  background_color="white", text_color="black", alternating_row_color="lightgray")
+    table = sg.Table(
+        values=[],
+        headings=["Experiment file"],
+        display_row_numbers=True,
+        justification="center",
+        enable_events=True,
+        size=(50, 10),
+        expand_x=True,
+        key=Keys.FILES_PATH,
+        background_color="white",
+        text_color="black",
+        alternating_row_color="lightgray",
+    )
     table.RowHeaderText = "Order"
     sequence_section_layout = [
-        
         [sg.Text("Files:")],
-        #[sg.Listbox(values=[], enable_events=True, size=(50, 10), expand_x=True, key=Keys.FILES_PATH, select_mode=sg.LISTBOX_SELECT_MODE_MULTIPLE)],
+        # [sg.Listbox(values=[], enable_events=True, size=(50, 10), expand_x=True, key=Keys.FILES_PATH, select_mode=sg.LISTBOX_SELECT_MODE_MULTIPLE)],
         [table],
-        [sg.Button("Add file(s)", key=Keys.NEW_FILES), sg.Button("Remove file(s)", key=Keys.REMOVE_SELECTED_FILES),
-         sg.Button("Move file(s) up", key=Keys.MOVE_UP), sg.Button("Move file(s) down", key=Keys.MOVE_DOWN)] # Buttons to change the ordering of selected files.
-        #[sg.Listbox(values=[], enable_events=True, size=(50, 10), key=Keys.FILES_LIST, visible=False)],
+        [
+            sg.Button("Add file(s)", key=Keys.NEW_FILES),
+            sg.Button("Remove file(s)", key=Keys.REMOVE_SELECTED_FILES),
+            sg.Button("Move file(s) up", key=Keys.MOVE_UP),
+            sg.Button("Move file(s) down", key=Keys.MOVE_DOWN),
+        ],  # Buttons to change the ordering of selected files.
+        # [sg.Listbox(values=[], enable_events=True, size=(50, 10), key=Keys.FILES_LIST, visible=False)],
     ]
     # ---------------------------------------------------------------------------------
 
@@ -178,7 +195,7 @@ def define_main_gui_layout():
                 enable_events=True,
                 key=Keys.TOGGLE_SEQ,
             ),
-            sg.Push()
+            sg.Push(),
         ],
     ]
 
@@ -205,7 +222,7 @@ def define_main_gui_layout():
                 key=Keys.SEC_SEQ,
                 visible=sec_seq_visible,
             ),
-            sg.Push()
+            sg.Push(),
         ]
     ]
 
@@ -214,23 +231,27 @@ def define_main_gui_layout():
             sg.Push(),
             # The pin function helps with visibility changes, shrinking the space the invisible element was occupying
             sg.pin(sg.Column(standard_settings_layout, key=Keys.STANDARD_SETTINGS)),
-            sg.Push()
+            sg.Push(),
         ],
         [
             sg.Push(),
             sg.Button("Load settings", key=Keys.LOAD_SETTINGS),
-            sg.FileSaveAs("Save settings", key=Keys.SAVE_SETTINGS, file_types=(
-                ("JSON files", ".json"),
-                ("ALL Files", ". *"),),
+            sg.FileSaveAs(
+                "Save settings",
+                key=Keys.SAVE_SETTINGS,
+                file_types=(
+                    ("JSON files", ".json"),
+                    ("ALL Files", ". *"),
+                ),
             ),
-            sg.Push()
+            sg.Push(),
         ],
         [
             sg.Push(),
             sg.Button("Send", key=Keys.SEND),
             sg.Button("Stop", key=Keys.STOP),
             sg.Button("Exit", key=Keys.EXIT),
-            sg.Push()
+            sg.Push(),
         ],
     ]
 
@@ -242,7 +263,11 @@ def define_main_gui_layout():
         common_elements_layout,
     ]
 
-
-    main_window = sg.Window("Transmitter", main_layout, finalize=True, grab_anywhere_using_control=False,
-                            icon="../img/window_icon.png")
+    main_window = sg.Window(
+        "Transmitter",
+        main_layout,
+        finalize=True,
+        grab_anywhere_using_control=False,
+        icon="../img/window_icon.png",
+    )
     return main_window

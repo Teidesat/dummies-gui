@@ -1,5 +1,5 @@
 """
-Various utility functions 
+Various utility functions
 """
 
 import FreeSimpleGUI as sg
@@ -36,14 +36,16 @@ def get_current_settings(window):
     """Function to get the current settings based on the provided window."""
 
     settings = {
-        setting_key: float(window[element_key].get() if window[element_key].get() != "" else 0) # Gets the focused element
+        setting_key: float(
+            window[element_key].get() if window[element_key].get() != "" else 0
+        )  # Gets the focused element
         for setting_key, element_key in SETTINGS_KEYS_TO_ELEMENTS_KEYS.items()
     }
 
     return settings
 
 
-def get_current_experiment_id(settings, id = None):
+def get_current_experiment_id(settings, id=None):
     """Function to get the current experiment ID based on the provided settings."""
     if id == None:
         id = "m"
@@ -103,6 +105,7 @@ def send_message(message_data, settings, id=None):
             f"Failed to send message to server with error code {response.status_code}."
         )
 
+
 def save_settings(window, path):
     """Save the settings in a given file"""
     if path == None or path == "":
@@ -115,9 +118,12 @@ def save_settings(window, path):
     json.dump(get_current_settings(window), file, indent=2)
     return
 
+
 def send_experiment(settings):
-    message_batch = int(settings["messages_batch"]) # Asserting is just an integer
-    message_batch_file_name = os.getcwd() + "/message-batches/batch-" + str(message_batch) + ".csv"
+    message_batch = int(settings["messages_batch"])  # Asserting is just an integer
+    message_batch_file_name = (
+        os.getcwd() + "/message-batches/batch-" + str(message_batch) + ".csv"
+    )
     try:
         with open(message_batch_file_name, "r") as file:
             for line in file:
@@ -125,16 +131,20 @@ def send_experiment(settings):
                 [id, message] = line.split(",")
                 send_message(message, settings, id)
     except:
-        sg.popup_error("Experiment file \"" + message_batch_file_name + "\" could not be found")
+        sg.popup_error(
+            'Experiment file "' + message_batch_file_name + '" could not be found'
+        )
+
 
 def retrieve_combo_values(experimentParam):
-    """Retrieves the combo box values of a given experiment parameter from its corresponding file. 
-       
-       Adds .txt at the end of the given parameter."""
+    """Retrieves the combo box values of a given experiment parameter from its corresponding file.
+
+    Adds .txt at the end of the given parameter."""
     file = open("combobox-values/" + experimentParam + ".txt", "r")
     values = file.read()
     file.close()
     return values.split()
+
 
 def load_settings(path, window):
     """
@@ -146,6 +156,7 @@ def load_settings(path, window):
         settings = json.load(file)
 
     update_settings(settings, window)
+
 
 def save_sequence(window, path: str):
     """
@@ -160,9 +171,10 @@ def save_sequence(window, path: str):
             file.write(savedSequence)
     except:
         sg.popup_error("There was an error while saving the sequence")
-    
+
+
 def load_sequence(path: str, window):
-    try: 
+    try:
         new_sequence = []
         with open(path, "r") as file:
             for line in file:
@@ -171,6 +183,7 @@ def load_sequence(path: str, window):
         window[Keys.FILES_PATH].update(values=new_sequence)
     except:
         sg.popup_error("There was an error while loading the sequence")
+
 
 def str_to_binary_str(string: str) -> str:
     """

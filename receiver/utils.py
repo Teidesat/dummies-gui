@@ -1,6 +1,7 @@
 """
-  Various utility functions used throughout the program
+Various utility functions used throughout the program
 """
+
 import os
 import FreeSimpleGUI as sg
 import re
@@ -10,6 +11,7 @@ from requests import get as get_request
 from layout import DEFAULT_EXP_ID
 
 from keys import *
+
 
 def receive_message():
     """Function to receive the message from the transmitter server."""
@@ -23,21 +25,23 @@ def receive_message():
 
     return response.text
 
+
 def get_experiment():
     """
     Function to retrieve an experiment from the receiver's server
     """
     # id = "CO_D60-A45-I3-F90-L1-Mm"
-    #settings = {
+    # settings = {
     #    "distance": "60",
     #    "angle": "45",
     #    "intensity": "3",
     #    "frequency": "90",
     #    "batch": "1"
-    #}
-    data = get_request("http://receiver-server:5001/experiment",
-                       headers={"Content-Type": "application/json"},
-                       )
+    # }
+    data = get_request(
+        "http://receiver-server:5001/experiment",
+        headers={"Content-Type": "application/json"},
+    )
     if data.status_code != 200:
         print(data)
         exit(-1)
@@ -51,24 +55,29 @@ def get_experiment():
     messages = data["messages"]
     return id, settings, messages
 
+
 def get_buffer_size():
     """
     Function to retrieve the size of the experiment buffer from the receiver's server
     """
-    data = get_request("http://receiver-server:5001/buffer_size",
-                       headers={"Content-Type": "application/json"},
-                       )
+    data = get_request(
+        "http://receiver-server:5001/buffer_size",
+        headers={"Content-Type": "application/json"},
+    )
     if data.status_code != 200:
         exit(-1)
     return data.text
+
 
 def parse_id(experiment_id: str):
     """
     Parses the given experiment id to retrieve the parameters and the return them as settings.
     """
     number_re = R"\d+(?:\.\d+)?"
-    match = re.fullmatch(fR"CO_D({number_re})-A({number_re})-I({number_re})-F({number_re})-L({number_re})-Mm",
-                         experiment_id)
+    match = re.fullmatch(
+        Rf"CO_D({number_re})-A({number_re})-I({number_re})-F({number_re})-L({number_re})-Mm",
+        experiment_id,
+    )
     if match == None:
         raise ValueError(f"Unexpected error when parsing the ID '{experiment_id}'")
     match = match.groups()
@@ -78,9 +87,10 @@ def parse_id(experiment_id: str):
         "angle": match[1],
         "intensity": match[2],
         "frequency": match[3],
-        "batch": match[4]
+        "batch": match[4],
     }
     return settings
+
 
 def assert_directory(directory_path):
     """
@@ -91,9 +101,12 @@ def assert_directory(directory_path):
         sg.popup_error("ERROR: The directory path is empty.")
         return False
     if not os.path.isdir(directory_path):
-        sg.popup_error(f"ERROR: The provided directory \"${directory_path}\" is not a directory.")
+        sg.popup_error(
+            f'ERROR: The provided directory "${directory_path}" is not a directory.'
+        )
         return False
     return True
+
 
 def save_messages_to_csv(messages, directory, name):
     """
@@ -109,6 +122,7 @@ def save_messages_to_csv(messages, directory, name):
         messages = "\n".join(messages)
         file.write(messages)
 
+
 def update_params(window: sg.Window, settings):
     """
     Function to update the parameters from the experiment section.
@@ -116,10 +130,15 @@ def update_params(window: sg.Window, settings):
     """
     window[Keys.DISTANCE_PARAM].update(settings["distance"] if settings != None else 0)
     window[Keys.ANGLE_PARAM].update(settings["angle"] if settings != None else 0)
-    window[Keys.INTENSITY_PARAM].update(settings["intensity"] if settings != None else 0)
-    window[Keys.FREQUENCY_PARAM].update(settings["frequency"] if settings != None else 0)
+    window[Keys.INTENSITY_PARAM].update(
+        settings["intensity"] if settings != None else 0
+    )
+    window[Keys.FREQUENCY_PARAM].update(
+        settings["frequency"] if settings != None else 0
+    )
     window[Keys.BATCH_PARAM].update(settings["batch"] if settings != None else 0)
-    
+
+
 def ascii_to_binary(ascii_str: str):
     """
     Transforms the given ASCII string to a binary string
@@ -133,6 +152,7 @@ def ascii_to_binary(ascii_str: str):
         sg.popup_error(f"Failed to transform {ascii_str} into a binary string")
         return ascii_str
 
+
 def binary_to_ascii(binary_str: str):
     """
     Transforms the given binary string to ASCII
@@ -140,7 +160,7 @@ def binary_to_ascii(binary_str: str):
     try:
         result = ""
         for ind in range(0, len(binary_str), 8):
-            binary_char =  binary_str[ind:ind + 8]
+            binary_char = binary_str[ind : ind + 8]
             ascii_code = int(binary_char, 2)
             ascii_char = format(ascii_code, "c")
             result += ascii_char
