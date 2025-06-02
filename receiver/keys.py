@@ -1,4 +1,8 @@
-"""The keys used for the events or layout elements in the GUI"""
+#! /usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+The keys used for the events or layout elements in the GUI.
+"""
 
 import enum
 
@@ -24,6 +28,7 @@ class Keys(enum.Enum):
     SEQ_SAVE_DIR = "-SEQ_SAVE_DIR-"
     SEQ_CLEAN = "-SEQ_CLEAN-"
     USE_BINARY = "-USE_BINARY-"
+
     # Param keys
     DISTANCE_PARAM = "-DISTANCE_PARAM-"
     ANGLE_PARAM = "-ANGLE_PARAM-"
@@ -31,11 +36,13 @@ class Keys(enum.Enum):
     FREQUENCY_PARAM = "-FREQUENCY_PARAM-"
     BATCH_PARAM = "-BATCH_PARAM-"
     RECEIVE_SEQUENCE = "-RECEIVE_SEQUENCE-"
+
     # Visibility related keys
     TOGGLE_SEC_SAVE_FILE = "-TOGGLE_SEC_SAVE_FILE-"
     TOGGLE_SEC_SHOW_TEXT = "-TOGGLE_SEC-SHOW_TEXT-"
     TOGGLE_SEC_SEQUENCE = "-TOGGLE_SEC_SEQUENCE-"
     TOGGLE_SEC_EXPERIMENT = "-TOGGLE_SEC-EXPERIMENT-"
+
     # Section related keys
     SEC_SHOW_TEXT = "-SEC_SHOW_TEXT-"
     SEC_SAVE_FILE = "-SEC_SAVE_FILE-"

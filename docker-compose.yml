@@ -10,6 +10,7 @@ services:
             dockerfile: Dockerfile
         container_name: transmitter-gui
         hostname: transmitter-gui
+        user: ${MY_UID}:${MY_GID}
         networks:
             - dummies-network
         environment:
@@ -31,6 +32,7 @@ services:
             dockerfile: Dockerfile
         container_name: receiver-gui
         hostname: receiver-gui
+        user: ${MY_UID}:${MY_GID}
         networks:
             - dummies-network
         environment:

@@ -1,109 +1,107 @@
+#! /usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
-File defining the layout of the GUI
+File defining the layout of the GUI.
 """
 
-import FreeSimpleGUI as sg
+import FreeSimpleGUI as Fsg
+
 from utils import retrieve_combo_values
-from keys import *
+from keys import Keys
 
 
 def define_main_gui_layout():
     """Function to define the GUI layout of the main window."""
 
     sec_plain_text_visible = True
-    sec_exp_visible = False
     sec_file_visible = False
-    sec_seq_visible = False
+    sec_experiment_visible = False
+    sec_sequence_visible = False
 
-    assert (
-        sec_plain_text_visible or sec_exp_visible or sec_file_visible or sec_seq_visible
+    assert (  # At least one section must be visible
+        sec_plain_text_visible
+        or sec_file_visible
+        or sec_experiment_visible
+        or sec_sequence_visible
     ) == True
-    assert (
-        sec_plain_text_visible + sec_exp_visible + sec_file_visible + sec_seq_visible
+
+    assert (  # Only one section can be visible at a time
+        sec_plain_text_visible
+        + sec_file_visible
+        + sec_experiment_visible
+        + sec_sequence_visible
     ) == 1
 
     # ---------------------------------------------------------------------------------
 
     standard_settings_labels = [
-        [
-            sg.Text("Dummies distance:", expand_x=True),
-        ],
-        [
-            sg.Text("Transmitter angle:", expand_x=True),
-        ],
-        [
-            sg.Text("LEDs intensity:", expand_x=True),
-        ],
-        [
-            sg.Text("Blinking frequency:", expand_x=True),
-        ],
+        [Fsg.Text("Dummies distance:", expand_x=True)],
+        [Fsg.Text("Transmitter angle:", expand_x=True)],
+        [Fsg.Text("LEDs intensity:", expand_x=True)],
+        [Fsg.Text("Blinking frequency:", expand_x=True)],
     ]
 
     standard_settings_inputs = [
         [
-            sg.Combo(
+            Fsg.Combo(
                 values=retrieve_combo_values("distance"),
                 size=5,
                 enable_events=True,
                 key=Keys.PARAM_DUMMY_DISTANCE,
             ),
-            sg.Text("m"),
+            Fsg.Text("m"),
         ],
         [
-            sg.Combo(
+            Fsg.Combo(
                 values=retrieve_combo_values("angle"),
                 size=5,
                 enable_events=True,
                 key=Keys.PARAM_TRANSMITTER_ANGLE,
             ),
-            sg.Text("º"),
+            Fsg.Text("º"),
         ],
         [
-            sg.Combo(
+            Fsg.Combo(
                 values=retrieve_combo_values("power"),
                 size=5,
                 enable_events=True,
                 key=Keys.PARAM_LED_INTENSITY,
             ),
-            sg.Text("A"),
+            Fsg.Text("A"),
         ],
         [
-            sg.Combo(
-                values=retrieve_combo_values("frecuency"),
+            Fsg.Combo(
+                values=retrieve_combo_values("frequency"),
                 size=5,
                 enable_events=True,
                 key=Keys.PARAM_BLINKING_FREQUENCY,
             ),
-            sg.Text("Hz"),
+            Fsg.Text("Hz"),
         ],
     ]
 
     standard_settings_layout = [
         [
-            sg.Push(),
-            sg.Column(standard_settings_labels),
-            sg.Column(standard_settings_inputs),
-            sg.Push(),
+            Fsg.Push(),
+            Fsg.Column(standard_settings_labels),
+            Fsg.Column(standard_settings_inputs),
+            Fsg.Push(),
         ]
     ]
 
     # ---------------------------------------------------------------------------------
 
     experiment_extra_settings_labels = [
-        [
-            sg.Text("Experiment Id:", expand_x=True),
-        ],
-        [
-            sg.Text("Messages batch:", expand_x=True),
-        ],
+        [Fsg.Text("Experiment Id:", expand_x=True)],
+        [Fsg.Text("Messages batch:", expand_x=True)],
     ]
 
     experiment_extra_settings_inputs = [
         [
-            sg.Text(text="CO_Dd-Aa-Ii-Ff-Cc-Mm", key=Keys.EXP_ID),
+            Fsg.Text(text="CO_Dd-Aa-Ii-Ff-Cc-Mm", key=Keys.EXP_ID),
         ],
         [
-            sg.In(
+            Fsg.In(
                 size=5,
                 enable_events=True,
                 key=Keys.PARAM_MESSAGES_BATCH,
@@ -113,30 +111,36 @@ def define_main_gui_layout():
 
     experiment_extra_settings_layout = [
         [
-            sg.Column(experiment_extra_settings_labels),
-            sg.Column(experiment_extra_settings_inputs),
+            Fsg.Push(),
+            Fsg.Column(experiment_extra_settings_labels),
+            Fsg.Column(experiment_extra_settings_inputs),
+            Fsg.Push(),
         ]
     ]
 
     # ---------------------------------------------------------------------------------
 
     plain_text_section_layout = [
-        [sg.Text("Message:")],
-        [sg.Multiline(size=(50, 10), key=Keys.MESSAGE)],
+        [Fsg.Text("Message:")],
+        [Fsg.Multiline(size=(50, 10), key=Keys.MESSAGE)],
     ]
 
     file_section_layout = [
         [
-            sg.Text("File:"),
-            sg.In(size=30, enable_events=True, key=Keys.DIR_PATH),
-            sg.FolderBrowse(),
+            Fsg.Text("File:"),
+            Fsg.In(size=30, enable_events=True, key=Keys.DIR_PATH),
+            Fsg.FolderBrowse(),
         ],
-        [sg.Listbox(values=[], enable_events=True, size=(50, 10), key=Keys.FILES_LIST)],
+        [
+            Fsg.Listbox(
+                values=[], enable_events=True, size=(50, 10), key=Keys.FILES_LIST
+            )
+        ],
     ]
 
     experiment_section_layout = experiment_extra_settings_layout
 
-    table = sg.Table(
+    table = Fsg.Table(
         values=[],
         headings=["Experiment file"],
         display_row_numbers=True,
@@ -150,15 +154,16 @@ def define_main_gui_layout():
         alternating_row_color="lightgray",
     )
     table.RowHeaderText = "Order"
+
     sequence_section_layout = [
-        [sg.Text("Files:")],
+        [Fsg.Text("Files:")],
         # [sg.Listbox(values=[], enable_events=True, size=(50, 10), expand_x=True, key=Keys.FILES_PATH, select_mode=sg.LISTBOX_SELECT_MODE_MULTIPLE)],
         [table],
         [
-            sg.Button("Add file(s)", key=Keys.NEW_FILES),
-            sg.Button("Remove file(s)", key=Keys.REMOVE_SELECTED_FILES),
-            sg.Button("Move file(s) up", key=Keys.MOVE_UP),
-            sg.Button("Move file(s) down", key=Keys.MOVE_DOWN),
+            Fsg.Button("Add file(s)", key=Keys.NEW_FILES),
+            Fsg.Button("Remove file(s)", key=Keys.REMOVE_SELECTED_FILES),
+            Fsg.Button("Move file(s) up", key=Keys.MOVE_UP),
+            Fsg.Button("Move file(s) down", key=Keys.MOVE_DOWN),
         ],  # Buttons to change the ordering of selected files.
         # [sg.Listbox(values=[], enable_events=True, size=(50, 10), key=Keys.FILES_LIST, visible=False)],
     ]
@@ -166,77 +171,79 @@ def define_main_gui_layout():
 
     radio_selector_layout = [
         [
-            sg.Push(),
-            sg.Radio(
+            Fsg.Push(),
+            Fsg.Radio(
                 " Plain text",
                 "Radio",
                 default=sec_plain_text_visible,
                 enable_events=True,
                 key=Keys.TOGGLE_PLAIN_TEXT,
             ),
-            sg.Radio(
+            Fsg.Radio(
                 " File",
                 "Radio",
                 default=sec_file_visible,
                 enable_events=True,
                 key=Keys.TOGGLE_FILE,
             ),
-            sg.Radio(
+            Fsg.Radio(
                 " Experiment",
                 "Radio",
-                default=sec_exp_visible,
+                default=sec_experiment_visible,
                 enable_events=True,
                 key=Keys.TOGGLE_EXP,
             ),
-            sg.Radio(
+            Fsg.Radio(
                 " Sequence",
                 "Radio",
-                default=sec_seq_visible,
+                default=sec_sequence_visible,
                 enable_events=True,
                 key=Keys.TOGGLE_SEQ,
             ),
-            sg.Push(),
+            Fsg.Push(),
         ],
     ]
 
     sub_sections_layout = [
         [
-            sg.Push(),
-            sg.Column(
+            Fsg.Push(),
+            Fsg.Column(
                 plain_text_section_layout,
                 key=Keys.SEC_PLAIN_TEXT,
                 visible=sec_plain_text_visible,
             ),
-            sg.Column(
+            Fsg.Column(
                 file_section_layout,
                 key=Keys.SEC_FILE,
                 visible=sec_file_visible,
             ),
-            sg.Column(
+            Fsg.Column(
                 experiment_section_layout,
                 key=Keys.SEC_EXP,
-                visible=sec_exp_visible,
+                visible=sec_experiment_visible,
             ),
-            sg.Column(
+            Fsg.Column(
                 sequence_section_layout,
                 key=Keys.SEC_SEQ,
-                visible=sec_seq_visible,
+                visible=sec_sequence_visible,
             ),
-            sg.Push(),
+            Fsg.Push(),
         ]
     ]
 
     common_elements_layout = [
         [
-            sg.Push(),
+            Fsg.Push(),
             # The pin function helps with visibility changes, shrinking the space the invisible element was occupying
-            sg.pin(sg.Column(standard_settings_layout, key=Keys.STANDARD_SETTINGS)),
-            sg.Push(),
+            Fsg.pin(
+                Fsg.Column(standard_settings_layout, key=Keys.STANDARD_SETTINGS),
+            ),
+            Fsg.Push(),
         ],
         [
-            sg.Push(),
-            sg.Button("Load settings", key=Keys.LOAD_SETTINGS),
-            sg.FileSaveAs(
+            Fsg.Push(),
+            Fsg.Button("Load settings", key=Keys.LOAD_SETTINGS),
+            Fsg.FileSaveAs(
                 "Save settings",
                 key=Keys.SAVE_SETTINGS,
                 file_types=(
@@ -244,14 +251,14 @@ def define_main_gui_layout():
                     ("ALL Files", ". *"),
                 ),
             ),
-            sg.Push(),
+            Fsg.Push(),
         ],
         [
-            sg.Push(),
-            sg.Button("Send", key=Keys.SEND),
-            sg.Button("Stop", key=Keys.STOP),
-            sg.Button("Exit", key=Keys.EXIT),
-            sg.Push(),
+            Fsg.Push(),
+            Fsg.Button("Send", key=Keys.SEND),
+            Fsg.Button("Stop", key=Keys.STOP),
+            Fsg.Button("Exit", key=Keys.EXIT),
+            Fsg.Push(),
         ],
     ]
 
@@ -263,11 +270,12 @@ def define_main_gui_layout():
         common_elements_layout,
     ]
 
-    main_window = sg.Window(
+    main_window = Fsg.Window(
         "Transmitter",
         main_layout,
         finalize=True,
         grab_anywhere_using_control=False,
         icon="../img/window_icon.png",
     )
+
     return main_window
