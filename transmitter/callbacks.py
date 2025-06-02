@@ -1,24 +1,36 @@
+#! /usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
-Callback functions to use with the events created by PySimpleGUI
+Callback functions to use with the events created by PySimpleGUI.
 
-Functions must have two parameters: window (representing the PySimpleGUI's Window Object) and values
+Functions must have two parameters: window (representing the FreeSimpleGUI's Window
+Object) and values.
 """
 
-import FreeSimpleGUI as sg
 import json
 import os
 
-from utils import *
-from keys import *
+import FreeSimpleGUI as Fsg
 
-def load_settings_callback(window, values):
+from keys import Keys
+from utils import (
+    load_sequence,
+    load_settings,
+    get_current_settings,
+    str_to_binary_str,
+    send_experiment,
+    send_message,
+)
+
+
+def load_settings_callback(window: Fsg.Window, values) -> None:
     """
     Function to load the settings from the selected file.
 
     Note: This function modifies the window object in place as an intended side effect.
     """
 
-    settings_file = sg.popup_get_file(
+    settings_file = Fsg.popup_get_file(
         "Select the file with the settings to be loaded",
         file_types=(
             ("JSON files", ".json"),
@@ -28,127 +40,181 @@ def load_settings_callback(window, values):
     )
 
     if settings_file is None:
-        sg.popup("File selection canceled, no settings were loaded.")
+        Fsg.popup("File selection canceled, no settings were loaded.")
         return
-    
-    if values[Keys.TOGGLE_SEQ]:
+
+    if values[Keys.TOGGLE_SEQ]:  # If the program is in sequence mode
         load_sequence(settings_file, window)
         return
 
     try:
         load_settings(settings_file, window)
+
     except (
         FileNotFoundError,
         json.JSONDecodeError,
         KeyError,
     ):
-        sg.popup("Error loading settings from file, please try again.")
+        Fsg.popup("Error loading settings from file, please try again.")
 
-def update_visibility(window, values):
+
+def update_visibility(window: Fsg.Window, values) -> None:
+    """
+    Updates the visibility of the elements on the GUI.
+    """
+
     window[Keys.SEC_PLAIN_TEXT].update(visible=values[Keys.TOGGLE_PLAIN_TEXT])
     window[Keys.SEC_FILE].update(visible=values[Keys.TOGGLE_FILE])
     window[Keys.SEC_EXP].update(visible=values[Keys.TOGGLE_EXP])
     window[Keys.SEC_SEQ].update(visible=values[Keys.TOGGLE_SEQ])
-    settings_visibility = not values[Keys.TOGGLE_SEQ]
-    window[Keys.STANDARD_SETTINGS].update(visible=settings_visibility)
+    window[Keys.STANDARD_SETTINGS].update(visible=(not values[Keys.TOGGLE_SEQ]))
 
-def send_callback(window, values):
+
+def send_callback(window: Fsg.Window, values) -> None:
     """
-    Callback for the Send event.
+    Callback for the 'Send' event.
     """
+
     if values[Keys.TOGGLE_PLAIN_TEXT]:
         message_data = values[Keys.MESSAGE]
 
     elif values[Keys.TOGGLE_FILE]:
-        file_path = os.path.join(
-            values[Keys.DIR_PATH], values[Keys.FILES_LIST][0]
-        )
+        file_path = os.path.join(values[Keys.DIR_PATH], values[Keys.FILES_LIST][0])
         with open(file_path, "r", encoding="utf-8-sig") as file:
             message_data = file.read()
 
     elif values[Keys.TOGGLE_EXP]:
         send_experiment(get_current_settings(window))
-        return # Skip sending the message again
+        return  # Skip sending the message again
 
     elif values[Keys.TOGGLE_SEQ]:
+        # ToDo: extract the logic inside this elif to a dedicated function to improve readability
         failed_files = []
         failed_files_ind = []
-        #for file_path in window[Keys.FILES_PATH].get_list_values():
+
+        # for file_path in window[Keys.FILES_PATH].get_list_values():
         for [ind, [file_path]] in enumerate(window[Keys.FILES_PATH].Values):
             try:
                 load_settings(file_path, window)
                 send_experiment(get_current_settings(window))
-            except:
+
+            except:  # ToDo: Catch the exception with the explicit error type
                 failed_files.append(file_path)
                 failed_files_ind.append(ind)
-        if len(failed_files) != 0:
-            window[Keys.FILES_PATH].update(row_colors=list(zip(failed_files_ind, ["red"] * len(failed_files_ind))))
-            sg.popup("Error sending the following experiment(s):\n" + "\n".join(failed_files))
 
-        return # Skip sending the message again
+        if len(failed_files) != 0:
+            window[Keys.FILES_PATH].update(
+                row_colors=list(
+                    zip(
+                        failed_files_ind,
+                        ["red"] * len(failed_files_ind),
+                    )
+                )
+            )
+            Fsg.popup(
+                "Error sending the following experiment(s):\n"
+                + "\n".join(failed_files),
+            )
+
+        return  # Skip sending the message again
 
     else:
-        # ToDo: Change this to a popup quick message
-        sg.popup_quick_message(
+        Fsg.popup_quick_message(
             "Error: Something weird happened, transmission type unknown!",
             auto_close_duration=2,
             background_color="yellow",
-            text_color="black"
+            text_color="black",
         )
+        return
+
     message_data = str_to_binary_str(message_data)
     send_message(message_data, get_current_settings(window))
 
-def add_files(window, values):
-    new_files = sg.popup_get_file("Select the file(s): ", multiple_files=True)
-    if new_files == None:
+
+def add_files(window: Fsg.Window, values) -> None:
+    # ToDo: Add docstring to the function
+
+    new_files = Fsg.popup_get_file(
+        "Select the file(s): ",
+        file_types=(
+            ("JSON files", ".json"),
+            ("ALL Files", ". *"),
+        ),
+        multiple_files=True,
+        no_window=True,
+    )
+
+    if new_files is None:
+        Fsg.popup("File selection canceled, no new files were loaded.")
         return
-    new_files = new_files.split(";") # ; is the default file delimitator
-    #current_files = window[Keys.FILES_PATH].get_list_values()
+
+    # ToDo: For each file, check if its a valid experiment file
+
     current_files = window[Keys.FILES_PATH].Values
-    #num_current_files = len(current_files)
-    #new_files = zip(range(num_current_files, num_current_files + len(new_files)), new_files)
-    #new_files = list(new_files)
     new_files = list(map(lambda file: [file], new_files))
+
     window[Keys.FILES_PATH].update(current_files + new_files)
 
-def remove_files(window, values):
-    #files_to_remove = window[Keys.FILES_PATH].get_indexes()
-    files_to_remove = window[Keys.FILES_PATH].get()
-    #current_files = window[Keys.FILES_PATH].get_list_values()
-    current_files = window[Keys.FILES_PATH].Values
-    final_files = [file for [ind, file] in enumerate(current_files) if ind not in files_to_remove]
-    window[Keys.FILES_PATH].update(final_files)
 
-def move_file_callback_generator(isMoveUp: bool):
+def remove_files(window: Fsg.Window, values) -> None:
+    # ToDo: Add docstring to the function
+
+    files_indexes_to_remove = window[Keys.FILES_PATH].get()
+    current_files_paths = window[Keys.FILES_PATH].Values
+
+    final_files_paths = [
+        file_path
+        for [file_index, file_path] in enumerate(current_files_paths)
+        if file_index not in files_indexes_to_remove
+    ]
+
+    window[Keys.FILES_PATH].update(final_files_paths)
+
+
+def move_file_callback_generator(is_move_up: bool) -> callable:
     """
     Generates a callback to move the selected files up or down, depending on the given parameter
 
-    Argument `isMoveUp` must be a boolean
+    Argument `is_move_up` must be a boolean
     """
-    if isMoveUp == True:
+
+    if is_move_up:
         offset = -1
-    elif isMoveUp == False:
+    elif not is_move_up:
         offset = 1
     else:
-        raise "ERROR: The 'isMoveUp' argument expected a bool value"
+        raise ValueError("The 'is_move_up' argument expected a bool value")
+
     def move_file_callback(window, values):
-        #selected_files = window[Keys.FILES_PATH].get_indexes()
+        # ToDo: Add docstring to the function
+
         selected_files = window[Keys.FILES_PATH].get()
+
         if offset > 0:
             iterator = reversed(selected_files)
         else:
             iterator = iter(selected_files)
-        #all_files = window[Keys.FILES_PATH].get_list_values()
+
         all_files = window[Keys.FILES_PATH].Values
         highlight_indexes = []
+
         for i in iterator:
             ind_to_swap_with = i + offset
-            if ind_to_swap_with >= 0 and ind_to_swap_with < len(all_files) and not ind_to_swap_with in highlight_indexes:
-                all_files[i], all_files[ind_to_swap_with] = all_files[ind_to_swap_with], all_files[i]
+
+            if (
+                0 <= ind_to_swap_with < len(all_files)
+                and ind_to_swap_with not in highlight_indexes
+            ):
+                all_files[i], all_files[ind_to_swap_with] = (
+                    all_files[ind_to_swap_with],
+                    all_files[i],
+                )
                 highlight_indexes.append(ind_to_swap_with)
-            else: # Can't move the item
+
+            else:  # Can't move the item
                 highlight_indexes.append(i)
-        #window[Keys.FILES_PATH].update(all_files, set_to_index=highlight_indexes)
-        window[Keys.FILES_PATH].update(all_files, select_rows=highlight_indexes)   
+
+        # window[Keys.FILES_PATH].update(all_files, set_to_index=highlight_indexes)
+        window[Keys.FILES_PATH].update(all_files, select_rows=highlight_indexes)
 
     return move_file_callback
