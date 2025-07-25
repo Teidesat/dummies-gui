@@ -8,6 +8,7 @@ import FreeSimpleGUI as sg
 import json
 import os
 
+from progress_popup.progress_popup import run_progress_window
 from utils import *
 from keys import *
 
@@ -68,6 +69,7 @@ def send_callback(window, values):
 
     elif values[Keys.TOGGLE_EXP]:
         send_experiment(get_current_settings(window))
+        run_progress_window()
         return # Skip sending the message again
 
     elif values[Keys.TOGGLE_SEQ]:
@@ -81,6 +83,7 @@ def send_callback(window, values):
             except:
                 failed_files.append(file_path)
                 failed_files_ind.append(ind)
+        run_progress_window()
         if len(failed_files) != 0:
             window[Keys.FILES_PATH].update(row_colors=list(zip(failed_files_ind, ["red"] * len(failed_files_ind))))
             sg.popup("Error sending the following experiment(s):\n" + "\n".join(failed_files))

@@ -1,19 +1,19 @@
 import FreeSimpleGUI as sg
 from threading import Timer
-from layout import define_gui_layout
-from popup_keys import Keys
-from callbacks import *
-from progress_data import ProgressData
+from .layout import define_gui_layout
+from .popup_keys import Keys
+from .callbacks import *
+from .progress_data import ProgressData
 
 EVENT_DICTIONARY = {
-  Keys.SKIP: lambda window, values: change_to_next_experiment(),
+  Keys.SKIP: change_to_next_experiment,
 }
 
 def run_progress_window():
   window = define_gui_layout()
+  data = ProgressData()
   update_window(window, data)
   SECONDS_BETWEEN_UPDATES = 3
-  data = ProgressData()
   update_timer = Timer(SECONDS_BETWEEN_UPDATES, lambda : 0)
   update_timer.start()
   while True:
@@ -28,10 +28,12 @@ def run_progress_window():
       stop_communication()
       break
     if event in EVENT_DICTIONARY:
-      EVENT_DICTIONARY[event](window, values)
+      EVENT_DICTIONARY[event](window, values, data)
     else:
       sg.popup_error(f"Unknown event ${event}")
       break
   update_timer.cancel()
+  window.close()
 
-run_progress_window()
+if __name__ == "__main__":
+  run_progress_window()

@@ -8,6 +8,8 @@ class ProgressData:
     def format_experiment(exp):
       message_ind = exp.find("M")
       return exp[0:message_ind + 1] + "m"
+    
+    print(given_experiment)
     given_experiment_formatted = format_experiment(given_experiment)
     if self.current_experiment == None:
       self.total_experiments = total_experiments

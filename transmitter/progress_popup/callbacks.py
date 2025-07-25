@@ -1,22 +1,25 @@
 import FreeSimpleGUI as sg
-from progress_data import ProgressData
+from .progress_data import ProgressData
 from requests import post as post_request, get as get_request
-from popup_keys import Keys
+from .popup_keys import Keys
 
 BASE_URL = "http://transmitter-server:5000/"
 
-def change_to_next_experiment():
+def change_to_next_experiment(window, values, data):
   ENDPOINT = "/next_experiment" 
-  post_request(BASE_URL + ENDPOINT)
+  get_request(BASE_URL + ENDPOINT)
+  update_window(window, data)
 
 def stop_communication():
   ENDPOINT = "/stop_communication" 
-  post_request(BASE_URL + ENDPOINT)
+  get_request(BASE_URL + ENDPOINT)
 
 def update_window(window: sg.Window, data: ProgressData):
   ENDPOINT = "/current_status"
   response = get_request(BASE_URL + ENDPOINT)
-  received_data = response.json
+  print(response)
+  received_data = response.json()
+  print(received_data)
   experiment_id = received_data["experiment_id"]
   experiments = received_data["experiments"]
   messages = received_data["messages"]

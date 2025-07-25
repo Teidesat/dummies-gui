@@ -1,5 +1,5 @@
 import FreeSimpleGUI as sg
-from popup_keys import Keys
+from .popup_keys import Keys
 
 def define_gui_layout():
     """Function to define the GUI layout of the popup window."""
