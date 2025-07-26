@@ -1,37 +1,54 @@
-import FreeSimpleGUI as sg
+#! /usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+ToDo: Add a description of this module.
+"""
+
+import FreeSimpleGUI as Fsg
+
 from .popup_keys import Keys
 
 
 def define_gui_layout():
     """Function to define the GUI layout of the popup window."""
+
     bar_size = (25, 15)
     main_layout = [
-        [sg.Text("Sending "), sg.Text("experiment_id", key=Keys.EXP_ID)],
         [
-            sg.Text("Current experiment progress: "),
-            sg.Text("1 out of 10", key=Keys.EXP_PROGRESS_TEXT),
+            Fsg.Text("Sending "),
+            Fsg.Text("experiment_id", key=Keys.EXP_ID),
         ],
         [
-            sg.ProgressBar(
-                10, size=bar_size, key=Keys.CURRENT_EXP_PROGRESS, expand_x=True
+            Fsg.Text("Current experiment progress: "),
+            Fsg.Text("1 out of 10", key=Keys.EXP_PROGRESS_TEXT),
+        ],
+        [
+            Fsg.ProgressBar(
+                10,
+                size=bar_size,
+                key=Keys.CURRENT_EXP_PROGRESS,
+                expand_x=True,
             )
         ],
         [
-            sg.Text("Current sequence progress: "),
-            sg.Text("1 out of 10", key=Keys.SEQ_PROGRESS_TEXT),
+            Fsg.Text("Current sequence progress: "),
+            Fsg.Text("1 out of 10", key=Keys.SEQ_PROGRESS_TEXT),
         ],
         [
-            sg.ProgressBar(
-                10, size=bar_size, key=Keys.CURRENT_SEQUENCE_PROGRESS, expand_x=True
+            Fsg.ProgressBar(
+                10,
+                size=bar_size,
+                key=Keys.CURRENT_SEQUENCE_PROGRESS,
+                expand_x=True,
             )
         ],
         [
-            sg.Button("Skip current experiment", key=Keys.SKIP),
-            sg.Button("Stop communication", key=Keys.STOP),
+            Fsg.Button("Skip current experiment", key=Keys.SKIP),
+            Fsg.Button("Stop communication", key=Keys.STOP),
         ],
     ]
 
-    main_window = sg.Window(
+    main_window = Fsg.Window(
         "Communication progress",
         main_layout,
         finalize=True,
@@ -39,4 +56,5 @@ def define_gui_layout():
         icon="../../img/window_icon.png",
         resizable=False,
     )
+
     return main_window

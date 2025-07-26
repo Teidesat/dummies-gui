@@ -1,9 +1,22 @@
-import FreeSimpleGUI as sg
+#! /usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+ToDo: Add a description of this module.
+"""
+
 from threading import Timer
+
+import FreeSimpleGUI as Fsg
+
 from .layout import define_gui_layout
 from .popup_keys import Keys
-from .callbacks import *
+from .callbacks import (
+    change_to_next_experiment,
+    stop_communication,
+    update_window,
+)
 from .progress_data import ProgressData
+
 
 EVENT_DICTIONARY = {
     Keys.SKIP: change_to_next_experiment,
@@ -11,28 +24,37 @@ EVENT_DICTIONARY = {
 
 
 def run_progress_window():
+    """ToDo: Add a description of this function."""
+
     window = define_gui_layout()
     data = ProgressData()
     update_window(window, data)
-    SECONDS_BETWEEN_UPDATES = 3
-    update_timer = Timer(SECONDS_BETWEEN_UPDATES, lambda: 0)
+
+    seconds_between_updates = 3
+    update_timer = Timer(seconds_between_updates, lambda: 0)
     update_timer.start()
+
     while True:
         event, values = window.read(timeout=1)
+
         if update_timer.finished.is_set():
             update_window(window, data)
-            update_timer = Timer(SECONDS_BETWEEN_UPDATES, lambda: 0)
+            update_timer = Timer(seconds_between_updates, lambda: 0)
             update_timer.start()
-        if event == sg.TIMEOUT_EVENT:
+
+        if event == Fsg.TIMEOUT_EVENT:
             continue
-        if event == sg.WIN_CLOSED or event == Keys.STOP:
+
+        if event == Fsg.WIN_CLOSED or event == Keys.STOP:
             stop_communication()
             break
+
         if event in EVENT_DICTIONARY:
             EVENT_DICTIONARY[event](window, values, data)
         else:
-            sg.popup_error(f"Unknown event ${event}")
+            Fsg.popup_error(f"Unknown event ${event}")
             break
+
     update_timer.cancel()
     window.close()
 
