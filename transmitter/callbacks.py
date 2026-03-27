@@ -132,7 +132,9 @@ def send_callback(window: Fsg.Window, values) -> None:
         )
         return
 
-    message_data = str_to_binary_str(message_data)
+    # Check if the user wants to encode the message to binary
+    if values[Keys.ENCODE_MESSAGE]:
+        message_data = str_to_binary_str(message_data)
     send_message(message_data, get_current_settings(window))
 
 

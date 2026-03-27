@@ -18,6 +18,7 @@ class Keys(enum.Enum):
     FILES_LIST = "-FILES_LIST-"
     FILES_PATH = "-FILES_PATH-"
     MESSAGE = "-MESSAGE-"
+    ENCODE_MESSAGE = "-ENCODE_MESSAGE-"
 
     # Visibility related keys
     TOGGLE_PLAIN_TEXT = "-TOGGLE_SEC-PLAIN_TEXT-"

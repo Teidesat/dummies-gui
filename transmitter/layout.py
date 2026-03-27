@@ -255,6 +255,11 @@ def define_main_gui_layout():
         ],
         [
             Fsg.Push(),
+            Fsg.Checkbox("Encode to binary", default=True, key=Keys.ENCODE_MESSAGE),
+            Fsg.Push(),
+        ],
+        [
+            Fsg.Push(),
             Fsg.Button("Send", key=Keys.SEND),
             Fsg.Button("Stop", key=Keys.STOP),
             Fsg.Button("Exit", key=Keys.EXIT),
