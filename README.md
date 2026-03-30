@@ -18,6 +18,21 @@ In this repository, you will find two main python files: `emisor.py` and `recept
 
 To run each of the dummies programs, you need to execute the following commands in the terminal of the respective dummies (or in the same computer but different terminals while testing):
 
+## Configuration secrets
+
+The GUI resolves all backend endpoints and debug flags from a local `.env` file. Prepare it before launching either script:
+
+1. Duplicate the template: `cp .env.example .env`.
+2. Set the variables according to your deployment, for example:
+    ```ini
+    DEBUG_MODE=false
+    TRANSMITTER_SERVER_BASE_URL=http://transmitter-server:5000
+    RECEIVER_SERVER_BASE_URL=http://receiver-server:5001
+    ```
+3. Start the GUI via the provided launch scripts (`./launch-transmitter.sh --build`, `./launch-receiver.sh --build`) so Docker Compose picks up the values.
+
+Keep `.env` out of version control—`.gitignore` already does this—and rotate the URLs or credentials if a populated file is ever committed inadvertently.
+
 
 ### Transmitter Dummy
 
