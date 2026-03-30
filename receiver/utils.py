@@ -13,11 +13,13 @@ from requests import get as get_request
 from layout import DEFAULT_EXP_ID
 from keys import Keys
 
+RECEIVER_SERVER_BASE_URL = os.getenv("RECEIVER_SERVER_BASE_URL")
+
 
 def receive_message():
     """Function to receive the message from the transmitter server."""
 
-    response = get_request("http://receiver-server:5001/message")
+    response = get_request(f"{RECEIVER_SERVER_BASE_URL}/message")
 
     if response.status_code != 200:
         raise ConnectionError(
@@ -33,7 +35,7 @@ def get_experiment():
     """
 
     response = get_request(
-        "http://receiver-server:5001/experiment",
+        f"{RECEIVER_SERVER_BASE_URL}/experiment",
         headers={"Content-Type": "application/json"},
     )
 
@@ -61,7 +63,7 @@ def get_buffer_size():
     """
 
     response = get_request(
-        "http://receiver-server:5001/buffer_size",
+        f"{RECEIVER_SERVER_BASE_URL}/buffer_size",
         headers={"Content-Type": "application/json"},
     )
 

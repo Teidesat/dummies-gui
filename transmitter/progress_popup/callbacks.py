@@ -7,11 +7,12 @@ ToDo: Add a description of this module.
 from requests import get as get_request
 
 import FreeSimpleGUI as Fsg
+import os
 
 from .progress_data import ProgressData
 from .popup_keys import Keys
 
-BASE_URL = "http://transmitter-server:5000/"
+BASE_URL = os.getenv("TRANSMITTER_SERVER_BASE_URL")
 
 
 def change_to_next_experiment(window: Fsg.Window, values, data: ProgressData):
