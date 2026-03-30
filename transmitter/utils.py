@@ -12,8 +12,8 @@ from requests import post as post_request
 
 from keys import Keys
 
-# Set the debug mode to True to print logs in the console
-DEBUG_MODE = True
+TRANSMITTER_SERVER_BASE_URL = os.getenv("TRANSMITTER_SERVER_BASE_URL")
+
 
 SETTINGS_KEYS_TO_ELEMENTS_KEYS = {
     "dummy_distance": Keys.PARAM_DUMMY_DISTANCE,
@@ -95,7 +95,7 @@ def send_message(message_data, settings, message_id=None):
     )
 
     response = post_request(
-        "http://transmitter-server:5000/start_optical_communications",
+        F"{TRANSMITTER_SERVER_BASE_URL}/start_optical_communications",
         headers={"Content-Type": "application/json"},
         json={
             "experiment_id": experiment_id,
