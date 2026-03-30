@@ -12,6 +12,7 @@ from requests import post as post_request
 
 from keys import Keys
 
+DEBUG_MODE = os.getenv("DEBUG_MODE")
 TRANSMITTER_SERVER_BASE_URL = os.getenv("TRANSMITTER_SERVER_BASE_URL")
 
 
