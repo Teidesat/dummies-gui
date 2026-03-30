@@ -10,11 +10,14 @@ Object) and values.
 import json
 import os
 
+from dotenv import load_dotenv
 import FreeSimpleGUI as Fsg
 
 from progress_popup.progress_popup import run_progress_window
 
 from keys import Keys
+load_dotenv()
+BASE_URL = os.getenv("TRANSMITTER_SERVER_BASE_URL")
 from utils import (
     load_sequence,
     load_settings,

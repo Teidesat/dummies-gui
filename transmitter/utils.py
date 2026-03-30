@@ -7,10 +7,13 @@ Various utility functions.
 import json
 import os
 
+from dotenv import load_dotenv
 import FreeSimpleGUI as Fsg
 from requests import post as post_request
 
 from keys import Keys
+
+load_dotenv()
 
 DEBUG_MODE = os.getenv("DEBUG_MODE")
 TRANSMITTER_SERVER_BASE_URL = os.getenv("TRANSMITTER_SERVER_BASE_URL")

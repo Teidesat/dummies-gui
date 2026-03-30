@@ -9,9 +9,11 @@ import re
 
 import FreeSimpleGUI as Fsg
 from requests import get as get_request
+from dotenv import load_dotenv
 
 from layout import DEFAULT_EXP_ID
 from keys import Keys
+load_dotenv()
 
 RECEIVER_SERVER_BASE_URL = os.getenv("RECEIVER_SERVER_BASE_URL")
 
