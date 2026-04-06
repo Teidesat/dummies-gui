@@ -83,10 +83,12 @@ def send_callback(window: Fsg.Window, values) -> None:
     if values[Keys.TOGGLE_PLAIN_TEXT]:
         message_data = values[Keys.MESSAGE]
 
+
     elif values[Keys.TOGGLE_FILE]:
         file_path = os.path.join(values[Keys.DIR_PATH], values[Keys.FILES_LIST][0])
         with open(file_path, "r", encoding="utf-8-sig") as file:
             message_data = file.read()
+
 
     elif values[Keys.TOGGLE_EXP]:
         send_experiment(get_current_settings(window))
@@ -139,6 +141,8 @@ def send_callback(window: Fsg.Window, values) -> None:
     if values[Keys.ENCODE_MESSAGE]:
         message_data = str_to_binary_str(message_data)
     send_message(message_data, get_current_settings(window))
+
+    run_progress_window()  #this is a test only for the issue #25
 
 
 def add_files(window: Fsg.Window, values) -> None:
