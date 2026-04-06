@@ -55,6 +55,8 @@ def define_gui_layout():
         grab_anywhere_using_control=False,
         icon="../../img/window_icon.png",
         resizable=False,
+        modal=True,
+        keep_on_top=True,
     )
 
     return main_window
