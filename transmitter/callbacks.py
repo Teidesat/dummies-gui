@@ -28,6 +28,7 @@ from utils import (
 )
 
 
+
 def load_settings_callback(window: Fsg.Window, values) -> None:
     """
     Function to load the settings from the selected file.
@@ -83,11 +84,28 @@ def send_callback(window: Fsg.Window, values) -> None:
     if values[Keys.TOGGLE_PLAIN_TEXT]:
         message_data = values[Keys.MESSAGE]
 
+        if not message_data or message_data.strip() == "":
+            Fsg.popup_quick_message(
+                "Please enter a message to send",
+                auto_close_duration=2,
+                background_color="yellow",
+                text_color="black",
+            )
+            return
+
 
     elif values[Keys.TOGGLE_FILE]:
+        if not values[Keys.FILES_LIST] or len(values[Keys.FILES_LIST]) == 0:
+            Fsg.popup_quick_message(
+                "Please select a file first",
+                auto_close_duration=2,
+                background_color="yellow",
+                text_color="black",
+            )
+            return
         file_path = os.path.join(values[Keys.DIR_PATH], values[Keys.FILES_LIST][0])
         with open(file_path, "r", encoding="utf-8-sig") as file:
-            message_data = file.read()
+            message_data = file.read()           
 
 
     elif values[Keys.TOGGLE_EXP]:
@@ -142,7 +160,13 @@ def send_callback(window: Fsg.Window, values) -> None:
         message_data = str_to_binary_str(message_data)
     send_message(message_data, get_current_settings(window))
 
-    run_progress_window()  #this is a test only for the issue #25
+    #run_progress_window()  #this is a test only for the issue #25
+    Fsg.popup_quick_message(
+        "Message sent successfully!",
+        auto_close_duration=2,
+        background_color="green",
+        text_color="white",
+    )
 
 
 def add_files(window: Fsg.Window, values) -> None:
@@ -184,6 +208,27 @@ def remove_files(window: Fsg.Window, values) -> None:
 
     window[Keys.FILES_PATH].update(final_files_paths)
 
+def stop_callback(window: Fsg.Window, values) -> None:
+    """
+    Callback for the 'Stop' event.
+    """
+    from progress_popup.callbacks import stop_communication
+
+    try:
+        stop_communication()
+        Fsg.popup_quick_message(
+            "Communication stopped successfully.",
+            auto_close_duration=2,
+            background_color="green",
+            text_color="white",
+        )
+    except Exception as e:
+        Fsg.popup_quick_message(
+            f"Error stopping communication: {str(e)}",
+            auto_close_duration=2,
+            background_color="red",
+            text_color="white",
+        )
 
 def move_file_callback_generator(is_move_up: bool) -> callable:
     """

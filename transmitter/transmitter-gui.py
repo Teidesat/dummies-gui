@@ -10,6 +10,7 @@ import FreeSimpleGUI as Fsg
 from callbacks import (
     load_settings_callback,
     send_callback,
+    stop_callback,
     move_file_callback_generator,
     add_files,
     remove_files,
@@ -45,19 +46,22 @@ EVENT_CALLBACK_DICT = {
     Keys.FILES_PATH: lambda window, values: window[Keys.FILES_LIST].update(
         values[Keys.FILES_PATH]
     ),
-    # ToDo: Send a request to stop the optical communications
-    Keys.STOP: lambda window, values: Fsg.popup_quick_message(
-        "Not implemented yet, work in progress.",
-        auto_close_duration=2,
-        background_color="yellow",
-        text_color="black",
-    ),
+    Keys.STOP: stop_callback,
     Keys.SEND: send_callback,
     Keys.NEW_FILES: add_files,
     Keys.REMOVE_SELECTED_FILES: remove_files,
     Keys.MOVE_UP: move_file_callback_generator(is_move_up=True),
     Keys.MOVE_DOWN: move_file_callback_generator(is_move_up=False),
 }
+""" 
+    # ToDo: Send a request to stop the optical communications
+    Keys.STOP: lambda window, values: Fsg.popup_quick_message(
+        "Not implemented yet, work in progress.",
+        auto_close_duration=2,
+        background_color="yellow",
+        text_color="black",
+    ), 
+"""
 
 EVENT_CALLBACK_DICT.update(
     dict.fromkeys(
