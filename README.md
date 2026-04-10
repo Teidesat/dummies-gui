@@ -18,8 +18,8 @@ The GUI resolves all backend endpoints and debug flags from a local `.env` file.
 2. Set the variables according to your deployment, for example:
     ```ini
     DEBUG_MODE=false
-    TRANSMITTER_SERVER_BASE_URL=http://transmitter-server:5000
-    RECEIVER_SERVER_BASE_URL=http://receiver-server:5001
+    TRANSMITTER_SERVER_BASE_URL=your_url:your_port
+    RECEIVER_SERVER_BASE_URL=your_url:your_port
     ```
 3. Start the GUI via the provided launch scripts (`./launch-transmitter.sh --build`, `./launch-receiver.sh --build`) so Docker Compose picks up the values.
 
