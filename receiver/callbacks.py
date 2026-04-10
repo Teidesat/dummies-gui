@@ -79,6 +79,25 @@ def get_experiment_callback(window: Fsg.Window, values, data: GUIData):
         save_messages_to_csv(messages, save_directory, exp_id)
 
 
+def _append_messages_to_console(window: Fsg.Window, messages):
+    """
+    Appends the received messages to the text console in the GUI.
+    """
+
+    if len(messages) == 0:
+        return
+
+    formatted_lines = []
+    for message in messages:
+        if isinstance(message, (list, tuple)) and len(message) >= 2:
+            formatted_lines.append(f"{message[0]}: {message[1]}")
+        else:
+            formatted_lines.append(str(message))
+
+    text_to_append = "\n".join(formatted_lines) + "\n"
+    window[Keys.MESSAGE].update(text_to_append, append=True)
+
+
 def receive_sequence(window: Fsg.Window, values, data: GUIData):
     """
     Receives a sequence of messages and updates the table
@@ -107,6 +126,8 @@ def receive_sequence(window: Fsg.Window, values, data: GUIData):
         if len(messages) != 0:
             for message in messages:
                 new_data.append(message)
+
+            _append_messages_to_console(window, messages)
 
             exp_id = exp_id + "_" + str(datetime.datetime.now().isoformat())
             save_messages_to_csv(messages, save_directory, exp_id)
