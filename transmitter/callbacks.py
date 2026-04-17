@@ -204,7 +204,7 @@ def add_files(window: Fsg.Window, values) -> None:
     new_files = Fsg.popup_get_file(
         "Select the file(s): ",
         file_types=(
-            ("JSON files", ".json"),
+            ("CSV files", ".csv"),
             ("ALL Files", ". *"),
         ),
         multiple_files=True,
