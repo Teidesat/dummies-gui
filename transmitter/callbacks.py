@@ -109,22 +109,49 @@ def send_callback(window: Fsg.Window, values) -> None:
 
 
     elif values[Keys.TOGGLE_EXP]:
-        send_experiment(get_current_settings(window))
-        run_progress_window()
+        try:
+            if not send_experiment(get_current_settings(window)):
+                return
+        # send_experiment(get_current_settings(window))
+            run_progress_window()
+        except Exception as e:
+            Fsg.popup_error(f"Error launching experiment: {str(e)}")
         return  # Skip sending the message again
 
     elif values[Keys.TOGGLE_SEQ]:
-        # ToDo: extract the logic inside this elif to a dedicated function to improve readability
         failed_files = []
         failed_files_ind = []
 
-        # for file_path in window[Keys.FILES_PATH].get_list_values():
+        # 1. Obtenemos los ajustes actuales de la interfaz (velocidad, ángulo, etc.)
+        current_settings = get_current_settings(window)
+
         for [ind, [file_path]] in enumerate(window[Keys.FILES_PATH].Values):
             try:
-                load_settings(file_path, window)
-                send_experiment(get_current_settings(window))
+                # 2. Truco para que el "experiment_id" sea correcto: 
+                # Extraemos el número del archivo (ej. de "batch-1.csv" sacamos el "1")
+                filename = os.path.basename(file_path)
+                if "batch-" in filename:
+                    batch_num = filename.split("batch-")[1].split(".")[0]
+                    current_settings["messages_batch"] = float(batch_num)
 
-            except:  # ToDo: Catch the exception with the explicit error type
+                # 3. Leemos el archivo CSV directamente y enviamos cada línea
+                with open(file_path, "r", encoding="utf-8-sig") as file:
+                    for line in file:
+                        line_clean = line.strip()
+                        if not line_clean: 
+                            continue # Saltamos líneas vacías por seguridad
+                        
+                        [message_id, message] = line_clean.split(",")
+                        
+                        # Si está marcado el tick de "Encode to binary", lo convertimos
+                        if values[Keys.ENCODE_MESSAGE]:
+                            message = str_to_binary_str(message)
+                            
+                        # Lo mandamos directo al servidor
+                        send_message(message, current_settings, message_id)
+
+            except Exception as e:
+                print(f"Error procesando {file_path}: {e}") # Por si queremos depurar
                 failed_files.append(file_path)
                 failed_files_ind.append(ind)
 
@@ -145,6 +172,8 @@ def send_callback(window: Fsg.Window, values) -> None:
             )
 
         return  # Skip sending the message again
+
+
 
     else:
         Fsg.popup_quick_message(

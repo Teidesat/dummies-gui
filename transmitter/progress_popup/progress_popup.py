@@ -39,6 +39,16 @@ def run_progress_window():
 
         if update_timer.finished.is_set():
             update_window(window, data)
+
+            if getattr(data, "is_finished", False):
+                Fsg.popup_quick_message(
+                    "All messages sent! Closing window...",
+                    auto_close_duration=2,
+                    background_color="green",
+                    text_color="white"
+                )
+                break
+
             update_timer = Timer(seconds_between_updates, lambda: 0)
             update_timer.start()
 

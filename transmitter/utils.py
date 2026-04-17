@@ -143,11 +143,17 @@ def send_experiment(settings: dict) -> None:
             for line in file:
                 [message_id, message] = line.strip().split(",")
                 send_message(message, settings, message_id)
+        return True 
 
-    except:  # ToDo: Catch the exception with the explicit error type
+    except FileNotFoundError:  # ToDo: Catch the exception with the explicit error type
         Fsg.popup_error(
             f'Experiment file "{message_batch_file_name}" could not be found'
         )
+        return False
+    
+    except Exception as e:
+        Fsg.popup_error(f"Error sending experiment: {str(e)}")
+        return False
 
 
 def retrieve_combo_values(experiment_param: str) -> list[str]:
