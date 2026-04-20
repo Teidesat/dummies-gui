@@ -28,6 +28,7 @@ class Keys(enum.Enum):
     SEQ_SAVE_DIR = "-SEQ_SAVE_DIR-"
     SEQ_CLEAN = "-SEQ_CLEAN-"
     USE_BINARY = "-USE_BINARY-"
+    RECORD = "-RECORD-"
 
     # Param keys
     DISTANCE_PARAM = "-DISTANCE_PARAM-"

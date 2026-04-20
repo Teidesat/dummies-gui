@@ -98,6 +98,54 @@ def _append_messages_to_console(window: Fsg.Window, messages):
     window[Keys.MESSAGE].update(text_to_append, append=True)
 
 
+def _save_in_recording_file(data: GUIData, message) -> None:
+    """
+    Appends a message to the recording file when recording is enabled.
+    """
+
+    if isinstance(message, (list, tuple)) and len(message) >= 2:
+        data.append_record(f"{message[0]}: {message[1]}")
+        return
+
+    data.append_record(str(message))
+
+
+def toggle_recording(window: Fsg.Window, values, data: GUIData):
+    """
+    Starts/stops recording all incoming messages into a text file.
+    """
+
+    if data.recording_enabled:
+        file_path = data.stop_recording()
+        window[Keys.RECORD].update("Record")
+
+        if file_path is not None:
+            Fsg.popup(f"Recording stopped. File saved in {file_path}")
+
+        return
+
+    save_directory = data.directory_path
+
+    if not save_directory:
+        save_directory = values[Keys.SEQ_SAVE_DIR]
+
+    if not assert_directory(save_directory):
+        return
+
+    timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+    file_path = os.path.join(save_directory, f"receiver_record_{timestamp}.txt")
+
+    try:
+        data.start_recording(file_path)
+
+    except OSError:
+        Fsg.popup_error(f"Error opening recording file: {file_path}")
+        return
+
+    window[Keys.RECORD].update("Stop")
+    Fsg.popup(f"Recording started in {file_path}")
+
+
 def receive_sequence(window: Fsg.Window, values, data: GUIData):
     """
     Receives a sequence of messages and updates the table
@@ -126,6 +174,7 @@ def receive_sequence(window: Fsg.Window, values, data: GUIData):
         if len(messages) != 0:
             for message in messages:
                 new_data.append(message)
+                _save_in_recording_file(data, message)
 
             _append_messages_to_console(window, messages)
 
@@ -148,6 +197,8 @@ def receive(window: Fsg.Window, values, data: GUIData):
 
     except:  # ToDo: Catch the exception with the explicit error type
         data.message = "Error receiving message"
+
+    _save_in_recording_file(data, data.message)
 
     window[Keys.MESSAGE].update(value=data.message)
 

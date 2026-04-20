@@ -115,7 +115,7 @@ def assert_directory(directory_path):
 
     if not os.path.isdir(directory_path):
         Fsg.popup_error(
-            f'ERROR: The provided directory "${directory_path}" is not a directory.'
+            f'ERROR: The provided directory "{directory_path}" is not a directory.'
         )
         return False
 

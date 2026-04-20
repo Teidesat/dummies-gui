@@ -4,6 +4,8 @@
 Defines the structure and style of PySimpleGUI's elements.
 """
 
+import os
+
 import FreeSimpleGUI as Fsg
 
 from keys import Keys
@@ -52,6 +54,7 @@ def define_gui_layout():
         [
             Fsg.Push(),
             Fsg.Button("Receive", key=Keys.RECEIVE),
+            Fsg.Button("Record", key=Keys.RECORD),
             Fsg.Button("Clean", key=Keys.CLEAN),
             Fsg.Push(),
         ],
@@ -99,7 +102,12 @@ def define_gui_layout():
         col_widths=[40, 30],  # Make the "ID" column wider than "Messages"
     )
 
-    default_folder = "/app/receiver/message-batches"
+    default_folder = os.path.join(
+        os.path.dirname(os.path.abspath(__file__)), "message-batches"
+    )
+
+    if not os.path.isdir(default_folder):
+        default_folder = os.getcwd()
 
     sequence_section_layout = [
         [Fsg.Text("Files:")],

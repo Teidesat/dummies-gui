@@ -13,6 +13,9 @@ class GUIData:
         self.message = message
         self.directory_path = directory_path
         self.receiving_message = receiving_message
+        self.recording_enabled = False
+        self.record_file_path = None
+        self.record_file = None
 
     # Since assignment cannot be used in lambda functions,
     # setters are necessary to avoid writing a normal function
@@ -28,3 +31,27 @@ class GUIData:
     def set_message(self, value: str) -> str:
         self.message = value
         return value
+
+    def start_recording(self, file_path: str) -> str:
+        self.record_file_path = file_path
+        self.record_file = open(file_path, "a", encoding="utf-8")
+        self.recording_enabled = True
+        return file_path
+
+    def stop_recording(self) -> str:
+        last_file_path = self.record_file_path
+        self.recording_enabled = False
+
+        if self.record_file is not None:
+            self.record_file.close()
+
+        self.record_file = None
+        self.record_file_path = None
+        return last_file_path
+
+    def append_record(self, text: str) -> None:
+        if not self.recording_enabled or self.record_file is None:
+            return
+
+        self.record_file.write(text + "\n")
+        self.record_file.flush()

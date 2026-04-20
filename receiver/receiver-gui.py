@@ -14,6 +14,7 @@ from callbacks import (
     receive,
     get_experiment_callback,
     receive_sequence,
+    toggle_recording,
     transform_binary_ascii,
     visibility_callback,
 )
@@ -33,6 +34,7 @@ EVENT_CALLBACK_DICT = {
     Keys.CLEAN: lambda w, v, data: w[Keys.MESSAGE].update(value=data.set_message("")),
     Keys.SEQ_CLEAN: lambda w, v, data: w[Keys.SEQUENCES_TABLE].update(values=[]),
     Keys.RECEIVE_SEQUENCE: receive_sequence,
+    Keys.RECORD: toggle_recording,
     Keys.USE_BINARY: transform_binary_ascii,
 }
 
@@ -62,6 +64,9 @@ def main():
         ):
             receive_sequence(window, values, data)
             last_receive_time = time.time()
+
+    if data.recording_enabled:
+        data.stop_recording()
 
     window.close()
 
