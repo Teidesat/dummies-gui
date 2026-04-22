@@ -59,11 +59,13 @@ def main():
         if event in EVENT_CALLBACK_DICT:
             EVENT_CALLBACK_DICT[event](window, values, data)
 
-        if data.receiving_message and (
-            (time.time() - last_receive_time) > receive_interval
-        ):
-            receive_sequence(window, values, data)
-            last_receive_time = time.time()
+        if (time.time() - last_receive_time) > receive_interval:
+            if data.receiving_message:
+                receive_sequence(window, values, data)
+                last_receive_time = time.time()
+            elif data.recording_enabled:
+                receive(window, values, data)
+                last_receive_time = time.time()
 
     if data.recording_enabled:
         data.stop_recording()
