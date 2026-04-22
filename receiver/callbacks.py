@@ -6,6 +6,7 @@ Define callbacks to be used in the main loop.
 
 import datetime
 import os
+import time
 
 import FreeSimpleGUI as Fsg
 
@@ -116,6 +117,15 @@ def toggle_recording(window: Fsg.Window, values, data: GUIData):
     """
 
     if data.recording_enabled:
+        end_dt = datetime.datetime.now()
+
+        start_ts = getattr(data, "record_start_time", 0.0)
+        if start_ts > 0:
+            duration_seconds = max(0, int(end_dt.timestamp() - start_ts))
+            duration = str(datetime.timedelta(seconds=duration_seconds))
+            data.append_record(f"[recording time: {duration}]")
+            data.record_start_time = 0.0
+
         file_path = data.stop_recording()
         window[Keys.RECORD].update("Record")
 
@@ -141,6 +151,8 @@ def toggle_recording(window: Fsg.Window, values, data: GUIData):
     except OSError:
         Fsg.popup_error(f"Error opening recording file: {file_path}")
         return
+
+    data.record_start_time = time.time()
 
     window[Keys.RECORD].update("Stop")
     Fsg.popup(f"Recording started in {file_path}")

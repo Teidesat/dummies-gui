@@ -5,6 +5,8 @@ Simple struct-like class to store the data from the GUI, like the current direct
 message, etc.
 """
 
+from typing import Optional
+
 
 class GUIData:
     # ToDo: Add docstrings to the class and its methods
@@ -16,6 +18,7 @@ class GUIData:
         self.recording_enabled = False
         self.record_file_path = None
         self.record_file = None
+        self.record_start_time = 0.0
 
     # Since assignment cannot be used in lambda functions,
     # setters are necessary to avoid writing a normal function
@@ -38,7 +41,7 @@ class GUIData:
         self.recording_enabled = True
         return file_path
 
-    def stop_recording(self) -> str:
+    def stop_recording(self) -> Optional[str]:
         last_file_path = self.record_file_path
         self.recording_enabled = False
 
@@ -47,6 +50,7 @@ class GUIData:
 
         self.record_file = None
         self.record_file_path = None
+        self.record_start_time = 0.0
         return last_file_path
 
     def append_record(self, text: str) -> None:
