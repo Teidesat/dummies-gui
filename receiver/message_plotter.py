@@ -9,6 +9,7 @@ def visualize_message(file_path):
     and plots the full sequence of bits.
     """
     all_bits = []
+    recording_duration = "Unknown" 
 
     if not os.path.exists(file_path):
         print(f"Error: File {file_path} does not exist.")
@@ -21,6 +22,10 @@ def visualize_message(file_path):
                 if not line:
                     continue
                 
+                if "[recording time:" in line:
+                    recording_duration = line.split("recording time: ")[1].replace("]", "")
+                    continue
+
                 line_bits = [int(b) for b in line if b in ('0', '1')]
                 all_bits.extend(line_bits)
 
@@ -37,7 +42,8 @@ def visualize_message(file_path):
             f"Signal Analysis:\n"
             f"Total bits: {total_count}\n"
             f"Ones (1): {ones_count} ({ (ones_count/total_count)*100:.1f}%)\n"
-            f"Zeros (0): {zeros_count} ({ (zeros_count/total_count)*100:.1f}%)"
+            f"Zeros (0): {zeros_count} ({ (zeros_count/total_count)*100:.1f}%)\n"
+            f"Duration: {recording_duration}"
         )
 
         # Plotting
@@ -82,4 +88,3 @@ if __name__ == "__main__":
         visualize_message(target_file)
     else:
         print("No file selected. Exiting.")
-
