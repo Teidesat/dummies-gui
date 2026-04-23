@@ -24,6 +24,16 @@ from utils import (
 )
 
 
+def _format_duration_with_milliseconds(start_ts: float, end_ts: float) -> str:
+    elapsed_ms = max(0, round((end_ts - start_ts) * 1000))
+    hours, remainder = divmod(elapsed_ms, 3_600_000)
+    minutes, remainder = divmod(remainder, 60_000)
+    seconds, milliseconds = divmod(remainder, 1_000)
+
+    return f"{hours:02d}:{minutes:02d}:{seconds:02d}.{milliseconds:03d}"
+
+
+
 def visibility_callback(window: Fsg.Window, values, data: GUIData):
     """
     Updates the visibility of the elements on the GUI.
@@ -117,12 +127,11 @@ def toggle_recording(window: Fsg.Window, values, data: GUIData):
     """
 
     if data.recording_enabled:
-        end_dt = datetime.datetime.now()
+        end_dt = time.time()
 
         start_ts = getattr(data, "record_start_time", 0.0)
         if start_ts > 0:
-            duration_seconds = max(0, int(end_dt.timestamp() - start_ts))
-            duration = str(datetime.timedelta(seconds=duration_seconds))
+            duration = _format_duration_with_milliseconds(start_ts, end_dt)
             data.append_record(f"[recording time: {duration}]")
             data.record_start_time = 0.0
 
