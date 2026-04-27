@@ -103,8 +103,11 @@ def define_gui_layout():
     )
 
     default_folder = os.path.join(
-        os.path.dirname(os.path.abspath(__file__)), "message-batches"
+        os.path.dirname(os.path.abspath(__file__)), "recordings"
     )
+
+    if not os.path.exists(default_folder):
+        os.makedirs(default_folder)
 
     if not os.path.isdir(default_folder):
         default_folder = os.getcwd()
