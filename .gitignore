@@ -146,4 +146,4 @@ cython_debug/
 test_combobox.py
 
 # Archivos de record
-**/message-batches/*receiver_record*
+**/recordings/*receiver_record*
