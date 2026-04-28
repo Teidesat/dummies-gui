@@ -110,9 +110,10 @@ def send_callback(window: Fsg.Window, values) -> None:
 
     elif values[Keys.TOGGLE_EXP]:
         try:
-            if not send_experiment(get_current_settings(window)):
+            is_encoded = values[Keys.ENCODE_MESSAGE]
+            if not send_experiment(get_current_settings(window), encode=is_encoded):
                 return
-        # send_experiment(get_current_settings(window))
+            
             run_progress_window()
         except Exception as e:
             Fsg.popup_error(f"Error launching experiment: {str(e)}")

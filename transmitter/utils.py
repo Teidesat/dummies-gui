@@ -130,10 +130,8 @@ def save_settings(window: Fsg.Window, path: str) -> None:
         return
 
 
-def send_experiment(settings: dict) -> None:
-    # ToDo: Add docstring to the function
-
-    message_batch = int(settings["messages_batch"])  # Asserting it's just an integer
+def send_experiment(settings: dict, encode: bool = False) -> None: 
+    message_batch = int(settings["messages_batch"])  
     message_batch_file_name = (
         f"{os.getcwd()}/message-batches/batch-{str(message_batch)}.csv"
     )
@@ -142,18 +140,21 @@ def send_experiment(settings: dict) -> None:
         with open(message_batch_file_name, "r") as file:
             for line in file:
                 [message_id, message] = line.strip().split(",")
+                if encode:
+                    message = str_to_binary_str(message)
+                
                 send_message(message, settings, message_id)
         return True 
 
-    except FileNotFoundError:  # ToDo: Catch the exception with the explicit error type
+    except FileNotFoundError:
         Fsg.popup_error(
             f'Experiment file "{message_batch_file_name}" could not be found'
         )
         return False
-    
     except Exception as e:
         Fsg.popup_error(f"Error sending experiment: {str(e)}")
         return False
+
 
 
 def retrieve_combo_values(experiment_param: str) -> list[str]:
