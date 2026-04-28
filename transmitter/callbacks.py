@@ -187,6 +187,19 @@ def send_callback(window: Fsg.Window, values) -> None:
     # Check if the user wants to encode the message to binary
     if values[Keys.ENCODE_MESSAGE]:
         message_data = str_to_binary_str(message_data)
+    else:
+        # Check if the message contains only '0' and '1'
+        cleaned_message = message_data.replace(" ", "").replace("\n", "").replace("\r", "")
+        
+        if not all(char in '01' for char in cleaned_message):
+            Fsg.popup_error(
+                "Error: Raw data mode only accepts '0' and '1'.\n\n"
+                "Please remove any letters/symbols, or check the 'Encode to binary' box."
+            )
+            return
+            
+        message_data = cleaned_message
+
     send_message(message_data, get_current_settings(window))
 
     #run_progress_window()  #this is a test only for the issue #25
@@ -196,6 +209,7 @@ def send_callback(window: Fsg.Window, values) -> None:
         background_color="green",
         text_color="white",
     )
+
 
 
 def add_files(window: Fsg.Window, values) -> None:
