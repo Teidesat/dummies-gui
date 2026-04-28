@@ -123,36 +123,36 @@ def send_callback(window: Fsg.Window, values) -> None:
         failed_files = []
         failed_files_ind = []
 
-        # 1. Obtenemos los ajustes actuales de la interfaz (velocidad, ángulo, etc.)
-        current_settings = get_current_settings(window)
-
         for [ind, [file_path]] in enumerate(window[Keys.FILES_PATH].Values):
             try:
-                # 2. Truco para que el "experiment_id" sea correcto: 
-                # Extraemos el número del archivo (ej. de "batch-1.csv" sacamos el "1")
-                filename = os.path.basename(file_path)
-                if "batch-" in filename:
-                    batch_num = filename.split("batch-")[1].split(".")[0]
-                    current_settings["messages_batch"] = float(batch_num)
+                # 1. Cargamos el JSON del experimento
+                with open(file_path, "r", encoding="utf-8") as f:
+                    experiment_settings = json.load(f)
 
-                # 3. Leemos el archivo CSV directamente y enviamos cada línea
-                with open(file_path, "r", encoding="utf-8-sig") as file:
-                    for line in file:
+                # 2. Obtenemos el número de batch (CSV) que tiene guardado este JSON
+                batch_num = experiment_settings.get("messages_batch")
+                
+                if batch_num is None:
+                    raise ValueError("JSON does not contain a valid message batch number")
+
+                # 3. Construimos la ruta al CSV de mensajes
+                csv_path = os.path.join(os.getcwd(), "message-batches", f"batch-{int(float(batch_num))}.csv")
+
+                # 4. Leemos el CSV y enviamos cada mensaje con la configuración del JSON
+                with open(csv_path, "r", encoding="utf-8-sig") as csv_file:
+                    for line in csv_file:
                         line_clean = line.strip()
-                        if not line_clean: 
-                            continue # Saltamos líneas vacías por seguridad
+                        if not line_clean: continue
                         
                         [message_id, message] = line_clean.split(",")
                         
-                        # Si está marcado el tick de "Encode to binary", lo convertimos
                         if values[Keys.ENCODE_MESSAGE]:
                             message = str_to_binary_str(message)
                             
-                        # Lo mandamos directo al servidor
-                        send_message(message, current_settings, message_id)
+                        send_message(message, experiment_settings, message_id)
 
             except Exception as e:
-                print(f"Error procesando {file_path}: {e}") # Por si queremos depurar
+                print(f"Error procesando experimento {file_path}: {e}")
                 failed_files.append(file_path)
                 failed_files_ind.append(ind)
 
@@ -214,17 +214,16 @@ def send_callback(window: Fsg.Window, values) -> None:
 
 
 def add_files(window: Fsg.Window, values) -> None:
-    # ToDo: Add docstring to the function
-
     new_files = Fsg.popup_get_file(
-        "Select the file(s): ",
+        "Select the experiment file(s): ",
         file_types=(
-            ("CSV files", ".csv"),
+            ("JSON files", ".json"),
             ("ALL Files", ". *"),
         ),
         multiple_files=True,
         no_window=True,
     )
+
 
     if new_files is None:
         Fsg.popup("File selection canceled, no new files were loaded.")
